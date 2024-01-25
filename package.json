@@ -1,0 +1,12 @@
+{
+  "name": "data-hound",
+  "version": "1.0.0",
+  "description": "Node microservice library for retrieving and importing nflverse data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
