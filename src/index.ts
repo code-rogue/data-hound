@@ -9,9 +9,9 @@ async function runService(): Promise<void> {
   try {
     const players = new NFLPlayerService();
     await players.runService();
-  } catch (error) {
-    console.log("Error: ", error);
-    logger.error(`Something went wrong...`, "error", LogContext.Service);
+  } catch (error: any) {
+    console.log('Error: ', error);
+    logger.error('Error: ', error.message, LogContext.Service);
   }
 }
 
