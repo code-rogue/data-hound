@@ -1,17 +1,16 @@
-import { NFLPlayerService } from '../../../src/data-services/nfl/playerService';
-import * as cd from '../../../src/config/configData';
-import * as csv from '../../../src/csv/csvService';
-import { Config } from '../../../src/config/config';
-import { LogContext } from '../../../src//log/log.enums';
-import { logger } from '../../../src/log/logger';
-
+import * as cd from '../../../../src/config/configData';
+import * as csv from '../../../../src/csv/csvService';
+import { Config } from '../../../../src/config/config';
 import {
   configData,
   dataFile,
-  data,
- } from './player.constants';
+  rawPlayerData as data,
+ } from '../constants/config.constants';
+ import { LogContext } from '../../../../src/log/log.enums';
+import { logger } from '../../../../src/log/logger';
+import { NFLPlayerService } from '../../../../src/data-services/nfl/playerService';
 
- jest.mock('../../../src/log/logger');
+jest.mock('../../../../src/log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;

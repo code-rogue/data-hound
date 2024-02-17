@@ -1,40 +1,42 @@
+import * as cd from '../../../../src/config/configData';
+import * as csv from '../../../../src/csv/csvService';
+import { Config } from '../../../../src/config/config';
+import { DBService } from '../../../../src/database/dbService'
+import { LogContext } from '../../../../src/log/log.enums';
+import { logger } from '../../../../src/log/logger';
 
-import * as cd from '../../../src/config/configData';
-import * as csv from '../../../src/csv/csvService';
-import { Config } from '../../../src/config/config';
-import { DBService } from '../../../src/database/dbService'
-import { LogContext } from '../../../src/log/log.enums';
-import { logger } from '../../../src/log/logger';
-import { 
-  NFLPlayerService,
+import {
   NFLSchema,
-  PlayerTable,
   BioTable,
   LeagueTable,
+  PlayerTable,
   PlayerId,
+} from '../../../../src/constants/nfl/service.constants';
+
+import { 
+  NFLPlayerService,
   PlayerGUID,
- } from '../../../src/data-services/nfl/playerService';
+ } from '../../../../src/data-services/nfl/playerService';
 
  import {
   configData,
   dataFile,
-  noData,
+  noRawPayerData as noData,
   playerRecord,
-  data,
+  rawPlayerData as data,
   playerData,
   leagueData,
   bioData,
- } from './player.constants';
+ } from '../constants/config.constants';
 
 import type { 
     BioData,
     LeagueData,
- } from '../../../src/interfaces/nfl/nflPlayer';
-import { constants } from 'buffer';
+ } from '../../../../src/interfaces/nfl/nflPlayer';
 
-  jest.mock('../../../src/log/logger');
+jest.mock('../../../../src/log/logger');
 
- let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
+let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;
 let mockDownloadCSV;
 let mockParseCSV: jest.SpyInstance<Promise<unknown[]>, [filePath: string, columnMap: csv.ColumnMap], any>;

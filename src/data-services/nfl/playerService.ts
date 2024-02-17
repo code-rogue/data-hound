@@ -1,4 +1,3 @@
-import { getConfigurationData } from '../../config/configData';
 import { DBService } from '../../database/dbService'
 import { downloadCSV, parseCSV } from '../../csv/csvService';
 import { logger } from '../../log/logger';
@@ -11,11 +10,14 @@ import type {
     LeagueData,
  } from '../../interfaces/nfl/nflPlayer';
 
-export const NFLSchema = "nfl"
-export const PlayerTable = "players"
-export const BioTable = "player_bio"
-export const LeagueTable = "player_league"
-export const PlayerId = "player_id"
+ import {
+    NFLSchema,
+    BioTable,
+    LeagueTable,
+    PlayerTable,
+    PlayerId,
+} from '../../constants/nfl/service.constants';
+
 export const PlayerGUID = "smart_id"
 
 export class NFLPlayerService extends DBService {

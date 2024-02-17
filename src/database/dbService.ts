@@ -2,7 +2,7 @@ import { Config } from '../config/config';
 import { getConfigurationData } from '../config/configData'
 import { logger } from '../log/logger'
 import { LogContext } from '../log/log.enums';
-import { Pool } from 'pg';
+import { Pool, QueryResult } from 'pg';
 
 export class DBService {
     public pool: Pool;
@@ -10,7 +10,7 @@ export class DBService {
 
     constructor() {
         this.config = getConfigurationData();
-        logger.debug(`Connecting to database: ${this.config.database.host}:${this.config.database.port}/${this.config.database.database}`, LogContext.dbService);
+        logger.debug(`Connecting to database: ${this.config.database.host}:${this.config.database.port}/${this.config.database.database}`, LogContext.DBService);
 
         // Set up PostgreSQL connection pool
         this.pool = new Pool({
@@ -28,13 +28,28 @@ export class DBService {
             const result = await this.pool.query(query, [key]);
             return result.rows[0].exists;
         } catch (error: any) {
-            logger.debug(`Failed Query: '${query}' - Values: '${key}'`, LogContext.dbService);
-            logger.error('Unable to find record: ', error.message, LogContext.dbService);
+            logger.debug(`Failed Query: '${query}' - Values: '${key}'`, LogContext.DBService);
+            logger.error('Unable to find record: ', error.message, LogContext.DBService);
             console.error("Error: ", error);
             throw error;
         }
     }
 
+    public async fetchRecords<T>(
+        query: string, 
+        keys: (number |string)[], 
+    ): Promise<[T] | undefined> {
+        try {
+            const result = await this.pool.query(query, keys);
+            return result?.rows as [T] | undefined;
+        } catch (error: any) {
+            logger.debug(`Failed Query: '${query}' - Values: '${keys.toString()}'`, LogContext.DBService);
+            logger.error('Unable to fetch records: ', error.message, LogContext.DBService);
+            console.error("Error: ", error);
+            throw error;
+        }
+    }
+    
     public async recordLookup(schema: string, tableName: string, keyColumn: string, key: number | string, idColumn: string): Promise<number> {
         const query = `SELECT ${idColumn} FROM ${schema}.${tableName} WHERE ${keyColumn} = $1`;
         try {
@@ -44,8 +59,8 @@ export class DBService {
 
             return 0;
         } catch (error: any) {
-            logger.debug(`Failed Query: '${query}' - Values: '${key}'`, LogContext.dbService);
-            logger.error('Unable to lookup record: ', error.message, LogContext.dbService);
+            logger.debug(`Failed Query: '${query}' - Values: '${key}'`, LogContext.DBService);
+            logger.error('Unable to lookup record: ', error.message, LogContext.DBService);
             console.error("Error: ", error);
             throw error;
         }
@@ -74,12 +89,12 @@ export class DBService {
         
         try {
             const result = await this.pool.query(query, values);
-            logger.debug(`New Record Id [${result.rows[0].id}] inserted successfully into '${schema}.${tableName}'.`,LogContext.dbService);
+            logger.debug(`New Record Id [${result.rows[0].id}] inserted successfully into '${schema}.${tableName}'.`,LogContext.DBService);
             return result.rows[0].id;
 
         } catch(error: any) {
-            logger.debug(`Failed Query: '${query}' - Values: '${values}'`, LogContext.dbService);
-            logger.error(`Unable to insert new record into '${schema}.${tableName}'.`, error.message, LogContext.dbService);
+            logger.debug(`Failed Query: '${query}' - Values: '${values}'`, LogContext.DBService);
+            logger.error(`Unable to insert new record into '${schema}.${tableName}'.`, error.message, LogContext.DBService);
             console.error("Error: ", error);
             throw error;
         };
@@ -94,10 +109,10 @@ export class DBService {
         const query = `UPDATE ${schema}.${tableName} SET ${setClause} WHERE ${keyColumn} = ${key}`;
         try {
             await this.pool.query(query, values);
-            logger.debug(`Record with '${keyColumn}' = '${key}' updated successfully in '${schema}.${tableName}'.`,LogContext.dbService);
+            logger.debug(`Record with '${keyColumn}' = '${key}' updated successfully in '${schema}.${tableName}'.`,LogContext.DBService);
         } catch(error: any) {
-            logger.debug(`Failed Query: '${query}' - Values: '${values}'`, LogContext.dbService);
-            logger.error(`Unable to update record with '${keyColumn}' = '${key}' in '${schema}.${tableName}'.`, error.message, LogContext.dbService);
+            logger.debug(`Failed Query: '${query}' - Values: '${values}'`, LogContext.DBService);
+            logger.error(`Unable to update record with '${keyColumn}' = '${key}' in '${schema}.${tableName}'.`, error.message, LogContext.DBService);
             console.error("Error: ", error);
             throw error;
         };

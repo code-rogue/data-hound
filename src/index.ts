@@ -4,15 +4,25 @@ import { logger } from './log/logger'
 import { LogContext } from './log/log.enums';
 
 import { NFLPlayerService } from './data-services/nfl/playerService';
+import { NFLWeeklyStatService } from './data-services/nfl/weeklyStatService';
 
 async function runService(): Promise<void> {
-  try {
-    const players = new NFLPlayerService();
-    await players.runService();
-  } catch (error: any) {
+  const players = new NFLPlayerService();
+  const weeklyStats = new NFLWeeklyStatService();
+  
+  //await players.runService();
+
+  const promises: Promise<void>[] = [];
+  promises.push(weeklyStats.runService());
+  
+  Promise.all(promises)
+  .catch((error) => {
     console.log('Error: ', error);
     logger.error('Error: ', error.message, LogContext.Service);
-  }
+  })
+  .finally(() => {
+      logger.debug(`Completed processing services.`, LogContext.Service);
+  });
 }
 
 const schedule = '0 0 * * *'; // Run daily at midnight

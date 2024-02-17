@@ -41,7 +41,7 @@ describe('DBService', () => {
         it('should create a pool and log connection information', () => {
             expect(logger.debug).toHaveBeenCalledWith(
                 'Connecting to database: test-host:5432/test-database',
-                LogContext.dbService
+                LogContext.DBService
             );
             expect(Pool).toHaveBeenCalledWith({
                 user: 'test-username',
@@ -50,6 +50,34 @@ describe('DBService', () => {
                 password: 'test-password',
                 port: 5432,
             });
+        });
+    });
+
+    describe('fetchRecords', () => {
+        const queryResult = { rows: [{ id: 1, key: 'value' }] } as QueryResult;
+        const emptyResults = { rows: [] } as unknown as QueryResult;
+        const undefinedResults = { } as unknown as QueryResult;
+        it.each([
+            ['', [], undefinedResults],
+            ['SELECT * FROM x', [], queryResult],
+            ['SELECT * FROM x WHERE a = $1 AND b = $2', ['a', 'b'], emptyResults]
+        ])('should return records', async (query, keys, returnResults) => {
+            mockPoolQuery.mockResolvedValueOnce(returnResults);
+            const result = await dbService.fetchRecords<{id: number, key: string}>(query, keys);
+            expect(result).toBe(returnResults?.rows ?? undefined);
+            expect(mockPoolQuery).toHaveBeenCalledWith(query, keys);
+        });
+
+        it('should log and throw an error if query fails', async () => {
+            const query = 'SELECT * FROM x WHERE a = $1';
+            const keys = ['a']
+            const error = new Error('Query failed');
+            mockPoolQuery.mockRejectedValueOnce(error);
+
+            await expect(dbService.fetchRecords(query, keys)).rejects.toThrow(error);
+            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${keys}'`, LogContext.DBService);
+            expect(logger.error).toHaveBeenCalledWith('Unable to fetch records: ', error.message, LogContext.DBService);
+            expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
         });
     });
 
@@ -73,8 +101,8 @@ describe('DBService', () => {
             const query = `SELECT EXISTS(SELECT 1 FROM schema.table WHERE keyColumn = $1) as "exists"`;
             mockPoolQuery.mockRejectedValueOnce(error);
             await expect(dbService.recordExists('schema', 'table', 'keyColumn', 'key')).rejects.toThrow(error);
-            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${['key']}'`, LogContext.dbService);
-            expect(logger.error).toHaveBeenCalledWith('Unable to find record: ', error.message, LogContext.dbService);
+            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${['key']}'`, LogContext.DBService);
+            expect(logger.error).toHaveBeenCalledWith('Unable to find record: ', error.message, LogContext.DBService);
             expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
         });
     });
@@ -99,8 +127,8 @@ describe('DBService', () => {
             const query = `SELECT id FROM schema.table WHERE keyColumn = $1`;
             mockPoolQuery.mockRejectedValueOnce(error);
             await expect(dbService.recordLookup('schema', 'table', 'keyColumn', 'key', 'id')).rejects.toThrow(error);
-            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${['key']}'`, LogContext.dbService);
-            expect(logger.error).toHaveBeenCalledWith('Unable to lookup record: ', error.message, LogContext.dbService);
+            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${['key']}'`, LogContext.DBService);
+            expect(logger.error).toHaveBeenCalledWith('Unable to lookup record: ', error.message, LogContext.DBService);
             expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
         });
     });
@@ -163,7 +191,7 @@ describe('DBService', () => {
             const result = await dbService.insertRecord('schema', 'table', { col: "value" });
             expect(result).toBe(100);
             expect(logger.debug).toHaveBeenCalledTimes(2);
-            expect(logger.debug).toHaveBeenNthCalledWith(2, `New Record Id [100] inserted successfully into 'schema.table'.`,LogContext.dbService);
+            expect(logger.debug).toHaveBeenNthCalledWith(2, `New Record Id [100] inserted successfully into 'schema.table'.`,LogContext.DBService);
         });
 
         it.each([
@@ -180,8 +208,8 @@ describe('DBService', () => {
             
             mockPoolQuery.mockRejectedValueOnce(error);
             await expect(dbService.insertRecord('schema', 'table', newData)).rejects.toThrow(error);
-            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${values}'`, LogContext.dbService);
-            expect(logger.error).toHaveBeenCalledWith(`Unable to insert new record into 'schema.table'.`, error.message, LogContext.dbService);
+            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${values}'`, LogContext.DBService);
+            expect(logger.error).toHaveBeenCalledWith(`Unable to insert new record into 'schema.table'.`, error.message, LogContext.DBService);
             expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
         });
     });
@@ -191,7 +219,7 @@ describe('DBService', () => {
             mockPoolQuery.mockResolvedValueOnce({ rows: [{ id: 100 }] } as QueryResult);
             await dbService.updateRecord('schema', 'table', 'keyColumn', 100, { col: "value" });
             expect(logger.debug).toHaveBeenCalledTimes(2);
-            expect(logger.debug).toHaveBeenNthCalledWith(2, `Record with 'keyColumn' = '100' updated successfully in 'schema.table'.`,LogContext.dbService);
+            expect(logger.debug).toHaveBeenNthCalledWith(2, `Record with 'keyColumn' = '100' updated successfully in 'schema.table'.`,LogContext.DBService);
         });
 
         it.each([
@@ -209,8 +237,8 @@ describe('DBService', () => {
             
             mockPoolQuery.mockRejectedValueOnce(error);
             await expect(dbService.updateRecord('schema', 'table', 'keyColumn', 100, newData)).rejects.toThrow(error);
-            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${values}'`, LogContext.dbService);
-            expect(logger.error).toHaveBeenCalledWith(`Unable to update record with 'keyColumn' = '100' in 'schema.table'.`, error.message, LogContext.dbService);
+            expect(logger.debug).toHaveBeenCalledWith(`Failed Query: '${query}' - Values: '${values}'`, LogContext.DBService);
+            expect(logger.error).toHaveBeenCalledWith(`Unable to update record with 'keyColumn' = '100' in 'schema.table'.`, error.message, LogContext.DBService);
             expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
         });
     });
