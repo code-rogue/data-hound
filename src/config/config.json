@@ -101,7 +101,9 @@
         "air_yards_share": "air_yards_share",
         "weighted_opportunity_rating": "wopr"
       },
-      "url": "https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_2023.csv"
+      "url": [
+        "https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_2023.csv"
+      ]
     }
   }
 }

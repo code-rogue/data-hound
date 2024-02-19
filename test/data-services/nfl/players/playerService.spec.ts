@@ -54,9 +54,9 @@ describe('NFLPlayerService', () => {
       expect(logger.log).toHaveBeenCalledWith('NFL Player Service started...', LogContext.NFLPlayerService)
       expect(mockParseCSV).toHaveBeenCalledWith(dataFile, configData.nfl.players.columns);
       expect(mockProcessPlayerData).toHaveBeenCalledWith(data);
-      expect(logger.error).toHaveBeenCalledWith('NFL Player Service did not complete', error.message, LogContext.NFLPlayerService)
       expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
-
+      expect(logger.error).toHaveBeenCalledWith('NFL Player Service did not complete', error.message, LogContext.NFLPlayerService)
+      
       mockProcessPlayerData.mockRestore();
     });
   });

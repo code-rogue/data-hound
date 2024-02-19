@@ -131,13 +131,8 @@ export class NFLPlayerService extends DBService {
                 this.processBioRecord(player_id, row),
                 this.processLeagueRecord(player_id, row),
             ];
-            Promise.all(promises)
-            .catch((error) => {
-                throw error;
-            })
-            .finally(() => {
-                logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, LogContext.NFLPlayerService);
-            });
+            await Promise.all(promises);
+            logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, LogContext.NFLPlayerService);
         } catch(error: any) {
             throw error;
         }
@@ -146,13 +141,14 @@ export class NFLPlayerService extends DBService {
     public async processPlayerData(data: RawPlayerData[]): Promise<void> {
         try {
             logger.log(`Processing player records [${data.length}]`, LogContext.NFLPlayerService);
-            data.forEach(async row => {
-                await this.processPlayerDataRow(row);
-            });
+            const promises = data.map((row) => this.processPlayerDataRow(row));
+
+            // Now await all promises in parallel
+            await Promise.all(promises);
+
+            logger.log('Processed player records.', LogContext.NFLPlayerService);
         } catch(error: any) {
             throw error;
-        } finally {
-            logger.log('Processed player records.', LogContext.NFLPlayerService);
         }
     }    
 

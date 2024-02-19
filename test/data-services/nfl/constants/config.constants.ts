@@ -48,7 +48,7 @@ export const configData = {
         draft_round: "draft_round",
         season: "season"
       },
-      url: "https://github.com/nflverse/nflverse-data/releases/download/players/players.csv"
+      url: "https://players.csv"
     },
     player_weekly_stats: {
       columns: {
@@ -106,7 +106,10 @@ export const configData = {
         air_yards_share: "air_yards_share",
         weighted_opportunity_rating: "weighted_opportunity_rating",
       },
-      "url": "https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_2023.csv"
+      "url": [
+        "https://player_stats_2023.csv",
+        "https://player_stats_2022.csv"
+      ]
     }
   }
 };

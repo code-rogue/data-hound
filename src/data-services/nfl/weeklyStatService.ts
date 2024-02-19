@@ -27,6 +27,7 @@ import type {
     RecordData,
 } from '../../interfaces/nfl/nflPlayerWeeklyStats';
 
+import { splitString } from './utils/utils'
 export const WeeklyStatId = 'player_weekly_id';
 export const PlayerGUID = 'gsis_id';
  
@@ -36,8 +37,11 @@ export class NFLWeeklyStatService extends DBService {
     }
     
     public parsePlayerData(data: RawWeeklyStatData): PlayerData {
+        const {firstPart: first_name, secondPart: last_name} = splitString(data.full_name, ' ');
         return {
             gsis_id: data.gsis_id,
+            first_name,
+            last_name,
             full_name: data.full_name,
             short_name: data.short_name,
         };
@@ -198,8 +202,8 @@ export class NFLWeeklyStatService extends DBService {
             const gameData = this.parseGameData(row);
             gameData.player_id = player_id;
 
-            const query = `SELECT id FROM ${NFLSchema}.${WeeklyStatTable} WHERE ${PlayerId} = $1 AND week = $2`;
-            const records = await this.fetchRecords<{id: number}>(query, [player_id, gameData.week]);
+            const query = `SELECT id FROM ${NFLSchema}.${WeeklyStatTable} WHERE ${PlayerId} = $1 AND season = $2 AND week = $3`;
+            const records = await this.fetchRecords<{id: number}>(query, [player_id, gameData.season, gameData.week]);
             if(!records || !records[0] || records[0].id === 0 ) {
                 return await this.insertRecord(NFLSchema, WeeklyStatTable, gameData);
             }
@@ -222,7 +226,7 @@ export class NFLWeeklyStatService extends DBService {
             const playerData = this.parsePlayerData(row);
             let player_id = await this.recordLookup(NFLSchema, PlayerTable, PlayerGUID, playerData.gsis_id, 'id');
             if(player_id === 0) {
-                logger.debug(`No Player Found, creating player record.`, LogContext.NFLWeeklyStatsService);
+                logger.debug(`No Player Found, creating player record: ${playerData.full_name} [${playerData.gsis_id}].`, LogContext.NFLWeeklyStatsService);
 
                 player_id = await this.insertRecord(NFLSchema, PlayerTable, playerData);
                 promises.push(this.processBioRecord(player_id, row));
@@ -234,13 +238,8 @@ export class NFLWeeklyStatService extends DBService {
             promises.push(this.processPassRecord(weeklyStatId, row));
             promises.push(this.processRushRecord(weeklyStatId, row));
             promises.push(this.processRecRecord(weeklyStatId, row));
-            Promise.all(promises)
-            .catch((error) => {
-                throw error;
-            })
-            .finally(() => {
-                logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, LogContext.NFLWeeklyStatsService);
-            });
+            await Promise.all(promises);
+            logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, LogContext.NFLWeeklyStatsService);
         } catch(error: any) {
             throw error;
         }
@@ -249,23 +248,39 @@ export class NFLWeeklyStatService extends DBService {
     public async processPlayerData(data: RawWeeklyStatData[]): Promise<void> {
         try {
             logger.log(`Processing player records [${data.length}]`, LogContext.NFLWeeklyStatsService);
-            data.forEach(async row => {
-                await this.processPlayerDataRow(row);
-            });
+            const promises = data.map((row) => this.processPlayerDataRow(row));
+
+            // Now await all promises in parallel
+            await Promise.all(promises);
+
+            logger.log('Processed player records.', LogContext.NFLWeeklyStatsService);
         } catch(error: any) {
             throw error;
-        } finally {
-            logger.log('Processed player records.', LogContext.NFLWeeklyStatsService);
         }
     }    
+
+    public async parseAndLoadWeeklyStats(url: string): Promise<void> {
+        try {
+            logger.log(`Downloading and parsing: ${url}`, LogContext.NFLWeeklyStatsService);
+            const dataFile = await downloadCSV(url);
+            const data = await parseCSV<RawWeeklyStatData>(dataFile, this.config.nfl.player_weekly_stats.columns);
+            await this.processPlayerData(data);
+            logger.log(`Completed processing: ${url}`, LogContext.NFLWeeklyStatsService);
+        } catch(error: any) {
+            throw error;
+        }
+    }
 
     public async runService(): Promise<void> {
         try {
             logger.log('NFL Player Weekly Stats Service started...', LogContext.NFLWeeklyStatsService);
-            const dataFile = await downloadCSV(this.config.nfl.player_weekly_stats.url);
-            const data = await parseCSV<RawWeeklyStatData>(dataFile, this.config.nfl.player_weekly_stats.columns);
-
-            await this.processPlayerData(data);
+    
+            const promises: Promise<void>[] = [];
+            this.config.nfl.player_weekly_stats.url.forEach(url => {
+                promises.push(this.parseAndLoadWeeklyStats(url));
+            });
+    
+            await Promise.all(promises);
         } catch (error: any) {
             console.error('Error: ', error);
             logger.error('NFL Player Weekly Stats Service did not complete', error.message, LogContext.NFLWeeklyStatsService);

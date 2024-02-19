@@ -10,6 +10,8 @@ export interface PlayerData {
   gsis_id: string,
   full_name: string,
   short_name: string,
+  first_name?: string;
+  last_name?: string;
 }
 
 export interface BioData {

@@ -104,7 +104,7 @@ export interface Config {
             air_yards_share: string,
             weighted_opportunity_rating: string,
           },
-          url: string,
+          url: string[],
         },
     },
     database: {
