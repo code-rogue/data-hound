@@ -4,6 +4,8 @@ import { logger } from '../log/logger'
 import { LogContext } from '../log/log.enums';
 import { Pool, QueryResult } from 'pg';
 
+import { RecordData } from '../interfaces/database/database';
+
 export class DBService {
     public pool: Pool;
     public config: Config;
@@ -31,6 +33,30 @@ export class DBService {
             logger.debug(`Failed Query: '${query}' - Values: '${key}'`, LogContext.DBService);
             logger.error('Unable to find record: ', error.message, LogContext.DBService);
             console.error("Error: ", error);
+            throw error;
+        }
+    }
+
+    public async processRecord<T extends RecordData>(
+        schema: string,
+        table: string, 
+        idColumn: keyof T, 
+        id: number, 
+        data: T
+    ): Promise<void | number> {
+        try {
+            const exists = await this.recordExists(schema, table, idColumn as string, id);
+            if (exists) {
+                // remove id column
+                const { [idColumn]: _, ...updatedData } = data;
+                return await this.updateRecord(schema, table, idColumn as string, id, updatedData);
+            } 
+            else {
+                // set id column
+                (data as RecordData)[idColumn as keyof RecordData] = id;
+                return await this.insertRecord(schema, table, data);
+            }
+        } catch(error: any) {
             throw error;
         }
     }

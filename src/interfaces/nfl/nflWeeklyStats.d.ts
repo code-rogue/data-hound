@@ -1,40 +1,6 @@
-export interface RecordData {
-  player_id?: number;  
-  player_weekly_id?: number;  
-}
+import { RawStatData } from './nflStats';
 
-export interface RawWeeklyStatData extends PlayerData, 
-    BioData, LeagueData, GameData, PassData, RushData, RecData {}
-
-export interface PlayerData {
-  gsis_id: string,
-  full_name: string,
-  short_name: string,
-  first_name?: string;
-  last_name?: string;
-}
-
-export interface BioData {
-  player_id?: number,
-  headshot_url: string,
-}
-
-export interface LeagueData {
-  player_id?: number,
-  position: string,
-  position_group: string,
-  team: string,
-}
-
-export interface GameData {
-  player_id?: number,
-  season: string,
-  week: number,
-  game_type: string,
-  opponent: string,
-  fantasy_points: number,
-  fantasy_points_ppr: number,
-}
+export interface RawWeeklyStatData extends RawStatData, PassData, RushData, RecData {}
 
 export interface PassData {
   player_weekly_id: number,

@@ -1,5 +1,7 @@
 export * from './player.constants'
 export * from './weeklyStats.constants'
+export * from './stats.constants'
+export * from './weeklyStatsDef.constants'
 
 export const dataFile = "Massive Data File"; 
 
@@ -48,7 +50,9 @@ export const configData = {
         draft_round: "draft_round",
         season: "season"
       },
-      url: "https://players.csv"
+      urls: [
+        "https://players.csv"
+      ]
     },
     player_weekly_stats: {
       columns: {
@@ -106,9 +110,48 @@ export const configData = {
         air_yards_share: "air_yards_share",
         weighted_opportunity_rating: "weighted_opportunity_rating",
       },
-      "url": [
+      urls: [
         "https://player_stats_2023.csv",
         "https://player_stats_2022.csv"
+      ]
+    },
+    player_weekly_def_stats: {
+      columns: {
+        gsis_id: "player_id",
+        short_name: "player_name",
+        full_name: "player_display_name",
+        headshot_url: "headshot_url",
+        position: "position",
+        position_group: "position_group",
+        team: "team",
+        season: "season",
+        week: "week",
+        tackles: "def_tackles",
+        tackles_solo: "def_tackles_solo",
+        tackle_with_assists: "def_tackles_with_assist",
+        tackle_assists: "def_tackle_assists",
+        tackles_for_loss: "def_tackles_for_loss",
+        tackles_for_loss_yards: "def_tackles_for_loss_yards",
+        fumbles_forced: "def_fumbles_forced",
+        sacks: "def_sacks",
+        sack_yards: "def_sack_yards",
+        qb_hits: "def_qb_hits",
+        interceptions: "def_interceptions",
+        interception_yards: "def_interception_yards",
+        pass_defended: "def_pass_defended",
+        tds: "def_tds",
+        fumbles: "def_fumbles",
+        fumble_recovery_own: "def_fumble_recovery_own",
+        fumble_recovery_yards_own: "def_fumble_recovery_yards_own",
+        fumble_recovery_opp: "def_fumble_recovery_opp",
+        fumble_recovery_yards_opp: "def_fumble_recovery_yards_opp",
+        safety: "def_safety",
+        penalty: "def_penalty",
+        penalty_yards: "def_penalty_yards",
+      },
+      urls: [
+        "https://player_stats_def_2023.csv",
+        "https://player_stats_def_2022.csv"
       ]
     }
   }

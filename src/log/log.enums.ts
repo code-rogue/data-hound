@@ -3,5 +3,7 @@ export enum LogContext {
     CSVService = 'CSVService',
     DBService = 'DBService',
     NFLPlayerService = 'NFLPlayerService',
-    NFLWeeklyStatsService = 'NFLWeeklyStatService',
+    NFLStatService = 'NFLStatService',
+    NFLWeeklyStatService = 'NFLWeeklyStatService',
+    NFLWeeklyStatDefService = 'NFLWeeklyStatDefService',
 }

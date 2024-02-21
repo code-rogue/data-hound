@@ -4,6 +4,26 @@ import { logger } from '../../src/log/logger';
 import { LogContext } from '../../src/log/log.enums';
 import { Pool, QueryResult } from 'pg';
 
+import {
+    noRawWeeklyStatData as noData,
+    rawWeeklyStatData as data,
+    weeklyPlayerData as playerData,
+    weeklyLeagueData as leagueData,
+    weeklyBioData as bioData,
+    passData,
+} from '../data-services/nfl/constants/config.constants';
+
+import {
+    NFLSchema,
+    PassTable,
+    PlayerId,
+    WeeklyStatId,
+} from '../../src/constants/nfl/service.constants';
+
+import type { 
+    RecordData,
+} from '../../src/interfaces/database/database';
+
 jest.mock('../../src/config/configData');
 jest.mock('../../src/log/logger');
 jest.mock('pg');
@@ -242,4 +262,46 @@ describe('DBService', () => {
             expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
         });
     });
+
+    describe('processRecord', () => {
+        it.each([
+            [true, passData, WeeklyStatId, 5],
+            [false, bioData, PlayerId, 10],
+        ])('should run successfully - exists: %s', async (exists, data, idColumn, id) => {
+            const dataCopy = data;
+            
+            const mockRecordExists = jest.spyOn(DBService.prototype, 'recordExists').mockImplementation(() => Promise.resolve(exists));
+            const mockUpdateRecord = jest.spyOn(DBService.prototype, 'updateRecord').mockImplementation();
+            const mockInsertRecord = jest.spyOn(DBService.prototype, 'insertRecord').mockImplementation(() => Promise.resolve(100));
+    
+            // @ts-ignore: (TS 2345) - idColumn is a keyof data
+            const result = await dbService.processRecord(NFLSchema, PassTable, idColumn, id, dataCopy);
+            expect(mockRecordExists).toHaveBeenLastCalledWith(NFLSchema, PassTable, idColumn, id);
+    
+            if (exists) {
+                // @ts-ignore: (TS 2537) - idColumn is a keyof data
+                const { [idColumn]: _, ...updatedData } = dataCopy;
+                expect(mockUpdateRecord).toHaveBeenCalledWith(NFLSchema, PassTable, idColumn, id, updatedData);
+            } 
+            else {
+                const updatedData = dataCopy;
+                (updatedData as RecordData)[idColumn as keyof RecordData] = id;
+                expect(result).toEqual(100);
+                expect(mockInsertRecord).toHaveBeenCalledWith(NFLSchema, PassTable, dataCopy);
+            }
+    
+            mockRecordExists.mockRestore();
+            mockUpdateRecord.mockRestore();
+            mockInsertRecord.mockRestore();
+        });
+    
+        it('should catch and throw the error', async () => {
+          const error = new Error("error");
+          const mockRecordExists = jest.spyOn(DBService.prototype, 'recordExists').mockImplementation().mockRejectedValue(error);
+    
+          await expect(dbService.processRecord(NFLSchema, PassTable, WeeklyStatId, 5, passData)).rejects.toThrow(error);
+          
+          mockRecordExists.mockRestore();
+        });    
+      });
 });

@@ -39,7 +39,7 @@ export interface Config {
             draft_round: string,
             season: string,
           },
-          url: string,
+          urls: string[],
         },
         player_weekly_stats: {
           columns: {
@@ -104,7 +104,48 @@ export interface Config {
             air_yards_share: string,
             weighted_opportunity_rating: string,
           },
-          url: string[],
+          urls: string[],
+        },
+        player_weekly_def_stats: {
+          columns: {
+            // player table
+            gsis_id: string,
+            short_name: string,
+            full_name: string,
+            // bio table
+            headshot_url: string,
+            // league table
+            position: string,
+            position_group: string,
+            team: string,
+            // player weekly stat table
+            season: string,
+            week: string,
+            // player weekly def stat table
+            tackles: string,
+            tackles_solo: string,
+            tackle_with_assists: string,
+            tackle_assists: string,
+            tackles_for_loss: string,
+            tackles_for_loss_yards: string,
+            fumbles_forced: string,
+            sacks: string,
+            sack_yards: string,
+            qb_hits: string,
+            interceptions: string,
+            interception_yards: string,
+            pass_defended: string,
+            tds: string,
+            fumbles: string,
+            fumble_recovery_own: string,
+            fumble_recovery_yards_own: string,
+            fumble_recovery_opp: string,
+            fumble_recovery_yards_opp: string,
+            safety: string,
+            penalty: string,
+            penalty_yards: string,
+          },
+          urls: string[],
         },
     },
     database: {

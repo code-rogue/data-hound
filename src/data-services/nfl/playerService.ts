@@ -1,5 +1,5 @@
 import { DBService } from '../../database/dbService'
-import { downloadCSV, parseCSV } from '../../csv/csvService';
+import { ColumnMap, downloadCSV, parseCSV } from '../../csv/csvService';
 import { logger } from '../../log/logger';
 import { LogContext } from '../../log/log.enums';
 
@@ -11,18 +11,23 @@ import type {
  } from '../../interfaces/nfl/nflPlayer';
 
  import {
-    NFLSchema,
     BioTable,
     LeagueTable,
-    PlayerTable,
+    NFLSchema,
     PlayerId,
+    PlayerSmartId,
+    PlayerTable
 } from '../../constants/nfl/service.constants';
 
-export const PlayerGUID = "smart_id"
-
 export class NFLPlayerService extends DBService {
+    public columns: ColumnMap = {};
+    public urls: string[] =[];
+    
     constructor() {
         super();
+
+        this.columns = this.config.nfl.players.columns;
+        this.urls = this.config.nfl.players.urls;
     }
     
     public parsePlayerData(data: RawPlayerData): PlayerData {
@@ -120,7 +125,7 @@ export class NFLPlayerService extends DBService {
     public async processPlayerDataRow(row: RawPlayerData): Promise<void> {
         try {
             const playerData = this.parsePlayerData(row);
-            let player_id = await this.recordLookup(NFLSchema, PlayerTable, PlayerGUID, playerData.smart_id, 'id');
+            let player_id = await this.recordLookup(NFLSchema, PlayerTable, PlayerSmartId, playerData.smart_id, 'id');
             if(player_id !== 0) {
                 await this.updateRecord(NFLSchema, PlayerTable, 'id', player_id, playerData);
             } else {
@@ -152,13 +157,28 @@ export class NFLPlayerService extends DBService {
         }
     }    
 
+    public async parseAndLoadPlayers(url: string): Promise<void> {
+        try {
+            logger.log(`Downloading and parsing: ${url}`, LogContext.NFLPlayerService);
+            const dataFile = await downloadCSV(url);
+            const data = await parseCSV<RawPlayerData>(dataFile, this.columns);
+            await this.processPlayerData(data);
+            logger.log(`Completed processing: ${url}`, LogContext.NFLPlayerService);
+        } catch(error: any) {
+            throw error;
+        }
+    }
+
     public async runService(): Promise<void> {
         try {
             logger.log('NFL Player Service started...', LogContext.NFLPlayerService);
-            const dataFile = await downloadCSV(this.config.nfl.players.url);
-            const data = await parseCSV<RawPlayerData>(dataFile, this.config.nfl.players.columns);
+            
+            const promises: Promise<void>[] = [];
+            this.urls.forEach(url => {
+                promises.push(this.parseAndLoadPlayers(url));
+            });
 
-            await this.processPlayerData(data);
+            await Promise.all(promises);
         } catch (error: any) {
             console.error('Error: ', error);
             logger.error('NFL Player Service did not complete', error.message, LogContext.NFLPlayerService);

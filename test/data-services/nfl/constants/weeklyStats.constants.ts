@@ -1,13 +1,16 @@
 import type { 
+  PlayerData as WeeklyPlayerData,
+  BioData as WeeklyBioData,
+  LeagueData as WeeklyLeagueData,
+  GameData as WeeklyGameData,
+} from '../../../../src/interfaces/nfl/nflStats';
+
+import type { 
     RawWeeklyStatData, 
-    PlayerData as WeeklyPlayerData,
-    BioData as WeeklyBioData,
-    LeagueData as WeeklyLeagueData,
-    GameData as WeeklyGameData,
     PassData as WeeklyPassData,
     RushData as WeeklyRushData,
     RecData as WeeklyRecData,
-  } from '../../../../src/interfaces/nfl/nflPlayerWeeklyStats';
+  } from '../../../../src/interfaces/nfl/nflWeeklyStats';
 
 export const weeklyStatRecord = {
     player_id: 1001,
@@ -69,7 +72,7 @@ export const weeklyStatRecord = {
 
   export const noRawWeeklyStatData: RawWeeklyStatData[] = [];
   export const rawWeeklyStatData: RawWeeklyStatData[] = [weeklyStatRecord];
-  export const gameData: WeeklyGameData = {
+  export const weeklylGameData: WeeklyGameData = {
     player_id: weeklyStatRecord.player_id,
     season: weeklyStatRecord.season,
     week: weeklyStatRecord.week,
