@@ -13,16 +13,12 @@ import type {
 
 import {
     NFLSchema,
-    BioTable,
-    LeagueTable,
     PassTable,
     PlayerGSIS,
     PlayerTable,
     RecTable,
     RushTable,
-    PlayerId,
     WeeklyStatId,
-    WeeklyStatTable,
 } from '../../../../src/constants/nfl/service.constants';
 
 import { 
@@ -34,16 +30,12 @@ import {
     dataFile,
     weeklyStatRecord,
     rawWeeklyStatData as data,
-    weeklylGameData as gameData,
+    weeklyGameData as gameData,
     weeklyPlayerData as playerData,
     passData,
     rushData,
     recData,
 } from '../constants/config.constants';
-
-import type { 
-    RecordData,
-} from '../../../../src/interfaces/database/database';
 
 import type {
   StringSplitResult,

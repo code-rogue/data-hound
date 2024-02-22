@@ -1,28 +1,19 @@
 import { NFLStatService } from './statService'
-import { downloadCSV, parseCSV } from '../../csv/csvService';
 import { logger } from '../../log/logger';
 import { LogContext } from '../../log/log.enums';
 
 import {
     NFLSchema,
-    BioTable,
-    LeagueTable,
     PassTable,
-    PlayerId,
     PlayerGSIS,
     PlayerTable,
-    WeeklyStatTable,
     RecTable,
     RushTable,
     WeeklyStatId,
 } from '../../constants/nfl/service.constants'
 
 import type { 
-    BioData,
-    PlayerData,
     GameData,
-    LeagueData,
-    RawStatData,
 } from '../../interfaces/nfl/nflStats';
 
 import type { 

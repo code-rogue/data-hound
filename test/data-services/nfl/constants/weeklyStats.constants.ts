@@ -72,7 +72,7 @@ export const weeklyStatRecord = {
 
   export const noRawWeeklyStatData: RawWeeklyStatData[] = [];
   export const rawWeeklyStatData: RawWeeklyStatData[] = [weeklyStatRecord];
-  export const weeklylGameData: WeeklyGameData = {
+  export const weeklyGameData: WeeklyGameData = {
     player_id: weeklyStatRecord.player_id,
     season: weeklyStatRecord.season,
     week: weeklyStatRecord.week,

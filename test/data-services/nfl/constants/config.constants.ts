@@ -2,6 +2,7 @@ export * from './player.constants'
 export * from './weeklyStats.constants'
 export * from './stats.constants'
 export * from './weeklyStatsDef.constants'
+export * from './weeklyStatsKick.constants'
 
 export const dataFile = "Massive Data File"; 
 
@@ -152,6 +153,54 @@ export const configData = {
       urls: [
         "https://player_stats_def_2023.csv",
         "https://player_stats_def_2022.csv"
+      ]
+    },
+    player_weekly_kick_stats: {
+      columns: {
+        gsis_id: "player_id",
+        short_name: "player_name",
+        team: "team",
+        season: "season",
+        week: "week",
+        game_type: "string",
+        fg_made: "fg_made",
+        fg_missed: "fg_missed",
+        fg_blocked: "fg_blocked",
+        fg_long: "fg_long",
+        fg_att: "fg_att",
+        fg_pct: "fg_pct",
+        pat_made: "pat_made",
+        pat_missed: "pat_missed",
+        pat_blocked: "pat_blocked",
+        pat_att: "pat_att",
+        pat_pct: "pat_pct",
+        fg_made_distance: "fg_made_distance",
+        fg_missed_distance: "fg_missed_distance",
+        fg_blocked_distance: "fg_blocked_distance",
+        gwfg_att: "gwfg_att",
+        gwfg_distance: "gwfg_distance",
+        gwfg_made: "gwfg_made",
+        gwfg_missed: "gwfg_missed",
+        gwfg_blocked: "gwfg_blocked",
+        fg_made_0_19: "fg_made_0_19",
+        fg_made_20_29: "fg_made_20_29",
+        fg_made_30_39: "fg_made_30_39",
+        fg_made_40_49: "fg_made_40_49",
+        fg_made_50_59: "fg_made_50_59",
+        fg_made_60_: "fg_made_60_",
+        fg_missed_0_19: "fg_missed_0_19",
+        fg_missed_20_29: "fg_missed_20_29",
+        fg_missed_30_39: "fg_missed_30_39",
+        fg_missed_40_49: "fg_missed_40_49",
+        fg_missed_50_59: "fg_missed_50_59",
+        fg_missed_60_: "fg_missed_60_",
+        fg_made_list: "fg_made_list",
+        fg_missed_list: "fg_missed_list",
+        fg_blocked_list: "fg_blocked_list",
+      },
+      urls: [
+        "https://player_stats_kick_2023.csv",
+        "https://player_stats_kick_2022.csv"
       ]
     }
   }

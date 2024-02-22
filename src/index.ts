@@ -6,17 +6,19 @@ import { LogContext } from './log/log.enums';
 import { NFLPlayerService } from './data-services/nfl/playerService';
 import { NFLWeeklyStatService } from './data-services/nfl/weeklyStatService';
 import { NFLWeeklyStatDefService } from './data-services/nfl/weeklyStatDefService';
+import { NFLWeeklyStatKickService } from './data-services/nfl/weeklyStatKickService';
 
 async function runService(): Promise<void> {
   const players = new NFLPlayerService();
   const weeklyStats = new NFLWeeklyStatService();
   const weeklyDefStats = new NFLWeeklyStatDefService();
-  
+  const weeklyKickStats = new NFLWeeklyStatKickService();
   //await players.runService();
 
   const promises: Promise<void>[] = [];
-  //promises.push(weeklyStats.runService());
+  promises.push(weeklyStats.runService());
   promises.push(weeklyDefStats.runService());
+  promises.push(weeklyKickStats.runService());
     
   Promise.all(promises)
   .catch((error) => {
