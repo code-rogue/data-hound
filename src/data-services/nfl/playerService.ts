@@ -8,7 +8,7 @@ import type {
     PlayerData,
     BioData,
     LeagueData,
- } from '../../interfaces/nfl/nflPlayer';
+ } from '../../interfaces/nfl/player';
 
  import {
     BioTable,

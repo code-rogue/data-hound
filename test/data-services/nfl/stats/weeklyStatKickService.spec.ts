@@ -9,7 +9,7 @@ import * as util from '../../../../src/data-services/nfl/utils/utils';
 
 import type { 
     RawWeeklyStatKickData, 
-  } from '../../../../src/interfaces/nfl/nflWeeklyStatsKick';
+  } from '../../../../src/interfaces/nfl/weeklyStatsKick';
 
 import {
     NFLSchema,
@@ -45,7 +45,7 @@ jest.mock('../../../../src/log/logger');
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;
 let mockDownloadCSV: jest.SpyInstance<Promise<string>, [url: string], any>;
-let mockSplitString: jest.SpyInstance<util.StringSplitResult, [input: string | null, delimiter: string], any>;
+let mockSplitString: jest.SpyInstance<util.StringSplitResult, [input: string | null | undefined, delimiter: string], any>;
 let mockParseCSV: jest.SpyInstance<Promise<unknown[]>, [filePath: string, columnMap: csv.ColumnMap], any>;
 let service: NFLWeeklyStatKickService;
 
@@ -74,12 +74,19 @@ describe('NFLWeeklyStatKickService', () => {
   });
 
   describe('parsePlayerData', () => {
-    it('should parse successfully', () => {
+    const { short_name, ...noShortName } = weeklyStatKickRecord;
+
+    it.each([
+      [1, weeklyStatKickRecord],
+      [2, noShortName],
+    ])('should parse successfully - idx: %s', (idx, record: RawWeeklyStatKickData) => {
       const result = playerData
+      result.short_name = record.short_name;
+      result.full_name = record.short_name ?? '';
       result.first_name = splitStringData.firstPart;
       result.last_name = splitStringData.secondPart;
-      expect(service.parsePlayerData(weeklyStatKickRecord)).toEqual(result);
-      expect(mockSplitString).toHaveBeenCalledWith(weeklyStatKickRecord.short_name, '.');
+      expect(service.parsePlayerData(record)).toEqual(result);
+      expect(mockSplitString).toHaveBeenCalledWith(result.short_name, '.');
     });
   });
 

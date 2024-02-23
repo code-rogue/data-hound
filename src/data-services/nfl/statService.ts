@@ -17,7 +17,7 @@ import type {
     LeagueData,
     PlayerData,
     RawStatData,
-} from '../../interfaces/nfl/nflStats';
+} from '../../interfaces/nfl/stats';
 
 import { splitString } from './utils/utils'
  

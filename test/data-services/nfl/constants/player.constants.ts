@@ -3,7 +3,7 @@ import type {
   PlayerData,
   BioData,
   LeagueData,
-} from '../../../../src/interfaces/nfl/nflPlayer';
+} from '../../../../src/interfaces/nfl/player';
 
 export const noRawPayerData: RawPlayerData[] = [];
 export const playerRecord = {

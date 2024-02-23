@@ -3,8 +3,8 @@ export interface StringSplitResult {
     secondPart: string;
 }
 
-export function splitString(input: string | null, delimiter: string): StringSplitResult {
-    if (input === null || input === '') {
+export function splitString(input: string | null | undefined, delimiter: string): StringSplitResult {
+    if (!input || input === '') {
         return { firstPart: '', secondPart: '' };
     }
 

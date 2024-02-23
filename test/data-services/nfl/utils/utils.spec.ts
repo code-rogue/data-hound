@@ -4,6 +4,7 @@ describe('Data Service Utils', () => {
     describe('splitString', () => {
       it.each([
         [null, ' ', { firstPart: '', secondPart: '' }],
+        [undefined, ' ', { firstPart: '', secondPart: '' }],
         ['', ' ', { firstPart: '', secondPart: '' }],
         ['a', ' ', { firstPart: 'a', secondPart: '' }],
         ['hello world!', ' ', { firstPart: 'hello', secondPart: 'world!' }],

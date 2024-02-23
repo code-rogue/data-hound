@@ -14,14 +14,14 @@ import {
 
 import type { 
     GameData,
-} from '../../interfaces/nfl/nflStats';
+} from '../../interfaces/nfl/stats';
 
 import type { 
     RawWeeklyStatData,
     PassData,
     RushData,
     RecData
-} from '../../interfaces/nfl/nflWeeklyStats';
+} from '../../interfaces/nfl/weeklyStats';
 
 export class NFLWeeklyStatService extends NFLStatService {
     constructor() {

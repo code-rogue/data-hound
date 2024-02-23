@@ -15,7 +15,7 @@ import {
 import type { 
     DefData,
     RawWeeklyStatDefData,
-} from '../../interfaces/nfl/nflWeeklyStatsDef';
+} from '../../interfaces/nfl/weeklyStatsDef';
 
 import { splitString } from './utils/utils'
  

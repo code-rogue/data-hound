@@ -1,4 +1,4 @@
-import { RawStatData } from './nflStats';
+import { RawStatData } from './stats';
 
 export interface RawWeeklyStatKickData extends RawStatData, KickData {}
 

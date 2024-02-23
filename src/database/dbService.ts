@@ -76,16 +76,23 @@ export class DBService {
         }
     }
     
-    public async recordLookup(schema: string, tableName: string, keyColumn: string, key: number | string, idColumn: string): Promise<number> {
+    public async recordLookup(
+        schema: string,
+        tableName: string, 
+        keyColumn: string, 
+        keyValue: number | string | undefined, 
+        idColumn: string
+    ): Promise<number> {
         const query = `SELECT ${idColumn} FROM ${schema}.${tableName} WHERE ${keyColumn} = $1`;
         try {
+            const key = (keyValue) ? keyValue : '';
             const result = await this.pool.query(query, [key]);
             if(result && result.rows[0])
                 return result.rows[0][idColumn];
 
             return 0;
         } catch (error: any) {
-            logger.debug(`Failed Query: '${query}' - Values: '${key}'`, LogContext.DBService);
+            logger.debug(`Failed Query: '${query}' - Values: '${keyValue}'`, LogContext.DBService);
             logger.error('Unable to lookup record: ', error.message, LogContext.DBService);
             console.error("Error: ", error);
             throw error;

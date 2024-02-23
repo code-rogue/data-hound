@@ -1,8 +1,13 @@
-export * from './player.constants'
-export * from './weeklyStats.constants'
-export * from './stats.constants'
-export * from './weeklyStatsDef.constants'
-export * from './weeklyStatsKick.constants'
+export * from './player.constants';
+export * from './weeklyStats.constants';
+export * from './advStats.constants';
+export * from './stats.constants';
+export * from './weeklyStatsDef.constants';
+export * from './weeklyStatsKick.constants';
+export * from './weeklyStatsAdvDef.constants';
+export * from './weeklyStatsAdvPass.constants';
+export * from './weeklyStatsAdvRec.constants';
+export * from './weeklyStatsAdvRush.constants';
 
 export const dataFile = "Massive Data File"; 
 
@@ -200,7 +205,113 @@ export const configData = {
       },
       urls: [
         "https://player_stats_kick_2023.csv",
-        "https://player_stats_kick_2022.csv"
+        "https://player_stats_kick_2022.csv",
+      ]
+    },
+    player_weekly_adv_pass_stats: {
+      columns: {
+        game_id: "game_id",
+        pfr_game_id: "pfr_game_id",
+        season: "season",
+        week: "week",
+        game_type: "game_type",
+        team: "team",
+        opponent: "opponent_team",
+        full_name: "pfr_player_name",
+        pfr_id: "pfr_player_id",
+        pass_drops: "passing_drops",
+        pass_drop_pct: "passing_drop_pct",
+        rec_drop: "receiving_drop",
+        rec_drop_pct: "receiving_drop_pct",
+        bad_throws: "passing_bad_throws",
+        bad_throw_pct: "passing_bad_throw_pct",
+        blitzed: "times_blitzed",
+        hurried: "times_hurried",
+        hit: "times_hit",
+        pressured: "times_pressured",
+        pressured_pct: "times_pressured_pct",
+      },
+      urls: [
+        "https://advstats_week_pass_2023.csv",
+        "https://advstats_week_pass_2022.csv",
+      ]
+    },
+    player_weekly_adv_rush_stats: {
+      columns: {
+        game_id: "game_id",
+        pfr_game_id: "pfr_game_id",
+        season: "season",
+        week: "week",
+        game_type: "game_type",
+        team: "team",
+        opponent: "opponent_team",
+        full_name: "pfr_player_name",
+        pfr_id: "pfr_player_id",
+        yards_before_contact: "rushing_yards_before_contact",
+        yards_before_contact_avg: "rushing_yards_before_contact_avg",
+        yards_after_contact: "rushing_yards_after_contact",
+        yards_after_contact_avg: "rushing_yards_after_contact_avg",
+        broken_tackles: "rushing_broken_tackles",
+      },
+      urls: [
+        "https://advstats_week_rush_2023.csv",
+        "https://advstats_week_rush_2022.csv",
+      ]
+    },
+    player_weekly_adv_rec_stats: {
+      columns: {
+        game_id: "game_id",
+        pfr_game_id: "pfr_game_id",
+        season: "season",
+        week: "week",
+        game_type: "game_type",
+        team: "team",
+        opponent: "opponent_team",
+        full_name: "pfr_player_name",
+        pfr_id: "pfr_player_id",
+        broken_tackles: "receiving_broken_tackles",
+        drops: "receiving_drop_pct",
+        drop_pct: "receiving_drop_pct",
+        interceptions: "receiving_int",
+        qb_rating: "receiving_rat",
+      },
+      urls: [
+        "https://advstats_week_rec_2023.csv",
+        "https://advstats_week_rec_2022.csv",
+      ]
+    },
+    player_weekly_adv_def_stats: {
+      columns: {
+        game_id: "game_id",
+        pfr_game_id: "pfr_game_id",
+        season: "season",
+        week: "week",
+        game_type: "game_type",
+        team: "team",
+        opponent: "opponent_team",
+        full_name: "pfr_player_name",
+        pfr_id: "pfr_player_id",
+        targets: "def_targets",
+        completions_allowed: "def_completions_allowed",
+        completion_pct: "def_completion_pct",
+        yards_allowed: "def_yards_allowed",
+        yards_allowed_per_cmp: "def_yards_allowed_per_cmp",
+        yards_allowed_per_tgt: "def_yards_allowed_per_tgt",
+        rec_td_allowed: "def_receiving_td_allowed",
+        passer_rating_allowed: "def_passer_rating_allowed",
+        adot: "def_adot",
+        air_yards_completed: "def_air_yards_completed",
+        yards_after_catch: "def_yards_after_catch",
+        blitzed: "def_times_blitzed",
+        hurried: "def_times_hurried",
+        pressures: "def_pressures",
+        tackles_combined: "def_tackles_combined",
+        tackles_missed: "def_missed_tackles",
+        tackle_missed_pct: "def_missed_tackle_pct",
+      },
+      urls: [
+        "https://advstats_week_def_2023.csv",
+        "https://advstats_week_def_2022.csv",
       ]
     }
   }

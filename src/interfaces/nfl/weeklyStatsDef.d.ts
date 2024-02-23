@@ -1,5 +1,5 @@
 
-  import { RawStatData } from './nflStats';
+  import { RawStatData } from './stats';
   
   export interface RawWeeklyStatDefData extends RawStatData, DefData {}
   

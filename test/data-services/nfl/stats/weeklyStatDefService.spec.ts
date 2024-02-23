@@ -1,6 +1,5 @@
 import * as cd from '../../../../src/config/configData';
 import * as csv from '../../../../src/csv/csvService';
-import * as util from '../../../../src/data-services/nfl/utils/utils';
 import { Config } from '../../../../src/config/config';
 import { DBService } from '../../../../src/database/dbService'
 import { NFLStatService } from '../../../../src/data-services/nfl/statService'
@@ -31,23 +30,13 @@ import {
     weeklyStatDefRecord,
 } from '../constants/config.constants';
 
-import type {
-  StringSplitResult,
-} from '../../../../src/data-services/nfl/utils/utils';
-
 jest.mock('../../../../src/log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;
 let mockDownloadCSV: jest.SpyInstance<Promise<string>, [url: string], any>;
-let mockSplitString: jest.SpyInstance<util.StringSplitResult, [input: string | null, delimiter: string], any>;
 let mockParseCSV: jest.SpyInstance<Promise<unknown[]>, [filePath: string, columnMap: csv.ColumnMap], any>;
 let service: NFLWeeklyStatDefService;
-
-const splitStringData: StringSplitResult = {
-  firstPart: '',
-  secondPart: '',
-};
 
 describe('NFLWeeklyStatDefService', () => {
   beforeEach(() => {
@@ -57,7 +46,6 @@ describe('NFLWeeklyStatDefService', () => {
     mockDownloadCSV = jest.spyOn(csv, 'downloadCSV').mockResolvedValue(dataFile);
     mockParseCSV = jest.spyOn(csv, 'parseCSV').mockResolvedValue(data);
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    mockSplitString = jest.spyOn(util, 'splitString').mockImplementation(() => splitStringData);
     service = new NFLWeeklyStatDefService();
   });
   

@@ -17,12 +17,12 @@ import type {
     GameData,
     LeagueData,
     PlayerData,
-} from '../../interfaces/nfl/nflStats';
+} from '../../interfaces/nfl/stats';
 
 import type { 
     RawWeeklyStatKickData,
     KickData
-} from '../../interfaces/nfl/nflWeeklyStatsKick';
+} from '../../interfaces/nfl/weeklyStatsKick';
 
 export class NFLWeeklyStatKickService extends NFLStatService {
     constructor() {
@@ -39,7 +39,7 @@ export class NFLWeeklyStatKickService extends NFLStatService {
             gsis_id: data.gsis_id,
             first_name,
             last_name,
-            full_name: data.short_name,
+            full_name: data.short_name ?? '',
             short_name: data.short_name,
         };
     }

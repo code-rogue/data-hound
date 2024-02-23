@@ -32,7 +32,7 @@ import {
 import type { 
     BioData,
     LeagueData,
- } from '../../../../src/interfaces/nfl/nflPlayer';
+ } from '../../../../src/interfaces/nfl/player';
 
 jest.mock('../../../../src/log/logger');
 

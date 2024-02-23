@@ -5,10 +5,6 @@ import { LogContext } from '../../src/log/log.enums';
 import { Pool, QueryResult } from 'pg';
 
 import {
-    noRawWeeklyStatData as noData,
-    rawWeeklyStatData as data,
-    weeklyPlayerData as playerData,
-    weeklyLeagueData as leagueData,
     weeklyBioData as bioData,
     passData,
 } from '../data-services/nfl/constants/config.constants';
@@ -132,6 +128,20 @@ describe('DBService', () => {
             mockPoolQuery.mockResolvedValueOnce({ rows: [{ id: 100 }] } as QueryResult);
             const result = await dbService.recordLookup('schema', 'table', 'keyColumn', 'key', 'id');
             expect(result).toBe(100);
+            expect(logger.debug).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return 0 if a record does not exist', async () => {
+            mockPoolQuery.mockResolvedValueOnce({ rows: [] } as unknown as QueryResult);
+            const result = await dbService.recordLookup('schema', 'table', 'keyColumn', 'key', 'id');
+            expect(result).toBe(0);
+            expect(logger.debug).toHaveBeenCalledTimes(1);
+        });
+
+        it('should return 0 if key is undefined', async () => {
+            mockPoolQuery.mockResolvedValueOnce({ rows: [] } as unknown as QueryResult);
+            const result = await dbService.recordLookup('schema', 'table', 'keyColumn', undefined, 'id');
+            expect(result).toBe(0);
             expect(logger.debug).toHaveBeenCalledTimes(1);
         });
 

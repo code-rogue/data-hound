@@ -1,0 +1,61 @@
+import type { 
+    RawWeeklyAdvStatDefData, 
+    AdvDefData as WeeklyAdvDefData,
+  } from '../../../../src/interfaces/nfl/weeklyAdvStatsDef';
+
+export const weeklyAdvStatDefRecord = {
+    player_id: 1001,
+    player_weekly_id: 100,
+    full_name: 'string',
+    short_name: 'string',
+    headshot_url: 'string',
+    game_id: "2023_01_DET_KC",
+    pfr_game_id: "202309070kan",
+    season: "2003",
+    week: 1,
+    game_type: "REG",
+    team: "KC",
+    opponent: "DET",
+    pfr_id: "string",
+    targets: 6,
+    completions_allowed: 4,
+    completion_pct: 0.667,
+    yards_allowed: 43,
+    yards_allowed_per_cmp: 10.8,
+    yards_allowed_per_tgt: 7.2,
+    rec_td_allowed: 0,
+    passer_rating_allowed: 87.5,
+    adot: 8.8,
+    air_yards_completed: 27,
+    yards_after_catch: 16,
+    blitzed: 2,
+    hurried: 0,
+    pressures: 0,
+    tackles_combined:8,
+    tackles_missed: 2,
+    tackle_missed_pct: 0.2,
+  };
+
+  export const noRawWeeklyAdvStatDefData: RawWeeklyAdvStatDefData[] = [];
+  export const rawWeeklyAdvStatDefData: RawWeeklyAdvStatDefData[] = [weeklyAdvStatDefRecord];
+  
+  export const advDefData: WeeklyAdvDefData = {
+    player_weekly_id: weeklyAdvStatDefRecord.player_weekly_id,
+    targets: weeklyAdvStatDefRecord.targets,
+    completions_allowed: weeklyAdvStatDefRecord.completions_allowed,
+    completion_pct: weeklyAdvStatDefRecord.completion_pct,
+    yards_allowed: weeklyAdvStatDefRecord.yards_allowed,
+    yards_allowed_per_cmp: weeklyAdvStatDefRecord.yards_allowed_per_cmp,
+    yards_allowed_per_tgt: weeklyAdvStatDefRecord.yards_allowed_per_tgt,
+    rec_td_allowed: weeklyAdvStatDefRecord.rec_td_allowed,
+    passer_rating_allowed: weeklyAdvStatDefRecord.passer_rating_allowed,
+    adot: weeklyAdvStatDefRecord.adot,
+    air_yards_completed: weeklyAdvStatDefRecord.air_yards_completed,
+    yards_after_catch: weeklyAdvStatDefRecord.yards_after_catch,
+    blitzed: weeklyAdvStatDefRecord.blitzed,
+    hurried: weeklyAdvStatDefRecord.hurried,
+    pressures: weeklyAdvStatDefRecord.pressures,
+    tackles_combined: weeklyAdvStatDefRecord.tackles_combined,
+    tackles_missed: weeklyAdvStatDefRecord.tackles_missed,
+    tackle_missed_pct: weeklyAdvStatDefRecord.tackle_missed_pct,
+  };
