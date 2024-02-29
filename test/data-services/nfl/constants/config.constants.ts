@@ -1,13 +1,32 @@
+import { playerColumns } from './player.constants';
+import { playerWeeklyStatsColumns } from './weeklyStats/weeklyStats.constants';
+import { weeklyAdvStatsDefColumns } from './weeklyAdvStats/weeklyAdvStatsDef.constants';
+import { weeklyAdvStatsPassColumns } from './weeklyAdvStats/weeklyAdvStatsPass.constants';
+import { weeklyAdvStatsRecColumns } from './weeklyAdvStats/weeklyAdvStatsRec.constants';
+import { weeklyAdvStatsRushColumns } from './weeklyAdvStats/weeklyAdvStatsRush.constants';
+import { playerWeeklyStatsDefColumns } from './weeklyStats/weeklyStatsDef.constants';
+import { playerWeeklyStatsKickColumns } from './weeklyStats/weeklyStatsKick.constants';
+import { seasonAdvStatsPassColumns } from './seasonAdvStats/seasonAdvStatsPass.constants';
+import { seasonAdvStatsRecColumns } from './seasonAdvStats/seasonAdvStatsRec.constants';
+import { seasonAdvStatsRushColumns } from './seasonAdvStats/seasonAdvStatsRush.constants';
+import { seasonAdvStatsDefColumns } from './seasonAdvStats/seasonAdvStatsDef.constants';
+
 export * from './player.constants';
-export * from './weeklyStats.constants';
-export * from './advStats.constants';
+
 export * from './stats.constants';
-export * from './weeklyStatsDef.constants';
-export * from './weeklyStatsKick.constants';
-export * from './weeklyStatsAdvDef.constants';
-export * from './weeklyStatsAdvPass.constants';
-export * from './weeklyStatsAdvRec.constants';
-export * from './weeklyStatsAdvRush.constants';
+export * from './weeklyAdvStats/weeklyAdvStats.constants';
+export * from './weeklyStats/weeklyStats.constants';
+export * from './weeklyStats/weeklyStatsDef.constants';
+export * from './weeklyStats/weeklyStatsKick.constants';
+export * from './weeklyAdvStats/weeklyAdvStatsDef.constants';
+export * from './weeklyAdvStats/weeklyAdvStatsPass.constants';
+export * from './weeklyAdvStats/weeklyAdvStatsRec.constants';
+export * from './weeklyAdvStats/weeklyAdvStatsRush.constants';
+export * from './seasonAdvStats/seasonAdvStats.constants';
+export * from './seasonAdvStats/seasonAdvStatsPass.constants';
+export * from './seasonAdvStats/seasonAdvStatsRec.constants';
+export * from './seasonAdvStats/seasonAdvStatsRush.constants';
+export * from './seasonAdvStats/seasonAdvStatsDef.constants';
 
 export const dataFile = "Massive Data File"; 
 
@@ -21,297 +40,86 @@ export const configData = {
   },
   nfl: {
     players: {
-      columns: {
-        career_status: "status",
-        game_status_abbr: "status_desription_abbr",
-        game_status: "status_short_description",
-        esb_id: "esb_id",
-        gsis_id: "gsis_id",
-        gsis_it_id: "gsis_it_id",
-        smart_id: "smart_id",
-        first_name: "first_name",
-        last_name: "last_name",
-        full_name: "display_name",
-        short_name: "short_name",
-        suffix: "suffix",
-        birth_date: "birth_date",
-        college_name: "college_name",
-        college_conference: "college_conference",
-        height: "height",
-        weight: "weight",
-        headshot_url: "headshot",
-        position_group: "position_group",
-        position: "position",
-        jersey_number: "jersey_number",
-        years_of_experience: "years_of_experience",
-        team: "team_abbr",
-        team_seq: "team_seq",
-        team_id: "current_team_id",
-        football_name: "",
-        entry_year: "",
-        rookie_year: "rookie_year",
-        draft_team: "draft_club",
-        draft_number: "draft_number",
-        uniform_number: "",
-        draft_round: "draft_round",
-        season: "season"
-      },
+      columns: playerColumns,
       urls: [
         "https://players.csv"
       ]
     },
     player_weekly_stats: {
-      columns: {
-        gsis_id: "player_id",
-        short_name: "player_name",
-        full_name: "player_display_name",
-        headshot_url: "headshot",
-        position: "position",
-        position_group: "position_group",
-        team: "team",
-        season: "season",
-        week: "week",
-        game_type: "game_type",
-        opponent: "opponent",
-        fantasy_points: "fantasy_points",
-        fantasy_points_ppr: "fantasy_points_ppr",
-        completions: "completions",
-        attempts: "attempts",
-        pass_yards: "pass_yards",
-        pass_tds: "pass_tds",
-        interceptions: "interceptions",
-        sacks: "sacks",
-        sack_yards: "sack_yards",
-        sack_fumbles: "sack_fumbles",
-        sack_fumbles_lost: "sack_fumbles_lost",
-        pass_air_yards:"air_yards",
-        pass_yards_after_catch: "yards_after_catch",
-        pass_first_downs: "pass_first_downs",
-        pass_epa: "pass_epa",
-        pass_2pt_conversions: "pass_two_pt_conversions",
-        pass_air_conversion_ratio: "pass_air_conversion_ratio",
-        dakota: "dakota",
-        carries: "carries",
-        rush_yards: "rush_yards",
-        rush_tds: "rush_tds",
-        rush_fumbles: "rush_fumbles",
-        rush_fumbles_lost: "rush_fumbles_lost",
-        rush_first_downs: "rush_first_downs",
-        rush_epa: "rush_epa",
-        rush_2pt_conversions: "rush_two_pt_conversions",        
-        special_teams_tds: "special_teams_tds",
-        receptions: "receptions",
-        targets: "targets",
-        rec_yards: "rec_yards",
-        rec_tds: "rec_tds",
-        rec_fumbles: "rec_fumbles",
-        rec_fumbles_lost: "rec_fumbles_lost",
-        rec_air_yards: "air_yards",
-        rec_yards_after_catch: "yards_after_catch",
-        rec_first_downs: "rec_first_downs",
-        rec_epa: "rec_epa",
-        rec_2pt_conversions: "rec_two_pt_conversions",
-        rec_air_conversion_ratio: "rec_air_conversion_ratio",
-        target_share: "target_share",
-        air_yards_share: "air_yards_share",
-        weighted_opportunity_rating: "weighted_opportunity_rating",
-      },
+      columns: playerWeeklyStatsColumns,
       urls: [
         "https://player_stats_2023.csv",
         "https://player_stats_2022.csv"
       ]
     },
     player_weekly_def_stats: {
-      columns: {
-        gsis_id: "player_id",
-        short_name: "player_name",
-        full_name: "player_display_name",
-        headshot_url: "headshot_url",
-        position: "position",
-        position_group: "position_group",
-        team: "team",
-        season: "season",
-        week: "week",
-        tackles: "def_tackles",
-        tackles_solo: "def_tackles_solo",
-        tackle_with_assists: "def_tackles_with_assist",
-        tackle_assists: "def_tackle_assists",
-        tackles_for_loss: "def_tackles_for_loss",
-        tackles_for_loss_yards: "def_tackles_for_loss_yards",
-        fumbles_forced: "def_fumbles_forced",
-        sacks: "def_sacks",
-        sack_yards: "def_sack_yards",
-        qb_hits: "def_qb_hits",
-        interceptions: "def_interceptions",
-        interception_yards: "def_interception_yards",
-        pass_defended: "def_pass_defended",
-        tds: "def_tds",
-        fumbles: "def_fumbles",
-        fumble_recovery_own: "def_fumble_recovery_own",
-        fumble_recovery_yards_own: "def_fumble_recovery_yards_own",
-        fumble_recovery_opp: "def_fumble_recovery_opp",
-        fumble_recovery_yards_opp: "def_fumble_recovery_yards_opp",
-        safety: "def_safety",
-        penalty: "def_penalty",
-        penalty_yards: "def_penalty_yards",
-      },
+      columns: playerWeeklyStatsDefColumns,
       urls: [
         "https://player_stats_def_2023.csv",
         "https://player_stats_def_2022.csv"
       ]
     },
     player_weekly_kick_stats: {
-      columns: {
-        gsis_id: "player_id",
-        short_name: "player_name",
-        team: "team",
-        season: "season",
-        week: "week",
-        game_type: "string",
-        fg_made: "fg_made",
-        fg_missed: "fg_missed",
-        fg_blocked: "fg_blocked",
-        fg_long: "fg_long",
-        fg_att: "fg_att",
-        fg_pct: "fg_pct",
-        pat_made: "pat_made",
-        pat_missed: "pat_missed",
-        pat_blocked: "pat_blocked",
-        pat_att: "pat_att",
-        pat_pct: "pat_pct",
-        fg_made_distance: "fg_made_distance",
-        fg_missed_distance: "fg_missed_distance",
-        fg_blocked_distance: "fg_blocked_distance",
-        gwfg_att: "gwfg_att",
-        gwfg_distance: "gwfg_distance",
-        gwfg_made: "gwfg_made",
-        gwfg_missed: "gwfg_missed",
-        gwfg_blocked: "gwfg_blocked",
-        fg_made_0_19: "fg_made_0_19",
-        fg_made_20_29: "fg_made_20_29",
-        fg_made_30_39: "fg_made_30_39",
-        fg_made_40_49: "fg_made_40_49",
-        fg_made_50_59: "fg_made_50_59",
-        fg_made_60_: "fg_made_60_",
-        fg_missed_0_19: "fg_missed_0_19",
-        fg_missed_20_29: "fg_missed_20_29",
-        fg_missed_30_39: "fg_missed_30_39",
-        fg_missed_40_49: "fg_missed_40_49",
-        fg_missed_50_59: "fg_missed_50_59",
-        fg_missed_60_: "fg_missed_60_",
-        fg_made_list: "fg_made_list",
-        fg_missed_list: "fg_missed_list",
-        fg_blocked_list: "fg_blocked_list",
-      },
+      columns: playerWeeklyStatsKickColumns,
       urls: [
         "https://player_stats_kick_2023.csv",
         "https://player_stats_kick_2022.csv",
       ]
     },
     player_weekly_adv_pass_stats: {
-      columns: {
-        game_id: "game_id",
-        pfr_game_id: "pfr_game_id",
-        season: "season",
-        week: "week",
-        game_type: "game_type",
-        team: "team",
-        opponent: "opponent_team",
-        full_name: "pfr_player_name",
-        pfr_id: "pfr_player_id",
-        pass_drops: "passing_drops",
-        pass_drop_pct: "passing_drop_pct",
-        rec_drop: "receiving_drop",
-        rec_drop_pct: "receiving_drop_pct",
-        bad_throws: "passing_bad_throws",
-        bad_throw_pct: "passing_bad_throw_pct",
-        blitzed: "times_blitzed",
-        hurried: "times_hurried",
-        hit: "times_hit",
-        pressured: "times_pressured",
-        pressured_pct: "times_pressured_pct",
-      },
+      columns: weeklyAdvStatsPassColumns,
       urls: [
         "https://advstats_week_pass_2023.csv",
         "https://advstats_week_pass_2022.csv",
       ]
     },
     player_weekly_adv_rush_stats: {
-      columns: {
-        game_id: "game_id",
-        pfr_game_id: "pfr_game_id",
-        season: "season",
-        week: "week",
-        game_type: "game_type",
-        team: "team",
-        opponent: "opponent_team",
-        full_name: "pfr_player_name",
-        pfr_id: "pfr_player_id",
-        yards_before_contact: "rushing_yards_before_contact",
-        yards_before_contact_avg: "rushing_yards_before_contact_avg",
-        yards_after_contact: "rushing_yards_after_contact",
-        yards_after_contact_avg: "rushing_yards_after_contact_avg",
-        broken_tackles: "rushing_broken_tackles",
-      },
+      columns: weeklyAdvStatsRushColumns,
       urls: [
         "https://advstats_week_rush_2023.csv",
         "https://advstats_week_rush_2022.csv",
       ]
     },
     player_weekly_adv_rec_stats: {
-      columns: {
-        game_id: "game_id",
-        pfr_game_id: "pfr_game_id",
-        season: "season",
-        week: "week",
-        game_type: "game_type",
-        team: "team",
-        opponent: "opponent_team",
-        full_name: "pfr_player_name",
-        pfr_id: "pfr_player_id",
-        broken_tackles: "receiving_broken_tackles",
-        drops: "receiving_drop_pct",
-        drop_pct: "receiving_drop_pct",
-        interceptions: "receiving_int",
-        qb_rating: "receiving_rat",
-      },
+      columns: weeklyAdvStatsRecColumns,
       urls: [
         "https://advstats_week_rec_2023.csv",
         "https://advstats_week_rec_2022.csv",
       ]
     },
     player_weekly_adv_def_stats: {
-      columns: {
-        game_id: "game_id",
-        pfr_game_id: "pfr_game_id",
-        season: "season",
-        week: "week",
-        game_type: "game_type",
-        team: "team",
-        opponent: "opponent_team",
-        full_name: "pfr_player_name",
-        pfr_id: "pfr_player_id",
-        targets: "def_targets",
-        completions_allowed: "def_completions_allowed",
-        completion_pct: "def_completion_pct",
-        yards_allowed: "def_yards_allowed",
-        yards_allowed_per_cmp: "def_yards_allowed_per_cmp",
-        yards_allowed_per_tgt: "def_yards_allowed_per_tgt",
-        rec_td_allowed: "def_receiving_td_allowed",
-        passer_rating_allowed: "def_passer_rating_allowed",
-        adot: "def_adot",
-        air_yards_completed: "def_air_yards_completed",
-        yards_after_catch: "def_yards_after_catch",
-        blitzed: "def_times_blitzed",
-        hurried: "def_times_hurried",
-        pressures: "def_pressures",
-        tackles_combined: "def_tackles_combined",
-        tackles_missed: "def_missed_tackles",
-        tackle_missed_pct: "def_missed_tackle_pct",
-      },
+      columns: weeklyAdvStatsDefColumns,
       urls: [
         "https://advstats_week_def_2023.csv",
         "https://advstats_week_def_2022.csv",
+      ]
+    },
+    player_season_adv_pass_stats: {
+      columns: seasonAdvStatsPassColumns,
+      urls: [
+        "https://advstats_season_pass_2023.csv",
+        "https://advstats_season_pass_2022.csv",
+      ]
+    },
+    player_season_adv_rec_stats: {
+      columns: seasonAdvStatsRecColumns,
+      urls: [
+        "https://advstats_season_rec_2023.csv",
+        "https://advstats_season_rec_2022.csv",
+      ]
+    },
+    player_season_adv_rush_stats: {
+      columns: seasonAdvStatsRushColumns,
+      urls: [
+        "https://advstats_season_rush_2023.csv",
+        "https://advstats_season_rush_2022.csv",
+      ]
+    },
+    player_season_adv_def_stats: {
+      columns: seasonAdvStatsDefColumns,
+      urls: [
+        "https://advstats_season_def_2023.csv",
+        "https://advstats_season_def_2022.csv",
       ]
     }
   }

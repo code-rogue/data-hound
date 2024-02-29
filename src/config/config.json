@@ -300,10 +300,139 @@
         "pressures": "def_pressures",
         "tackles_combined": "def_tackles_combined",
         "tackles_missed": "def_missed_tackles",
-        "tackle_missed_pct": "def_missed_tackle_pct"
+        "tackles_missed_pct": "def_missed_tackle_pct"
       },
       "urls": [
         "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_week_def_2023.csv"
+      ]
+    },
+    "player_season_adv_pass_stats": {
+      "columns": {
+        "full_name": "player",
+        "team": "team",
+        "attempts": "pass_attempts",
+        "throw_aways": "throwaways",
+        "spikes": "spikes",
+        "drops": "drops",
+        "drop_pct": "drop_pct",
+        "bad_throws": "bad_throws",
+        "bad_throw_pct": "bad_throw_pct",
+        "season": "season",
+        "pfr_id": "pfr_id",
+        "pocket_time": "pocket_time",
+        "blitzed": "times_blitzed",
+        "hurried": "times_hurried",
+        "hit": "times_hit",
+        "pressured": "times_pressured",
+        "pressured_pct": "pressure_pct",
+        "batted_balls": "batted_balls",
+        "on_tgt_throws": "on_tgt_throws",
+        "on_tgt_throws_pct": "on_tgt_pct",
+        "rpo_plays": "rpo_plays",
+        "rpo_yards": "rpo_yards",
+        "rpo_pass_attempts": "rpo_pass_att",
+        "rpo_pass_yards": "rpo_pass_yards",
+        "rpo_rush_attempts": "rpo_rush_att",
+        "rpo_rush_yards": "rpo_rush_yards",
+        "pa_pass_attempts": "pa_pass_att",
+        "pa_pass_yards": "pa_pass_yards"
+      },
+      "urls": [
+        "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_season_pass.csv"
+      ]
+    },
+    "player_season_adv_rush_stats": {
+      "columns": {
+        "season": "season",
+        "full_name": "player",
+        "pfr_id": "pfr_id",
+        "team": "team",
+        "age": "age",
+        "position": "position",
+        "games_played": "g",
+        "games_started": "gs",
+        "attempts": "att",
+        "yards": "yds",
+        "tds": "td",
+        "longest_rush": "x1d",
+        "yards_before_contact": "ybc",
+        "yards_before_contact_avg": "ybc_att",
+        "yards_after_contact": "yac",
+        "yards_after_contact_avg": "yac_att",
+        "broken_tackles": "brk_tkl",
+        "broken_tackles_avg": "att_br",
+        "loaded": ""
+      },
+      "urls": [
+        "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_season_rush.csv"
+      ]
+    },
+    "player_season_adv_rec_stats": {
+      "columns": {
+        "season": "season",
+        "full_name": "player",
+        "pfr_id": "pfr_id",
+        "team": "team",
+        "age": "age",
+        "position": "position",
+        "games_played": "g",
+        "games_started": "gs",
+        "targets": "tgt",
+        "receptions": "rec",
+        "yards": "yds",
+        "tds": "td",
+        "longest_rec": "x1d",
+        "air_yards": "ybc",
+        "air_yards_avg": "ybc_r",
+        "yards_after_contact": "yac",
+        "yards_after_contact_avg": "yac_r",
+        "adot": "adot",
+        "broken_tackles": "brk_tkl",
+        "broken_tackles_avg": "rec_br",
+        "drops": "drop",
+        "drop_pct": "drop_percent",
+        "interceptions": "int",
+        "qb_rating": "rat",
+        "loaded": ""
+      },
+      "urls": [
+        "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_season_rec.csv"
+      ]
+    },
+    "player_season_adv_def_stats": {
+      "columns": {
+        "season": "season",
+        "full_name": "player",
+        "pfr_id": "pfr_id",
+        "team": "team",
+        "age": "age",
+        "position": "position",
+        "games_played": "g",
+        "games_started": "gs",
+        "interceptions": "int",
+        "targets": "tgt",
+        "completions_allowed": "cmp",
+        "completion_pct": "cmp_percent",
+        "yards_allowed": "yds",
+        "yards_allowed_per_cmp": "yds_cmp",
+        "yards_allowed_per_tgt": "yds_tgt",
+        "tds_allowed": "td",
+        "passer_rating_allowed": "rat",
+        "adot": "dadot",
+        "air_yards_completed": "air",
+        "yards_after_catch": "yac",
+        "blitzed": "bltz",
+        "hurried": "hrry",
+        "qbkd": "qbkd",
+        "sacks": "sk",
+        "pressures": "prss",
+        "tackles_combined": "comb",
+        "tackles_missed": "m_tkl",
+        "tackles_missed_pct": "m_tkl_percent",
+        "loaded": ""
+      },
+      "urls": [
+        "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_season_def.csv"
       ]
     }
   }

@@ -1,4 +1,4 @@
-import { Config } from '../config/config';
+import { Config } from '../interfaces/config/config';
 import { getConfigurationData } from '../config/configData'
 import { logger } from '../log/logger'
 import { LogContext } from '../log/log.enums';

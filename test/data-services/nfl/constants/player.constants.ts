@@ -37,7 +37,7 @@ export const playerRecord = {
     draft_team: 'KC',
     draft_number: '256',
     draft_round: '7',
-    season: '',
+    season: '2023',
 }
 export const rawPlayerData: RawPlayerData[] = [playerRecord];
 
@@ -80,4 +80,40 @@ export const bioData: BioData = {
   height: playerRecord.height,
   weight: playerRecord.weight,
   headshot_url: playerRecord.headshot_url,
+};
+
+export const playerColumns = {
+    career_status: "status",
+    game_status_abbr: "status_desription_abbr",
+    game_status: "status_short_description",
+    esb_id: "esb_id",
+    gsis_id: "gsis_id",
+    gsis_it_id: "gsis_it_id",
+    smart_id: "smart_id",
+    first_name: "first_name",
+    last_name: "last_name",
+    full_name: "display_name",
+    short_name: "short_name",
+    suffix: "suffix",
+    birth_date: "birth_date",
+    college_name: "college_name",
+    college_conference: "college_conference",
+    height: "height",
+    weight: "weight",
+    headshot_url: "headshot",
+    position_group: "position_group",
+    position: "position",
+    jersey_number: "jersey_number",
+    years_of_experience: "years_of_experience",
+    team: "team_abbr",
+    team_seq: "team_seq",
+    team_id: "current_team_id",
+    football_name: "",
+    entry_year: "",
+    rookie_year: "rookie_year",
+    draft_team: "draft_club",
+    draft_number: "draft_number",
+    uniform_number: "",
+    draft_round: "draft_round",
+    season: "season"
 };

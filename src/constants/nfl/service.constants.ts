@@ -1,22 +1,51 @@
 export const NFLSchema = 'nfl'
 
 export const BioTable = 'player_bio';
-export const AdvDefTable = 'weekly_adv_stats_def';
-export const AdvPassTable = 'weekly_adv_stats_pass';
-export const AdvRecTable = 'weekly_adv_stats_rec';
-export const AdvRushTable = 'weekly_adv_stats_rush';
-export const DefTable = 'weekly_stats_def';
-export const KickTable = 'weekly_stats_kick';
+
 export const LeagueTable = 'player_league';
-export const PassTable = 'weekly_stats_pass';
 export const PlayerTable = 'players';
-export const RecTable = 'weekly_stats_rec';
-export const RushTable = 'weekly_stats_rush';
+export const SeasonAdvDefTable = 'season_adv_stats_def';
+export const SeasonAdvPassTable = 'season_adv_stats_pass';
+export const SeasonAdvRecTable = 'season_adv_stats_rec';
+export const SeasonAdvRushTable = 'season_adv_stats_rush';
+export const SeasonStatTable = 'player_season_stats';
+export const WeeklyDefTable = 'weekly_stats_def';
+export const WeeklyKickTable = 'weekly_stats_kick';
+export const WeeklyPassTable = 'weekly_stats_pass';
+export const WeeklyRecTable = 'weekly_stats_rec';
+export const WeeklyRushTable = 'weekly_stats_rush';
+export const WeeklyAdvDefTable = 'weekly_adv_stats_def';
+export const WeeklyAdvPassTable = 'weekly_adv_stats_pass';
+export const WeeklyAdvRecTable = 'weekly_adv_stats_rec';
+export const WeeklyAdvRushTable = 'weekly_adv_stats_rush';
 export const WeeklyStatTable = 'player_weekly_stats';
+
 
 export const PlayerFullName = 'full_name';
 export const PlayerPFR = 'pfr_id';
 export const PlayerId = 'player_id';
 export const PlayerGSIS = 'gsis_id';
-export const PlayerSmartId = "smart_id"
+export const PlayerSmartId = "smart_id";
+export const SeasonStatId = 'player_season_id';
 export const WeeklyStatId = 'player_weekly_id';
+
+export enum ServiceName {
+    CSVService = 'CSV Service',
+    DBService = 'DB Service',
+    NFLPlayerService = 'NFL Player Service',
+    NFLSeasonAdvStatService = 'NFL Season Adv Stats Service',
+    NFLSeasonAdvStatPassService = 'NFL Season Adv Pass Stats Service',
+    NFLSeasonAdvStatRecService = 'NFL Season Adv REc Stats Service',
+    NFLSeasonAdvStatRushService = 'NFL Season Adv Rush Stats Service',
+    NFLSeasonAdvStatDefService = 'NFL Season Adv Def Stats Service',
+    NFLStatService = 'NFL Stats Service',
+    NFLWeeklyStatService = 'NFL Weekly Stats Service',
+    NFLWeeklyStatOffService = 'NFL Weekly Offensive Stats Service',
+    NFLWeeklyStatDefService = 'NFL Weekly Def Stats Service',
+    NFLWeeklyStatKickService = 'NFL Weekly Kick Stats Service',
+    NFLWeeklyAdvStatService = 'NFL Weekly Adv Stats Service',
+    NFLWeeklyAdvStatPassService = 'NFL Weekly Adv Pass Stats Service',
+    NFLWeeklyAdvStatRecService = 'NFL Weekly Adv Rec Stats Service',
+    NFLWeeklyAdvStatRushService = 'NFL Weekly Adv Rush Stats Service',
+    NFLWeeklyAdvStatDefService = 'NFL Weekly Adv Def Stats Service',
+}

@@ -11,7 +11,7 @@ import {
 
 import {
     NFLSchema,
-    PassTable,
+    WeeklyPassTable,
     PlayerId,
     WeeklyStatId,
 } from '../../src/constants/nfl/service.constants';
@@ -285,19 +285,19 @@ describe('DBService', () => {
             const mockInsertRecord = jest.spyOn(DBService.prototype, 'insertRecord').mockImplementation(() => Promise.resolve(100));
     
             // @ts-ignore: (TS 2345) - idColumn is a keyof data
-            const result = await dbService.processRecord(NFLSchema, PassTable, idColumn, id, dataCopy);
-            expect(mockRecordExists).toHaveBeenLastCalledWith(NFLSchema, PassTable, idColumn, id);
+            const result = await dbService.processRecord(NFLSchema, WeeklyPassTable, idColumn, id, dataCopy);
+            expect(mockRecordExists).toHaveBeenLastCalledWith(NFLSchema, WeeklyPassTable, idColumn, id);
     
             if (exists) {
                 // @ts-ignore: (TS 2537) - idColumn is a keyof data
                 const { [idColumn]: _, ...updatedData } = dataCopy;
-                expect(mockUpdateRecord).toHaveBeenCalledWith(NFLSchema, PassTable, idColumn, id, updatedData);
+                expect(mockUpdateRecord).toHaveBeenCalledWith(NFLSchema, WeeklyPassTable, idColumn, id, updatedData);
             } 
             else {
                 const updatedData = dataCopy;
                 (updatedData as RecordData)[idColumn as keyof RecordData] = id;
                 expect(result).toEqual(100);
-                expect(mockInsertRecord).toHaveBeenCalledWith(NFLSchema, PassTable, dataCopy);
+                expect(mockInsertRecord).toHaveBeenCalledWith(NFLSchema, WeeklyPassTable, dataCopy);
             }
     
             mockRecordExists.mockRestore();
@@ -309,7 +309,7 @@ describe('DBService', () => {
           const error = new Error("error");
           const mockRecordExists = jest.spyOn(DBService.prototype, 'recordExists').mockImplementation().mockRejectedValue(error);
     
-          await expect(dbService.processRecord(NFLSchema, PassTable, WeeklyStatId, 5, passData)).rejects.toThrow(error);
+          await expect(dbService.processRecord(NFLSchema, WeeklyPassTable, WeeklyStatId, 5, passData)).rejects.toThrow(error);
           
           mockRecordExists.mockRestore();
         });    

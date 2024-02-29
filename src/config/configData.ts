@@ -1,4 +1,4 @@
-import { Config } from './config';
+import { Config } from '../interfaces/config/config';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 

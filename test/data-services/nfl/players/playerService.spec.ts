@@ -1,6 +1,6 @@
 import * as cd from '../../../../src/config/configData';
 import * as csv from '../../../../src/csv/csvService';
-import { Config } from '../../../../src/config/config';
+import { Config } from '../../../../src/interfaces/config/config';
 import { DBService } from '../../../../src/database/dbService'
 import { LogContext } from '../../../../src/log/log.enums';
 import { logger } from '../../../../src/log/logger';

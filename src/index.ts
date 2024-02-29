@@ -4,42 +4,51 @@ import { logger } from './log/logger'
 import { LogContext } from './log/log.enums';
 
 import { NFLPlayerService } from './data-services/nfl/playerService';
-import { NFLWeeklyStatService } from './data-services/nfl/weeklyStatService';
-import { NFLWeeklyStatDefService } from './data-services/nfl/weeklyStatDefService';
-import { NFLWeeklyStatKickService } from './data-services/nfl/weeklyStatKickService';
-import { NFLWeeklyAdvStatPassService } from './data-services/nfl/weeklyAdvStatPassService';
-import { NFLWeeklyAdvStatRecService } from './data-services/nfl/weeklyAdvStatRecService';
-import { NFLWeeklyAdvStatRushService } from './data-services/nfl/weeklyAdvStatRushService';
-import { NFLWeeklyAdvStatDefService } from './data-services/nfl/weeklyAdvStatDefService';
+import { NFLWeeklyStatOffService } from './data-services/nfl/weeklyStats/weeklyStatOffService';
+import { NFLWeeklyStatDefService } from './data-services/nfl/weeklyStats/weeklyStatDefService';
+import { NFLWeeklyStatKickService } from './data-services/nfl/weeklyStats/weeklyStatKickService';
+import { NFLWeeklyAdvStatPassService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatPassService';
+import { NFLWeeklyAdvStatRecService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatRecService';
+import { NFLWeeklyAdvStatRushService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatRushService';
+import { NFLWeeklyAdvStatDefService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatDefService';
+import { NFLSeasonAdvStatDefService } from './data-services/nfl/seasonAdvStats/seasonAdvStatDefService';
+import { NFLSeasonAdvStatPassService } from './data-services/nfl/seasonAdvStats/seasonAdvStatPassService';
+import { NFLSeasonAdvStatRecService } from './data-services/nfl/seasonAdvStats/seasonAdvStatRecService';
+import { NFLSeasonAdvStatRushService } from './data-services/nfl/seasonAdvStats/seasonAdvStatRushService';
 
 async function runService(): Promise<void> {
-  const players = new NFLPlayerService();
-  const weeklyStats = new NFLWeeklyStatService();
-  const weeklyDefStats = new NFLWeeklyStatDefService();
-  const weeklyKickStats = new NFLWeeklyStatKickService();
-  const weeklyAdvPassStats = new NFLWeeklyAdvStatPassService();
-  const weeklyAdvRecStats = new NFLWeeklyAdvStatRecService();
-  const weeklyAdvRushStats = new NFLWeeklyAdvStatRushService();
-  const weeklyAdvDefStats = new NFLWeeklyAdvStatDefService();
-  //await players.runService();
-
-  const promises: Promise<void>[] = [];
-  promises.push(weeklyStats.runService());
-  promises.push(weeklyDefStats.runService());
-  promises.push(weeklyKickStats.runService());
-  promises.push(weeklyAdvPassStats.runService());
-  promises.push(weeklyAdvRecStats.runService());
-  promises.push(weeklyAdvRushStats.runService());
-  promises.push(weeklyAdvDefStats.runService());
+  try {
+    const players = new NFLPlayerService();
+    const weeklyOffStats = new NFLWeeklyStatOffService();
+    const weeklyDefStats = new NFLWeeklyStatDefService();
+    const weeklyKickStats = new NFLWeeklyStatKickService();
+    const weeklyAdvPassStats = new NFLWeeklyAdvStatPassService();
+    const weeklyAdvRecStats = new NFLWeeklyAdvStatRecService();
+    const weeklyAdvRushStats = new NFLWeeklyAdvStatRushService();
+    const weeklyAdvDefStats = new NFLWeeklyAdvStatDefService();
+    const seasonAdvDefStats = new NFLSeasonAdvStatDefService();
+    const seasonAdvPassStats = new NFLSeasonAdvStatPassService();
+    const seasonAdvRecStats = new NFLSeasonAdvStatRecService();
+    const seasonAdvRushStats = new NFLSeasonAdvStatRushService();
     
-  Promise.all(promises)
-  .catch((error) => {
+    //await players.runService();
+    await weeklyOffStats.runService();
+    await weeklyDefStats.runService();
+    await weeklyKickStats.runService();
+    await weeklyAdvPassStats.runService();
+    await weeklyAdvRecStats.runService();
+    await weeklyAdvRushStats.runService();
+    await weeklyAdvDefStats.runService();
+    await seasonAdvPassStats.runService();
+    await seasonAdvRecStats.runService();
+    await seasonAdvRushStats.runService();
+    await seasonAdvDefStats.runService();
+    logger.debug(`Completed processing services.`, LogContext.Service);
+  }
+  catch(error: any) {
     console.log('Error: ', error);
     logger.error('Error: ', error.message, LogContext.Service);
-  })
-  .finally(() => {
-      logger.debug(`Completed processing services.`, LogContext.Service);
-  });
+  }
 }
 
 const schedule = '0 0 * * *'; // Run daily at midnight
