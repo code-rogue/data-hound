@@ -10,6 +10,10 @@ import { seasonAdvStatsPassColumns } from './seasonAdvStats/seasonAdvStatsPass.c
 import { seasonAdvStatsRecColumns } from './seasonAdvStats/seasonAdvStatsRec.constants';
 import { seasonAdvStatsRushColumns } from './seasonAdvStats/seasonAdvStatsRush.constants';
 import { seasonAdvStatsDefColumns } from './seasonAdvStats/seasonAdvStatsDef.constants';
+import { weeklyNextGenStatsPassColumns } from './weeklyNextGenStats/weeklyNextGenStatsPass.constants';
+import { weeklyNextGenStatsRecColumns } from './weeklyNextGenStats/weeklyNextGenStatsRec.constants';
+import { weeklyNextGenStatsRushColumns } from './weeklyNextGenStats/weeklyNextGenStatsRush.constants';
+
 
 export * from './player.constants';
 
@@ -27,6 +31,10 @@ export * from './seasonAdvStats/seasonAdvStatsPass.constants';
 export * from './seasonAdvStats/seasonAdvStatsRec.constants';
 export * from './seasonAdvStats/seasonAdvStatsRush.constants';
 export * from './seasonAdvStats/seasonAdvStatsDef.constants';
+export * from './weeklyNextGenStats/weeklyNextGenStats.constants';
+export * from './weeklyNextGenStats/weeklyNextGenStatsPass.constants';
+export * from './weeklyNextGenStats/weeklyNextGenStatsRec.constants';
+export * from './weeklyNextGenStats/weeklyNextGenStatsRush.constants';
 
 export const dataFile = "Massive Data File"; 
 
@@ -121,6 +129,27 @@ export const configData = {
         "https://advstats_season_def_2023.csv",
         "https://advstats_season_def_2022.csv",
       ]
-    }
+    },
+    player_weekly_nextgen_pass_stats: {
+      columns: weeklyNextGenStatsPassColumns,
+      urls: [
+        "https://ngs_2023_passing.csv.gz",
+        "https://ngs_2022_passing.csv.gz",
+      ]
+    },
+    player_weekly_nextgen_rush_stats: {
+      columns: weeklyNextGenStatsRushColumns,
+      urls: [
+        "https://ngs_2023_rushing.csv.gz",
+        "https://ngs_2022_rushing.csv.gz",
+      ]
+    },
+    player_weekly_nextgen_rec_stats: {
+      columns: weeklyNextGenStatsRecColumns,
+      urls: [
+        "https://ngs_2023_receiving.csv.gz",
+        "https://ngs_2022_receiving.csv.gz",
+      ]
+    },
   }
 };

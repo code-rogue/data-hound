@@ -18,6 +18,9 @@ export const WeeklyAdvDefTable = 'weekly_adv_stats_def';
 export const WeeklyAdvPassTable = 'weekly_adv_stats_pass';
 export const WeeklyAdvRecTable = 'weekly_adv_stats_rec';
 export const WeeklyAdvRushTable = 'weekly_adv_stats_rush';
+export const WeeklyNextGenPassTable = 'weekly_nextgen_stats_pass';
+export const WeeklyNextGenRecTable = 'weekly_nextgen_stats_rec';
+export const WeeklyNextGenRushTable = 'weekly_nextgen_stats_rush';
 export const WeeklyStatTable = 'player_weekly_stats';
 
 
@@ -48,4 +51,8 @@ export enum ServiceName {
     NFLWeeklyAdvStatRecService = 'NFL Weekly Adv Rec Stats Service',
     NFLWeeklyAdvStatRushService = 'NFL Weekly Adv Rush Stats Service',
     NFLWeeklyAdvStatDefService = 'NFL Weekly Adv Def Stats Service',
+    NFLWeeklyNextGenStatService = 'NFL Weekly Next Gen Stats Service',
+    NFLWeeklyNextGenStatPassService = 'NFL Weekly Next Gen Stats Pass Service',
+    NFLWeeklyNextGenStatRecService = 'NFL Weekly Next Gen Stat Rec Service',
+    NFLWeeklyNextGenStatRushService = 'NFL Weekly Next Gen Stat Rush Service',
 }

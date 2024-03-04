@@ -18,4 +18,8 @@ export enum LogContext {
     NFLWeeklyAdvStatRecService = 'NFLWeeklyAdvStatRecService',
     NFLWeeklyAdvStatRushService = 'NFLWeeklyAdvStatRushService',
     NFLWeeklyAdvStatDefService = 'NFLWeeklyAdvStatDefService',
+    NFLWeeklyNextGenStatService = 'NFLWeeklyNextGenStatService',
+    NFLWeeklyNextGenStatPassService = 'NFLWeeklyNextGenStatPassService',
+    NFLWeeklyNextGenStatRecService = 'NFLWeeklyNextGenStatRecService',
+    NFLWeeklyNextGenStatRushService = 'NFLWeeklyNextGenStatRushService',
 }

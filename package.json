@@ -23,7 +23,8 @@
     "pg": "^8.11.3",
     "sequelize": "^6.36.0",
     "winston": "^3.11.0",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^4.7.1",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.23.3",

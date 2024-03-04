@@ -16,6 +16,11 @@ import {
   NFLWeeklyAdvStatsRec,
   NFLWeeklyAdvStatsDef,
 } from './nfl/weeklyAdvStats';
+import { 
+  NFLWeeklyNextGenStatsPass, 
+  NFLWeeklyNextGenStatsRush, 
+  NFLWeeklyNextGenStatsRec,
+} from './nfl/weeklyNextGenStats';
 
 export interface Config {
     nfl: {
@@ -31,6 +36,9 @@ export interface Config {
         player_season_adv_rush_stats: NFLSeasonAdvStatsRush,
         player_season_adv_rec_stats: NFLSeasonAdvStatsRec,
         player_season_adv_def_stats: NFLSeasonAdvStatsDef,
+        player_weekly_nextgen_pass_stats: NFLWeeklyNextGenStatsPass,
+        player_weekly_nextgen_rush_stats: NFLWeeklyNextGenStatsRush,
+        player_weekly_nextgen_rec_stats: NFLWeeklyNextGenStatsRec,
     },
     database: {
       username: string,

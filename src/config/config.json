@@ -434,6 +434,101 @@
       "urls": [
         "https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_season_def.csv"
       ]
+    },
+    "player_weekly_nextgen_pass_stats": {
+      "columns": {
+        "season": "season",
+        "game_type": "season_type",
+        "week": "week",
+        "full_name": "player_display_name",
+        "position": "player_position",
+        "team": "team_abbr",
+        "avg_time_to_throw": "avg_time_to_throw",
+        "avg_completed_air_yards": "avg_completed_air_yards",
+        "avg_intended_air_yards": "avg_intended_air_yards",
+        "avg_air_yards_differential": "avg_air_yards_differential",
+        "aggressiveness": "aggressiveness",
+        "max_completed_air_distance": "max_completed_air_distance",
+        "avg_air_yards_to_sticks": "avg_air_yards_to_sticks",
+        "attempts": "",
+        "pass_yards": "",
+        "pass_touchdowns": "",
+        "interceptions": "",
+        "passer_rating": "passer_rating",
+        "completions": "",
+        "completion_pct": "completion_percentage",
+        "expected_completion_pct": "expected_completion_percentage",
+        "completions_above_expectation_pct": "completion_percentage_above_expectation",
+        "avg_air_distance": "avg_air_distance",
+        "max_air_distance": "max_air_distance",
+        "gsis_id": "player_gsis_id",
+        "first_name": "player_first_name",
+        "last_name": "player_last_name",
+        "jersey_number": "player_jersey_number",
+        "short_name": "player_short_name"
+      },
+      "urls": [
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_passing.csv.gz"
+      ]
+    },
+    "player_weekly_nextgen_rush_stats": {
+      "columns": {
+        "season": "season",
+        "game_type": "season_type",
+        "week": "week",
+        "full_name": "player_display_name",
+        "position": "player_position",
+        "team": "team_abbr",
+        "efficiency": "efficiency",
+        "attempts_gte_eight_defenders_pct": "percent_attempts_gte_eight_defenders",
+        "avg_time_to_los": "avg_time_to_los",
+        "rush_attempts": "",
+        "rush_yards": "",
+        "expected_yards": "expected_rush_yards",
+        "yards_over_expected": "rush_yards_over_expected",
+        "avg_yards": "avg_rush_yards",
+        "yards_over_expected_per_att": "rush_yards_over_expected_per_att",
+        "yards_over_expected_pct": "rush_pct_over_expected",
+        "rush_touchdowns": "",
+        "gsis_id": "player_gsis_id",
+        "first_name": "player_first_name",
+        "last_name": "player_last_name",
+        "jersey_number": "player_jersey_number",
+        "short_name": "player_short_name"
+      },
+      "urls": [
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_rushing.csv.gz"
+      ]
+    },
+    "player_weekly_nextgen_rec_stats": {
+      "columns": {
+        "season": "season",
+        "game_type": "season_type",
+        "week": "week",
+        "full_name": "player_display_name",
+        "position": "player_position",
+        "team": "team_abbr",
+        "avg_cushion": "avg_cushion",
+        "avg_separation": "avg_separation",
+        "avg_intended_air_yards": "avg_intended_air_yards",
+        "share_of_intended_air_yards_pct": "percent_share_of_intended_air_yards",
+        "receptions": "",
+        "targets": "",
+        "catch_pct": "catch_percentage",
+        "yards": "",
+        "rec_touchdowns": "",
+        "avg_yac": "avg_yac",
+        "avg_expected_yac": "avg_expected_yac",
+        "avg_yac_above_expectation": "avg_yac_above_expectation",
+        "gsis_id": "player_gsis_id",
+        "first_name": "player_first_name",
+        "last_name": "player_last_name",
+        "jersey_number": "player_jersey_number",
+        "short_name": "player_short_name"
+      },
+      "urls": [
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_receiving.csv.gz"
+      ]
     }
   }
 }

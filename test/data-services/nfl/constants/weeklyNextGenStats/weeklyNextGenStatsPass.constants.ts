@@ -1,0 +1,81 @@
+import type { 
+    RawWeeklyNextGenStatPassData, 
+    NextGenPassData as WeeklyNextGenPassData,
+  } from '../../../../../src/interfaces/nfl/weeklyNextGenStats/weeklyNextGenStatsPass';
+
+export const weeklyNextGenStatPassRecord = {
+    player_id: 1001,
+    player_weekly_id: 100,
+    full_name: 'string',
+    short_name: 'string',
+    first_name: 'string',
+    last_name: 'string',
+    headshot_url: '',
+    season: "2003",
+    week: 1,
+    game_type: "REG",
+    position: "WR",
+    jersey_number: '5',
+    team: "KC",
+    gsis_id: "string",
+    avg_time_to_throw: 2.14,
+    avg_completed_air_yards: 7.8,
+    avg_intended_air_yards: 8.7,
+    avg_air_yards_differential: .097,
+    aggressiveness: 22.4,
+    max_completed_air_distance: 48.5,
+    avg_air_yards_to_sticks: -1.4,
+    passer_rating: 92.2,
+    completion_pct: 65.4,
+    expected_completion_pct: 63.4,
+    completions_above_expectation_pct: 4.13,
+    avg_air_distance: 16.7,
+    max_air_distance: 62.7,
+  };
+
+  export const noRawWeeklyNextGenStatPassData: RawWeeklyNextGenStatPassData[] = [];
+  export const rawWeeklyNextGenStatPassData: RawWeeklyNextGenStatPassData[] = [weeklyNextGenStatPassRecord];
+  
+  export const nextGenPassData: WeeklyNextGenPassData = {
+    player_weekly_id: weeklyNextGenStatPassRecord.player_weekly_id,
+    avg_time_to_throw: weeklyNextGenStatPassRecord.avg_time_to_throw,
+    avg_completed_air_yards: weeklyNextGenStatPassRecord.avg_completed_air_yards,
+    avg_intended_air_yards: weeklyNextGenStatPassRecord.avg_intended_air_yards,
+    avg_air_yards_differential: weeklyNextGenStatPassRecord.avg_air_yards_differential,
+    aggressiveness: weeklyNextGenStatPassRecord.aggressiveness,
+    max_completed_air_distance: weeklyNextGenStatPassRecord.max_completed_air_distance,
+    avg_air_yards_to_sticks: weeklyNextGenStatPassRecord.avg_air_yards_to_sticks,
+    passer_rating: weeklyNextGenStatPassRecord.passer_rating,
+    completion_pct: weeklyNextGenStatPassRecord.completion_pct,
+    expected_completion_pct: weeklyNextGenStatPassRecord.expected_completion_pct,
+    completions_above_expectation_pct: weeklyNextGenStatPassRecord.completions_above_expectation_pct,
+    avg_air_distance: weeklyNextGenStatPassRecord.avg_air_distance,
+    max_air_distance: weeklyNextGenStatPassRecord.max_air_distance,
+  };
+
+  export const weeklyNextGenStatsPassColumns = {
+    season: "season",
+    game_type: "season_type",
+    week: "week",
+    full_name: "player_display_name",
+    position: "player_position",
+    team: "team_abbr",
+    avg_time_to_throw: "avg_time_to_throw",
+    avg_completed_air_yards: "avg_completed_air_yards",
+    avg_intended_air_yards: "avg_intended_air_yards",
+    avg_air_yards_differential: "avg_air_yards_differential",
+    aggressiveness: "aggressiveness",
+    max_completed_air_distance: "max_completed_air_distance",
+    avg_air_yards_to_sticks: "avg_air_yards_to_sticks",
+    passer_rating: "passer_rating",
+    completion_pct: "completion_percentage",
+    expected_completion_pct: "expected_completion_percentage",
+    completions_above_expectation_pct: "completion_percentage_above_expectation",
+    avg_air_distance: "avg_air_distance",
+    max_air_distance: "max_air_distance",
+    gsis_id: "player_gsis_id",
+    first_name: "player_first_name",
+    last_name: "player_last_name",
+    jersey_number: "player_jersey_number",
+    short_name: "player_short_name"
+  }

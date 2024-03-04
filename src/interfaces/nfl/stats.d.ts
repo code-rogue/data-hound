@@ -20,6 +20,7 @@ export interface LeagueData {
     player_id?: number,
     position?: string,
     position_group?: string,
+    jersey_number?: string,
     team: string,
 }
 

@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as zlib from 'zlib';
 
 import axios from 'axios';
 import csvParser from 'csv-parser';
@@ -52,12 +53,51 @@ export async function downloadCSV(url: string): Promise<string> {
   return downloadPath;
 };
 
+async function unzipFile(filePath: string): Promise<string> {
+  if (!filePath.endsWith('.gz')) {
+    throw new Error('Invalid file extension. Only .gz files are supported.');
+  }
+
+  const decompressedFilePath = filePath.slice(0, -3); // Remove '.gz' extension
+
+  try {
+    await new Promise((resolve, reject) => {
+      const compressedStream = fs.createReadStream(filePath);
+      const decompressedStream = zlib.createGunzip();
+      const writeStream = fs.createWriteStream(decompressedFilePath);
+
+      compressedStream.on('error', (error) => reject(error));
+      decompressedStream.on('error', (error) => reject(error));
+      writeStream.on('error', (error) => reject(error));
+
+      writeStream.on('finish', resolve);
+
+      compressedStream.pipe(decompressedStream).pipe(writeStream);
+    });
+
+    return decompressedFilePath;
+  } catch (error: any) {
+    logger.error(`Failed to unzip file: '${filePath}'`, "", LogContext.CSVService);
+    throw error;
+  }
+}
+
 export async function parseCSV<T>(filePath: string, columnMap: ColumnMap): Promise<T[]> {
   const data: T[] = [];
   try {
     logger.log(`CSV parsing: '${filePath}'`, LogContext.CSVService);
+
+    let readStream: fs.ReadStream;
+    if(filePath.endsWith('.gz')) {
+      const decompressedFilePath = await unzipFile(filePath);
+      readStream = fs.createReadStream(decompressedFilePath);
+    }
+    else {
+      readStream = fs.createReadStream(filePath);
+    }
+
     await pipelineAsync(
-      fs.createReadStream(filePath),
+      readStream,
       csvParser(),
       async (source) => {
         let line = 1;
