@@ -1,7 +1,7 @@
 import type { 
   RawSeasonAdvStatPassData, 
   SeasonAdvStatPassData,
-} from '../../../../../src/interfaces/nfl/seasonAdvStats/seasonAdvStatsPass';
+} from '@interfaces/nfl/seasonAdvStats/seasonAdvStatsPass';
 
 export const seasonAdvStatPassRecord = {
   player_id: 1001,

@@ -1,5 +1,5 @@
 
-import { RawSeasonStatData } from '../stats';
+import { RawSeasonStatData } from '@interfaces/nfl/stats';
   
 export interface RawSeasonAdvStatPassData extends RawSeasonStatData, SeasonAdvStatPassData {}
 

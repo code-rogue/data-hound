@@ -1,26 +1,26 @@
-import { nflPlayers } from './nfl/player';
+import { nflPlayers } from '@interfaces/config/nfl/player';
 import { 
   NFLWeeklyStats, 
   NFLWeeklyStatsDef, 
   NFLWeeklyStatsKick
-} from './nfl/weeklyStats';
+} from '@interfaces/config/nfl/weeklyStats';
 import { 
   NFLSeasonAdvStatsPass, 
   NFLSeasonAdvStatsRush, 
   NFLSeasonAdvStatsRec,
   NFLSeasonAdvStatsDef,
-} from './nfl/seasonAdvStats';
+} from '@interfaces/config/nfl/seasonAdvStats';
 import { 
   NFLWeeklyAdvStatsPass, 
   NFLWeeklyAdvStatsRush, 
   NFLWeeklyAdvStatsRec,
   NFLWeeklyAdvStatsDef,
-} from './nfl/weeklyAdvStats';
+} from '@interfaces/config/nfl/weeklyAdvStats';
 import { 
   NFLWeeklyNextGenStatsPass, 
   NFLWeeklyNextGenStatsRush, 
   NFLWeeklyNextGenStatsRec,
-} from './nfl/weeklyNextGenStats';
+} from '@interfaces/config/nfl/weeklyNextGenStats';
 
 export interface Config {
     nfl: {

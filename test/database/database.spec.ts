@@ -1,27 +1,27 @@
-import { DBService } from '../../src/database/dbService';
-import { getConfigurationData } from '../../src/config/configData';
-import { logger } from '../../src/log/logger';
-import { LogContext } from '../../src/log/log.enums';
+import { DBService } from '@database/dbService';
+import { getConfigurationData } from '@config/configData';
+import { logger } from '@log/logger';
+import { LogContext } from '@log/log.enums';
 import { Pool, QueryResult } from 'pg';
 
 import {
     weeklyBioData as bioData,
     passData,
-} from '../data-services/nfl/constants/config.constants';
+} from '@test-nfl-constants/config.constants';
 
 import {
     NFLSchema,
     WeeklyPassTable,
     PlayerId,
     WeeklyStatId,
-} from '../../src/constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
 
 import type { 
     RecordData,
-} from '../../src/interfaces/database/database';
+} from '@interfaces/database/database';
 
-jest.mock('../../src/config/configData');
-jest.mock('../../src/log/logger');
+jest.mock('@config/configData');
+jest.mock('@log/logger');
 jest.mock('pg');
 
 describe('DBService', () => {

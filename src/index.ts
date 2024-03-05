@@ -1,23 +1,23 @@
 import * as cron from 'node-cron';
 
-import { logger } from './log/logger'
-import { LogContext } from './log/log.enums';
+import { logger } from '@log/logger'
+import { LogContext } from '@log/log.enums';
 
-import { NFLPlayerService } from './data-services/nfl/playerService';
-import { NFLWeeklyStatOffService } from './data-services/nfl/weeklyStats/weeklyStatOffService';
-import { NFLWeeklyStatDefService } from './data-services/nfl/weeklyStats/weeklyStatDefService';
-import { NFLWeeklyStatKickService } from './data-services/nfl/weeklyStats/weeklyStatKickService';
-import { NFLWeeklyAdvStatPassService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatPassService';
-import { NFLWeeklyAdvStatRecService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatRecService';
-import { NFLWeeklyAdvStatRushService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatRushService';
-import { NFLWeeklyAdvStatDefService } from './data-services/nfl/weeklyAdvStats/weeklyAdvStatDefService';
-import { NFLWeeklyNextGenStatPassService } from './data-services/nfl/weeklyNextGenStats/weeklyNextGenStatPassService';
-import { NFLWeeklyNextGenStatRecService } from './data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRecService';
-import { NFLWeeklyNextGenStatRushService } from './data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRushService';
-import { NFLSeasonAdvStatDefService } from './data-services/nfl/seasonAdvStats/seasonAdvStatDefService';
-import { NFLSeasonAdvStatPassService } from './data-services/nfl/seasonAdvStats/seasonAdvStatPassService';
-import { NFLSeasonAdvStatRecService } from './data-services/nfl/seasonAdvStats/seasonAdvStatRecService';
-import { NFLSeasonAdvStatRushService } from './data-services/nfl/seasonAdvStats/seasonAdvStatRushService';
+import { NFLPlayerService } from '@data-services/nfl/playerService';
+import { NFLWeeklyStatOffService } from '@data-services/nfl/weeklyStats/weeklyStatOffService';
+import { NFLWeeklyStatDefService } from '@data-services/nfl/weeklyStats/weeklyStatDefService';
+import { NFLWeeklyStatKickService } from '@data-services/nfl/weeklyStats/weeklyStatKickService';
+import { NFLWeeklyAdvStatPassService } from '@data-services/nfl/weeklyAdvStats/weeklyAdvStatPassService';
+import { NFLWeeklyAdvStatRecService } from '@data-services/nfl/weeklyAdvStats/weeklyAdvStatRecService';
+import { NFLWeeklyAdvStatRushService } from '@data-services/nfl/weeklyAdvStats/weeklyAdvStatRushService';
+import { NFLWeeklyAdvStatDefService } from '@data-services/nfl/weeklyAdvStats/weeklyAdvStatDefService';
+import { NFLWeeklyNextGenStatPassService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatPassService';
+import { NFLWeeklyNextGenStatRecService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRecService';
+import { NFLWeeklyNextGenStatRushService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRushService';
+import { NFLSeasonAdvStatDefService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatDefService';
+import { NFLSeasonAdvStatPassService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatPassService';
+import { NFLSeasonAdvStatRecService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatRecService';
+import { NFLSeasonAdvStatRushService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatRushService';
 
 async function runService(): Promise<void> {
   try {
@@ -49,8 +49,8 @@ async function runService(): Promise<void> {
     //await seasonAdvRecStats.runService();
     //await seasonAdvRushStats.runService();
     //await seasonAdvDefStats.runService();
-    //await weeklyNextGenPassStats.runService();
-    //await weeklyNextGenRecStats.runService();
+    await weeklyNextGenPassStats.runService();
+    await weeklyNextGenRecStats.runService();
     await weeklyNextGenRushStats.runService();
     logger.debug(`Completed processing services.`, LogContext.Service);
   }

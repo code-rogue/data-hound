@@ -1,24 +1,24 @@
-import { LogContext } from '../../../log/log.enums';
+import { LogContext } from '@log/log.enums';
 import {
     NFLSchema,
+    ServiceName,
     WeeklyKickTable,
     WeeklyStatId,    
-} from '../../../constants/nfl/service.constants';
-import { NFLWeeklyStatService } from '../weeklyStats/weeklyStatService';
-import { parseNumber, splitString } from '../../utils/utils';
-import { ServiceName } from '../../../constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
+import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
+import { parseNumber, splitString } from '@utils/utils';
 
 import type { 
     BioData,
     GameData,
     LeagueData,
     PlayerData,
-} from '../../../interfaces/nfl/stats';
+} from '@interfaces/nfl/stats';
 
 import type { 
     RawWeeklyStatKickData,
     WeeklyKickData
-} from '../../../interfaces/nfl/weeklyStats/weeklyStatsKick';
+} from '@interfaces/nfl/weeklyStats/weeklyStatsKick';
 
 export class NFLWeeklyStatKickService extends NFLWeeklyStatService {
     constructor() {

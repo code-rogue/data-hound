@@ -1,21 +1,21 @@
-import { logger } from '../../../log/logger';
-import { LogContext } from '../../../log/log.enums';
+import { logger } from '@log/logger';
+import { LogContext } from '@log/log.enums';
 import {
     NFLSchema,
     BioTable,
     PlayerGSIS,
     PlayerId,
     PlayerTable,
+    ServiceName,
     WeeklyStatTable,
-} from '../../../constants/nfl/service.constants';
-import { NFLStatService } from '../statService';
-import { ServiceName } from '../../../constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
+import { NFLStatService } from '@data-services/nfl/statService';
 
 import type { 
     BioData,
     GameData,
     RawWeeklyStatData,
-} from '../../../interfaces/nfl/stats';
+} from '@interfaces/nfl/stats';
 
 export class NFLWeeklyStatService extends NFLStatService {
     constructor() {

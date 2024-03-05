@@ -1,11 +1,11 @@
 import type { 
   GameData as WeeklyKickGameData,
-} from '../../../../../src/interfaces/nfl/stats';
+} from '@interfaces/nfl/stats';
 
 import type { 
   RawWeeklyStatKickData, 
   WeeklyKickData,
-} from '../../../../../src/interfaces/nfl/weeklyStats/weeklyStatsKick';
+} from '@interfaces/nfl/weeklyStats/weeklyStatsKick';
 
 export const weeklyStatKickRecord = {
     player_id: 1001,

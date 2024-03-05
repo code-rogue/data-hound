@@ -1,7 +1,7 @@
 import type { 
     RawWeeklyNextGenStatPassData, 
     NextGenPassData as WeeklyNextGenPassData,
-  } from '../../../../../src/interfaces/nfl/weeklyNextGenStats/weeklyNextGenStatsPass';
+  } from '@interfaces/nfl/weeklyNextGenStats/weeklyNextGenStatsPass';
 
 export const weeklyNextGenStatPassRecord = {
     player_id: 1001,

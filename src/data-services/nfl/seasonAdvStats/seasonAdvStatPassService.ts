@@ -1,17 +1,17 @@
-import { LogContext } from '../../../log/log.enums';
-import { NFLSeasonAdvStatService } from './seasonAdvStatService'
+import { LogContext } from '@log/log.enums';
+import { NFLSeasonAdvStatService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatService';
 import {  
     NFLSchema,
     SeasonAdvPassTable,
     SeasonStatId,
-} from '../../../constants/nfl/service.constants'
-import { parseNumber } from '../../utils/utils';
-import { ServiceName } from '../../../constants/nfl/service.constants';
+    ServiceName,
+} from '@constants/nfl/service.constants';
+import { parseNumber } from '@utils/utils';
 
 import type { 
     RawSeasonAdvStatPassData,
     SeasonAdvStatPassData
-} from '../../../interfaces/nfl/seasonAdvStats/seasonAdvStatsPass';
+} from '@interfaces/nfl/seasonAdvStats/seasonAdvStatsPass';
 
 export class NFLSeasonAdvStatPassService extends NFLSeasonAdvStatService {
     constructor() {

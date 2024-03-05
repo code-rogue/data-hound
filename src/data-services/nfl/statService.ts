@@ -1,7 +1,7 @@
-import { DBService } from '../../database/dbService'
-import { ColumnMap, downloadCSV, parseCSV } from '../../csv/csvService';
-import { logger } from '../../log/logger';
-import { LogContext } from '../../log/log.enums';
+import { DBService } from '@database/dbService';
+import { ColumnMap, downloadCSV, parseCSV } from '@csv/csvService';
+import { logger } from '@log/logger';
+import { LogContext } from '@log/log.enums';
 import {
     NFLSchema,
     LeagueTable,
@@ -9,15 +9,15 @@ import {
     PlayerId,
     PlayerPFR,
     PlayerTable,
-} from '../../constants/nfl/service.constants';
+    ServiceName,
+} from '@constants/nfl/service.constants';
 
 import type { 
     LeagueData,
     PlayerData,
     RawStatData,
-} from '../../interfaces/nfl/stats';
-import { ServiceName } from '../../constants/nfl/service.constants';
-import { splitString } from '../utils/utils'
+} from '@interfaces/nfl/stats';
+import { splitString } from '@utils/utils';
  
 export class NFLStatService extends DBService {
     public columns: ColumnMap = {};

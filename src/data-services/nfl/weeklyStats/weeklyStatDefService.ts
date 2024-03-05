@@ -1,18 +1,18 @@
-import { LogContext } from '../../../log/log.enums';
+import { LogContext } from '@log/log.enums';
 
 import {
     NFLSchema,
+    ServiceName,
     WeeklyDefTable,
     WeeklyStatId,
-} from '../../../constants/nfl/service.constants'
-import { NFLWeeklyStatService } from '../weeklyStats/weeklyStatService';
-import { parseNumber } from '../../utils/utils';
-import { ServiceName } from '../../../constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
+import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
+import { parseNumber } from '@utils/utils';
 
 import type { 
     DefData,
     RawWeeklyStatDefData,
-} from '../../../interfaces/nfl/weeklyStats/weeklyStatsDef';
+} from '@interfaces/nfl/weeklyStats/weeklyStatsDef';
 
 export class NFLWeeklyStatDefService extends NFLWeeklyStatService {
     constructor() {

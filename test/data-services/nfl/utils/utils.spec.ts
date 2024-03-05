@@ -1,4 +1,4 @@
-import { parseNumber, splitString } from '../../../../src/data-services/utils/utils'
+import { parseNumber, splitString } from '@utils/utils'
 
 describe('Data Service Utils', () => {
     describe('splitString', () => {

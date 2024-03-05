@@ -1,9 +1,9 @@
-import * as cd from '../../../../src/config/configData';
-import * as csv from '../../../../src/csv/csvService';
-import { Config } from '../../../../src/interfaces/config/config';
-import { DBService } from '../../../../src/database/dbService'
-import { LogContext } from '../../../../src/log/log.enums';
-import { logger } from '../../../../src/log/logger';
+import * as cd from '@config/configData';
+import * as csv from '@csv/csvService';
+import { Config } from '@interfaces/config/config';
+import { DBService } from '@database/dbService'
+import { LogContext } from '@log/log.enums';
+import { logger } from '@log/logger';
 
 import {
   BioTable,
@@ -12,11 +12,11 @@ import {
   PlayerId,
   PlayerSmartId,
   PlayerTable
-} from '../../../../src/constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
 
 import { 
   NFLPlayerService
- } from '../../../../src/data-services/nfl/playerService';
+ } from '@data-services/nfl/playerService';
 
  import {
   configData,
@@ -27,14 +27,14 @@ import {
   playerData,
   leagueData,
   bioData,
- } from '../constants/config.constants';
+ } from '@test-nfl-constants/config.constants';
 
 import type { 
     BioData,
     LeagueData,
- } from '../../../../src/interfaces/nfl/player';
+ } from '@interfaces/nfl/player';
 
-jest.mock('../../../../src/log/logger');
+jest.mock('@log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;

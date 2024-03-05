@@ -4,7 +4,7 @@ import {
   consoleTransport,
   errorFileTransport,
   logFileTransport,   
-} from './log.constants'
+} from '@log/log.constants'
 
 class Log {
     public logger: winston.Logger;

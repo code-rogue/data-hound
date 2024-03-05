@@ -3,14 +3,14 @@ import type {
   BioData as WeeklyBioData,
   LeagueData as WeeklyLeagueData,
   GameData as WeeklyGameData,
-} from '../../../../../src/interfaces/nfl/stats';
+} from '@interfaces/nfl/stats';
 
 import type { 
     RawWeeklyStatData, 
     PassData as WeeklyPassData,
     RushData as WeeklyRushData,
     RecData as WeeklyRecData,
-  } from '../../../../../src/interfaces/nfl/weeklyStats/weeklyStats';
+  } from '@interfaces/nfl/weeklyStats/weeklyStats';
 
 export const weeklyStatRecord = {
     player_id: 1001,

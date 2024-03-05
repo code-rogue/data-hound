@@ -1,7 +1,7 @@
 import type { 
     RawWeeklyStatDefData, 
     DefData as WeeklyDefData,
-  } from '../../../../../src/interfaces/nfl/weeklyStats/weeklyStatsDef';
+  } from '@interfaces/nfl/weeklyStats/weeklyStatsDef';
 
 export const weeklyStatDefRecord = {
     player_id: 1001,

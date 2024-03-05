@@ -1,17 +1,19 @@
-import { LogContext } from '../../../log/log.enums';
+import { LogContext } from '@log/log.enums';
 import {
     NFLSchema,
+    ServiceName,
     WeeklyNextGenRushTable,
     WeeklyStatId,
-} from '../../../constants/nfl/service.constants'
-import { NFLWeeklyNextGenStatService } from '../weeklyNextGenStats/weeklyNextGenStatService';
-import { parseNumber } from '../../utils/utils';
-import { ServiceName } from '../../../constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
+import { 
+    NFLWeeklyNextGenStatService 
+} from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatService';
+import { parseNumber } from '@utils/utils';
 
 import type { 
     RawWeeklyNextGenStatRushData,
     NextGenRushData
-} from '../../../interfaces/nfl/weeklyNextGenStats/weeklyNextGenStatsRush';
+} from '@interfaces/nfl/weeklyNextGenStats/weeklyNextGenStatsRush';
 
 export class NFLWeeklyNextGenStatRushService extends NFLWeeklyNextGenStatService {
     constructor() {

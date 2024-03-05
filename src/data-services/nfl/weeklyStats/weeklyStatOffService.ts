@@ -1,23 +1,22 @@
-import { NFLWeeklyStatService } from '../weeklyStats/weeklyStatService'
-import { LogContext } from '../../../log/log.enums';
-
+import { LogContext } from '@log/log.enums';
 import {
-    NFLSchema,    
+    NFLSchema,
+    ServiceName,
     WeeklyPassTable as PassTable,
     WeeklyRecTable as RecTable,
     WeeklyRushTable as RushTable,
     WeeklyStatId,
-} from '../../../constants/nfl/service.constants'
-import { parseNumber } from '../../utils/utils';
-import { ServiceName } from '../../../constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
+import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
+import { parseNumber } from '@utils/utils';
 
-import type { GameData } from '../../../interfaces/nfl/stats';
+import type { GameData } from '@interfaces/nfl/stats';
 import type { 
     RawWeeklyStatData,
     PassData,
     RushData,
     RecData
-} from '../../../interfaces/nfl/weeklyStats/weeklyStats';
+} from '@interfaces/nfl/weeklyStats/weeklyStats';
 
 export class NFLWeeklyStatOffService extends NFLWeeklyStatService {
     constructor() {

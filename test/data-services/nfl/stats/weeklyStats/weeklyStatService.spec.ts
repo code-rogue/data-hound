@@ -1,4 +1,4 @@
-import * as cd from '../../../../../src/config/configData';
+import * as cd from '@config/configData';
 
 import {
   BioTable,
@@ -7,23 +7,23 @@ import {
   PlayerId,
   PlayerTable,
   WeeklyStatTable,
-} from '../../../../../src/constants/nfl/service.constants';
-import { Config } from '../../../../../src/interfaces/config/config';
+} from '@constants/nfl/service.constants';
+import { Config } from '@interfaces/config/config';
 import {
   configData,
   statRecord as record,
   statGameData as gameData,
   statBioData as bioData,
   weeklyPlayerData as playerData,
-} from '../../constants/config.constants';
-import { DBService } from '../../../../../src/database/dbService'
-import { LogContext } from '../../../../../src/log/log.enums';
-import { logger } from '../../../../../src/log/logger';
-import { NFLStatService } from '../../../../../src/data-services/nfl/statService'
-import { NFLWeeklyStatService } from '../../../../../src/data-services/nfl/weeklyStats/weeklyStatService';
-import { ServiceName } from '../../../../../src/constants/nfl/service.constants';
+} from '@test-nfl-constants/config.constants';
+import { DBService } from '@database/dbService'
+import { LogContext } from '@log/log.enums';
+import { logger } from '@log/logger';
+import { NFLStatService } from '@data-services/nfl/statService'
+import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
+import { ServiceName } from '@constants/nfl/service.constants';
 
-jest.mock('../../../../../src/log/logger');
+jest.mock('@log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;

@@ -1,23 +1,23 @@
-import * as cd from '../../../../../src/config/configData';
-import * as util from '../../../../../src/data-services/utils/utils';
+import * as cd from '@config/configData';
+import * as util from '@utils/utils';
 
 import {
   nextGenRecData as testData,
   configData,
   weeklyNextGenStatRecRecord as record,
-} from '../../constants/config.constants';
-import { Config } from '../../../../../src/interfaces/config/config';
-import { DBService } from '../../../../../src/database/dbService'
-import { LogContext } from '../../../../../src/log/log.enums';
+} from '@test-nfl-constants/config.constants';
+import { Config } from '@interfaces/config/config';
+import { DBService } from '@database/dbService'
+import { LogContext } from '@log/log.enums';
 import {
   NFLSchema,
   WeeklyNextGenRecTable as DBTable,
   WeeklyStatId as DBId,
-} from '../../../../../src/constants/nfl/service.constants';
-import { NFLWeeklyNextGenStatRecService } from '../../../../../src/data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRecService'
-import { ServiceName } from '../../../../../src/constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
+import { NFLWeeklyNextGenStatRecService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRecService'
+import { ServiceName } from '@constants/nfl/service.constants';
 
-jest.mock('../../../../../src/log/logger');
+jest.mock('@log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;

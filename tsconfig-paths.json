@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "paths": {
+        "@config/*": ["src/config/*"],
+        "@constants/*": ["src/constants/*"],
+        "@csv/*": ["src/csv/*"],
+        "@database/*": ["src/database/*"],
+        "@log/*": ["src/log/*"],
+        "@interfaces/*": ["src/interfaces/*"],
+        "@data-services/*": ["src/data-services/*"],
+        "@src/*": ["src/*"],
+        "@test/*": ["test/*"],
+        "@test-nfl-constants/*": ["test/data-services/nfl/constants/*"],
+        "@utils/*": ["src/data-services/utils/*"],
+      }
+    }
+  }

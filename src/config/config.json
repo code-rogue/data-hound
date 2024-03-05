@@ -468,7 +468,14 @@
         "short_name": "player_short_name"
       },
       "urls": [
-        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_passing.csv.gz"
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_passing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2022_passing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2021_passing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2020_passing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2019_passing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2018_passing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2017_passing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2016_passing.csv.gz"
       ]
     },
     "player_weekly_nextgen_rush_stats": {
@@ -497,7 +504,14 @@
         "short_name": "player_short_name"
       },
       "urls": [
-        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_rushing.csv.gz"
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_rushing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2022_rushing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2021_rushing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2020_rushing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2019_rushing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2018_rushing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2017_rushing.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2016_rushing.csv.gz"
       ]
     },
     "player_weekly_nextgen_rec_stats": {
@@ -527,7 +541,15 @@
         "short_name": "player_short_name"
       },
       "urls": [
-        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_receiving.csv.gz"
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_receiving.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2022_receiving.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2021_receiving.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2020_receiving.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2019_receiving.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2018_receiving.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2017_receiving.csv.gz",
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2016_receiving.csv.gz"
+
       ]
     }
   }

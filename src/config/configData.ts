@@ -1,9 +1,9 @@
-import { Config } from '../interfaces/config/config';
+import { Config } from '@interfaces/config/config';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { logger } from '../log/logger'
-import { LogContext } from '../log/log.enums';
+import { logger } from '@log/logger'
+import { LogContext } from '@log/log.enums';
 
 export function getConfigurationData(): Config {
     const configPath = resolve(__dirname, './config.json');

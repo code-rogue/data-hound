@@ -1,21 +1,21 @@
-import { logger } from '../../../log/logger';
-import { LogContext } from '../../../log/log.enums';
-import { NFLStatService } from '../statService';
+import { logger } from '@log/logger';
+import { LogContext } from '@log/log.enums';
+import { NFLStatService } from '@data-services/nfl/statService';
 import {
     NFLSchema,
     PlayerId,
     PlayerTable,
     SeasonStatTable,
-} from '../../../constants/nfl/service.constants';
+    ServiceName,
+} from '@constants/nfl/service.constants';
+import { splitString } from '@utils/utils';
 
 import type { 
     LeagueData,
     PlayerData,
     RawSeasonStatData,
     SeasonData,
-} from '../../../interfaces/nfl/stats';
-import { ServiceName } from '../../../constants/nfl/service.constants';
-import { splitString } from '../../utils/utils';
+} from '@interfaces/nfl/stats';
 
 export class NFLSeasonAdvStatService extends NFLStatService {
     constructor() {

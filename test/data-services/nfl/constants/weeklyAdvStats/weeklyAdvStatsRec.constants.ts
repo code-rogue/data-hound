@@ -1,7 +1,7 @@
 import type { 
     RawWeeklyAdvStatRecData, 
     AdvRecData as WeeklyAdvRecData,
-  } from '../../../../../src/interfaces/nfl/weeklyAdvStats/weeklyAdvStatsRec';
+  } from '@interfaces/nfl/weeklyAdvStats/weeklyAdvStatsRec';
 
 export const weeklyAdvStatRecRecord = {
     player_id: 1001,

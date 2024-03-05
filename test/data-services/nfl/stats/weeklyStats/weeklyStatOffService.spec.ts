@@ -1,7 +1,7 @@
-import * as cd from '../../../../../src/config/configData';
-import * as util from '../../../../../src/data-services/utils/utils';
+import * as cd from '@config/configData';
+import * as util from '@utils/utils';
 
-import { Config } from '../../../../../src/interfaces/config/config';
+import { Config } from '@interfaces/config/config';
 import {
   configData,
   dataFile,
@@ -11,9 +11,9 @@ import {
   passData,
   rushData,
   recData,
-} from '../../constants/config.constants';
-import { DBService } from '../../../../../src/database/dbService'
-import { LogContext } from '../../../../../src/log/log.enums';
+} from '@test-nfl-constants/config.constants';
+import { DBService } from '@database/dbService'
+import { LogContext } from '@log/log.enums';
 
 import {
   NFLSchema,
@@ -21,12 +21,12 @@ import {
   WeeklyRecTable as RecTable,
   WeeklyRushTable as RushTable,
   WeeklyStatId,
-} from '../../../../../src/constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
 
-import {  NFLWeeklyStatOffService } from '../../../../../src/data-services/nfl/weeklyStats/weeklyStatOffService';
-import { ServiceName } from '../../../../../src/constants/nfl/service.constants';
+import {  NFLWeeklyStatOffService } from '@data-services/nfl/weeklyStats/weeklyStatOffService';
+import { ServiceName } from '@constants/nfl/service.constants';
 
-jest.mock('../../../../../src/log/logger');
+jest.mock('@log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;

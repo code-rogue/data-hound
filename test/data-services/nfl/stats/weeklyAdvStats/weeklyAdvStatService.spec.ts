@@ -1,5 +1,5 @@
-import * as cd from '../../../../../src/config/configData';
-import * as util from '../../../../../src/data-services/utils/utils';
+import * as cd from '@config/configData';
+import * as util from '@utils/utils';
 
 import {
   advStatRecord as record,
@@ -7,26 +7,26 @@ import {
   advStatLeagueData as leagueData,
   advStatPlayerData as playerData,
   configData,
-} from '../../constants/config.constants';
-import { Config } from '../../../../../src/interfaces/config/config';
-import { DBService } from '../../../../../src/database/dbService';
-import { LogContext } from '../../../../../src/log/log.enums';
-import { logger } from '../../../../../src/log/logger';
-import { NFLStatService } from '../../../../../src/data-services/nfl/statService';
-import { NFLWeeklyAdvStatService } from '../../../../../src/data-services/nfl/weeklyAdvStats/weeklyAdvStatService';
-import { NFLWeeklyStatService } from '../../../../../src/data-services/nfl/weeklyStats/weeklyStatService';
+} from '@test-nfl-constants/config.constants';
+import { Config } from '@interfaces/config/config';
+import { DBService } from '@database/dbService';
+import { LogContext } from '@log/log.enums';
+import { logger } from '@log/logger';
+import { NFLStatService } from '@data-services/nfl/statService';
+import { NFLWeeklyAdvStatService } from '@data-services/nfl/weeklyAdvStats/weeklyAdvStatService';
+import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
 import {
   NFLSchema,
   PlayerTable,
-} from '../../../../../src/constants/nfl/service.constants';
-import { ServiceName } from '../../../../../src/constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
+import { ServiceName } from '@constants/nfl/service.constants';
 
 
 import type {
   StringSplitResult,
-} from '../../../../../src/data-services/utils/utils';
+} from '@data-services/utils/utils';
 
-jest.mock('../../../../../src/log/logger');
+jest.mock('@log/logger');
 
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;
 let mockSplitString: jest.SpyInstance<util.StringSplitResult, [input: string | null | undefined, delimiter: string], any>;

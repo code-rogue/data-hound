@@ -1,7 +1,7 @@
 import type { 
     RawWeeklyAdvStatRushData, 
     AdvRushData as WeeklyAdvRushData,
-  } from '../../../../../src/interfaces/nfl/weeklyAdvStats/weeklyAdvStatsRush';
+  } from '@interfaces/nfl/weeklyAdvStats/weeklyAdvStatsRush';
 
 export const weeklyAdvStatRushRecord = {
     player_id: 1001,

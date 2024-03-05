@@ -3,8 +3,8 @@ import * as zlib from 'zlib';
 
 import axios from 'axios';
 import csvParser from 'csv-parser';
-import { logger } from '../log/logger'
-import { LogContext } from '../log/log.enums';
+import { logger } from '@log/logger'
+import { LogContext } from '@log/log.enums';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
 

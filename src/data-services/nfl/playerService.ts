@@ -1,14 +1,14 @@
-import { DBService } from '../../database/dbService'
-import { ColumnMap, downloadCSV, parseCSV } from '../../csv/csvService';
-import { logger } from '../../log/logger';
-import { LogContext } from '../../log/log.enums';
+import { DBService } from '@database/dbService';
+import { ColumnMap, downloadCSV, parseCSV } from '@csv/csvService';
+import { logger } from '@log/logger';
+import { LogContext } from '@log/log.enums';
 
 import type { 
     RawPlayerData, 
     PlayerData,
     BioData,
     LeagueData,
- } from '../../interfaces/nfl/player';
+ } from '@interfaces/nfl/player';
 
  import {
     BioTable,
@@ -17,7 +17,7 @@ import type {
     PlayerId,
     PlayerSmartId,
     PlayerTable
-} from '../../constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
 
 export class NFLPlayerService extends DBService {
     public columns: ColumnMap = {};

@@ -1,7 +1,7 @@
-import * as cd from '../../../../../src/config/configData';
-import * as util from '../../../../../src/data-services/utils/utils';
+import * as cd from '@config/configData';
+import * as util from '@utils/utils';
 
-import { Config } from '../../../../../src/interfaces/config/config';
+import { Config } from '@interfaces/config/config';
 import {
   configData,
   rawWeeklyStatKickData as data,
@@ -11,19 +11,19 @@ import {
   weeklyKickGameData as gameData,
   weeklyPlayerData as playerData,
   weeklyKickData as testData,
-} from '../../constants/config.constants';
-import { DBService } from '../../../../../src/database/dbService';
+} from '@test-nfl-constants/config.constants';
+import { DBService } from '@database/dbService';
 import {
   NFLSchema,
   WeeklyKickTable as DBTable,
   WeeklyStatId as DBId,
-} from '../../../../../src/constants/nfl/service.constants';
-import { NFLWeeklyStatKickService } from '../../../../../src/data-services/nfl/weeklyStats/weeklyStatKickService';
+} from '@constants/nfl/service.constants';
+import { NFLWeeklyStatKickService } from '@data-services/nfl/weeklyStats/weeklyStatKickService';
 
-import type { RawWeeklyStatKickData } from '../../../../../src/interfaces/nfl/weeklyStats/weeklyStatsKick';
-import type { StringSplitResult } from '../../../../../src/data-services/utils/utils';
+import type { RawWeeklyStatKickData } from '@interfaces/nfl/weeklyStats/weeklyStatsKick';
+import type { StringSplitResult } from '@data-services/utils/utils';
 
-jest.mock('../../../../../src/log/logger');
+jest.mock('@log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;

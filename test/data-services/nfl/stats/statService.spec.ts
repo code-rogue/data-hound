@@ -1,10 +1,10 @@
-import * as cd from '../../../../src/config/configData';
-import * as csv from '../../../../src/csv/csvService';
-import { Config } from '../../../../src/interfaces/config/config';
-import { DBService } from '../../../../src/database/dbService'
-import { LogContext } from '../../../../src/log/log.enums';
-import { logger } from '../../../../src/log/logger';
-import * as util from '../../../../src/data-services/utils/utils';
+import * as cd from '@config/configData';
+import * as csv from '@csv/csvService';
+import { Config } from '@interfaces/config/config';
+import { DBService } from '@database/dbService'
+import { LogContext } from '@log/log.enums';
+import { logger } from '@log/logger';
+import * as util from '@data-services/utils/utils';
 
 import {
   NFLSchema,
@@ -13,11 +13,11 @@ import {
   PlayerId,
   PlayerPFR,
   PlayerTable,
-} from '../../../../src/constants/nfl/service.constants';
+} from '@constants/nfl/service.constants';
 
 import { 
     NFLStatService,
- } from '../../../../src/data-services/nfl/statService';
+ } from '@data-services/nfl/statService';
 
 import {
     configData,
@@ -27,17 +27,17 @@ import {
     rawStatData as data,
     statLeagueData as leagueData,
     statPlayerData as playerData,
-} from '../constants/config.constants';
+} from '@test-nfl-constants/config.constants';
 
 import type { 
   PlayerData,
-} from '../../../../src/interfaces/nfl/stats';
+} from '@interfaces/nfl/stats';
 
 import type {
   StringSplitResult,
-} from '../../../../src/data-services/utils/utils';
+} from '@utils/utils';
 
-jest.mock('../../../../src/log/logger');
+jest.mock('@log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;

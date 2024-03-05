@@ -3,7 +3,7 @@ import type {
     LeagueData,
     PlayerData,
     SeasonData
-} from '../../../../../src/interfaces/nfl/stats';
+} from '@interfaces/nfl/stats';
   
 export const seasonAdvStatRecord = {
     player_id: 1001,

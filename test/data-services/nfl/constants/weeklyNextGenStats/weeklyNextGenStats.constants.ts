@@ -3,7 +3,7 @@ import type {
     PlayerData,
     LeagueData,
     GameData,
-} from '../../../../../src/interfaces/nfl/stats';
+} from '@interfaces/nfl/stats';
   
 export const nextGenStatRecord = {
     player_id: 1001,

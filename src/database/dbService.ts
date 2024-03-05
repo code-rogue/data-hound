@@ -1,10 +1,10 @@
-import { Config } from '../interfaces/config/config';
-import { getConfigurationData } from '../config/configData'
-import { logger } from '../log/logger'
-import { LogContext } from '../log/log.enums';
-import { Pool, QueryResult } from 'pg';
+import { Config } from '@interfaces/config/config';
+import { getConfigurationData } from '@config/configData'
+import { logger } from '@log/logger'
+import { LogContext } from '@log/log.enums';
+import { Pool } from 'pg';
 
-import { RecordData } from '../interfaces/database/database';
+import { RecordData } from '@interfaces/database/database';
 
 export class DBService {
     public pool: Pool;

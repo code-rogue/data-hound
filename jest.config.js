@@ -9,9 +9,11 @@ module.exports = {
         "^@data-services/(.*)$": "<rootDir>/src/data-services/$1",
         "^@nfl-services/(.*)$": "<rootDir>/src/data-services/nfl/$1",
         "^@log/(.*)$": "<rootDir>/src/log/$1",
+        "^@utils/(.*)$": "<rootDir>/src/data-services/utils/$1",
         "^@csv/(.*)$": "<rootDir>/src/csv/$1",
         "^@src/(.*)$": "<rootDir>/src/$1",
         "^@test/(.*)$": "<rootDir>/test/$1",
+        "^@test-nfl-constants/(.*)$": "<rootDir>/test/data-services/nfl/constants/$1",
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
