@@ -43,6 +43,7 @@ export class NFLWeeklyAdvStatDefService extends NFLWeeklyAdvStatService {
             tackles_combined: parseNumber(data.tackles_combined),
             tackles_missed: parseNumber(data.tackles_missed),
             tackles_missed_pct: parseNumber(data.tackles_missed_pct),
+            interceptions:  parseNumber(data.interceptions),
         };
     }
 

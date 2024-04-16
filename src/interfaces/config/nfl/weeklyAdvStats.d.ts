@@ -75,6 +75,7 @@ export interface NFLWeeklyAdvStatsDef {
       opponent: string,
       full_name: string,
       pfr_id: string,
+      interceptions: string,
       targets: string,
       completions_allowed: string,
       completion_pct: string,

@@ -5,6 +5,7 @@ export interface RawWeeklyAdvStatDefData extends RawWeeklyStatData, WeeklyAdvDef
 
 export interface WeeklyAdvDefData {
   player_weekly_id?: number,
+  interceptions: number | null,
   targets: number | null,
   completions_allowed: number | null,
   completion_pct: number | null,

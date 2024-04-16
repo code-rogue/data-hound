@@ -1,7 +1,6 @@
 export const NFLSchema = 'nfl'
 
 export const BioTable = 'player_bio';
-
 export const LeagueTable = 'player_league';
 export const PlayerTable = 'players';
 export const SeasonAdvDefTable = 'season_adv_stats_def';

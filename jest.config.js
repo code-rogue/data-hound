@@ -37,7 +37,7 @@ module.exports = {
         "/src/constants/",
         "/src/config/",
         "/src/data/",
-        "/src/index.ts",
+        "/src/app.ts",
         "/src/log/",
         '/src/.*\\.d\\.[jt]s$',
         "/test/",

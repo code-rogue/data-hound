@@ -47,7 +47,7 @@ describe('NFLWeeklyAdvStatDefService', () => {
 
       const result = service.parseStatData(record);
       expect(result.player_weekly_id).toEqual(0);
-      expect(mockParseNumber).toHaveBeenCalledTimes(17);
+      expect(mockParseNumber).toHaveBeenCalledTimes(18);
       expect(mockParseNumber).toHaveBeenNthCalledWith(1, record.targets);
       expect(mockParseNumber).toHaveBeenNthCalledWith(2, record.completions_allowed);
       expect(mockParseNumber).toHaveBeenNthCalledWith(3, record.completion_pct);
@@ -65,6 +65,7 @@ describe('NFLWeeklyAdvStatDefService', () => {
       expect(mockParseNumber).toHaveBeenNthCalledWith(15, record.tackles_combined);
       expect(mockParseNumber).toHaveBeenNthCalledWith(16, record.tackles_missed);
       expect(mockParseNumber).toHaveBeenNthCalledWith(17, record.tackles_missed_pct);
+      expect(mockParseNumber).toHaveBeenNthCalledWith(18, record.interceptions);
     });
   });
 

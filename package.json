@@ -2,10 +2,13 @@
   "name": "data-hound",
   "version": "1.0.0",
   "description": "",
+  "author": "Fry Labs",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "ts-node src/index.ts",
+    "build": "npx tsc --build --force",
+    "build:run": "node -r tsconfig-paths/register -r ts-node/register ./dist/src/app.js --",
+    "start": "npx ts-node src/app.ts --",
     "start:schedule": "ts-node src/index.ts schedule",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -13,8 +16,6 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "keywords": [],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "axios": "^1.2.6",
     "csv-parser": "^3.0.0",
@@ -30,7 +31,7 @@
     "@babel/preset-typescript": "^7.23.3",
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.12.7",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.11.0",
     "@types/supertest": "^6.0.2",
@@ -38,6 +39,7 @@
     "ts-jest": "^29.1.2",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.5"
   }
 }
