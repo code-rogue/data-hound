@@ -3,9 +3,7 @@ import { LogContext } from '@log/log.enums';
 import { NFLStatService } from '@data-services/nfl/statService';
 import {
     NFLSchema,
-    PlayerId,
     PlayerTable,
-    SeasonStatTable,
     ServiceName,
 } from '@constants/nfl/service.constants';
 import { splitString } from '@utils/utils';
@@ -14,7 +12,6 @@ import type {
     LeagueData,
     PlayerData,
     RawSeasonStatData,
-    SeasonData,
 } from '@interfaces/nfl/stats';
 
 export class NFLSeasonAdvStatService extends NFLStatService {
@@ -40,38 +37,6 @@ export class NFLSeasonAdvStatService extends NFLStatService {
             player_id: 0,
             team: data.team,
         };
-    }
-
-    public parseSeasonData<T extends SeasonData>(data: T): SeasonData {
-        return {
-            player_id: 0,
-            season: data.season,
-            age: data?.age ?? 0,
-            games_played: data?.games_played ?? 0,
-            games_started: data?.games_started ?? 0,
-        };
-    }
-
-    public async processSeasonRecord(player_id: number, row: RawSeasonStatData): Promise<number> {
-        try {
-            const seasonData = this.parseSeasonData(row);
-            seasonData.player_id = player_id;
-
-            const query = `SELECT id FROM ${NFLSchema}.${SeasonStatTable} WHERE ${PlayerId} = $1 AND season = $2`;
-            const records = await this.fetchRecords<{id: number}>(query, [player_id, seasonData.season]);
-            if(!records || !records[0] || records[0].id === 0 ) {
-                return await this.insertRecord(NFLSchema, SeasonStatTable, seasonData);
-            }
-            else {
-                // remove player_id
-                const { player_id, ...updatedData } = seasonData;
-                const season_id = records[0].id;
-                await this.updateRecord(NFLSchema, SeasonStatTable, 'id', season_id, updatedData);
-                return season_id;
-            } 
-        } catch(error: any) {
-            throw error;
-        }
     }
 
     // Abstract function 

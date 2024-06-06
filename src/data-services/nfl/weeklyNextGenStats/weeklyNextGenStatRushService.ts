@@ -4,11 +4,14 @@ import {
     ServiceName,
     WeeklyNextGenRushTable,
     WeeklyStatId,
+    SeasonNextGenRushTable,
+    SeasonStatId,
 } from '@constants/nfl/service.constants';
 import { 
     NFLWeeklyNextGenStatService 
 } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatService';
 import { parseNumber } from '@utils/utils';
+import { RawWeeklyStatData } from '@interfaces/nfl/stats';
 
 import type { 
     RawWeeklyNextGenStatRushData,
@@ -27,7 +30,6 @@ export class NFLWeeklyNextGenStatRushService extends NFLWeeklyNextGenStatService
     
     public parseStatData(data: RawWeeklyNextGenStatRushData): NextGenRushData {
         return {
-            player_weekly_id: 0,
             efficiency: parseNumber(data.efficiency),
             attempts_gte_eight_defenders_pct: parseNumber(data.attempts_gte_eight_defenders_pct),
             avg_time_to_los: parseNumber(data.avg_time_to_los),
@@ -39,13 +41,31 @@ export class NFLWeeklyNextGenStatRushService extends NFLWeeklyNextGenStatService
         };
     }
 
-    public override async processStatRecord(week_id: number, row: RawWeeklyNextGenStatRushData): Promise<void> {
+    public override async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {
         try {
-            await this.processRecord(NFLSchema, WeeklyNextGenRushTable, WeeklyStatId, week_id, this.parseStatData(row));
+            await this.processRecord(
+                NFLSchema, 
+                WeeklyNextGenRushTable, 
+                WeeklyStatId, 
+                week_id, 
+                this.parseStatData(row as unknown as RawWeeklyNextGenStatRushData)
+            );
         } catch(error: any) {
             throw error;
         }
     }
 
-    
+    public override async processSeasonStatRecord<T extends RawWeeklyStatData>(season_id: number, row: T): Promise<void> {
+        try {
+            await this.processRecord(
+                NFLSchema, 
+                SeasonNextGenRushTable, 
+                SeasonStatId,
+                season_id, 
+                this.parseStatData(row as unknown as RawWeeklyNextGenStatRushData)
+            );
+        } catch(error: any) {
+            throw error;
+        }
+    }
 }

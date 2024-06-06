@@ -4,9 +4,12 @@ import {
     ServiceName,
     WeeklyNextGenRecTable,
     WeeklyStatId,
+    SeasonNextGenRecTable,
+    SeasonStatId,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyNextGenStatService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatService';
 import { parseNumber } from '@utils/utils';
+import { RawWeeklyStatData } from '@interfaces/nfl/stats';
 
 import type { 
     RawWeeklyNextGenStatRecData,
@@ -25,7 +28,6 @@ export class NFLWeeklyNextGenStatRecService extends NFLWeeklyNextGenStatService 
     
     public parseStatData(data: RawWeeklyNextGenStatRecData): NextGenRecData {
         return {
-            player_weekly_id: 0,
             avg_cushion: parseNumber(data.avg_cushion),
             avg_separation: parseNumber(data.avg_separation),
             avg_intended_air_yards: parseNumber(data.avg_intended_air_yards),
@@ -37,13 +39,31 @@ export class NFLWeeklyNextGenStatRecService extends NFLWeeklyNextGenStatService 
         };
     }
 
-    public override async processStatRecord(week_id: number, row: RawWeeklyNextGenStatRecData): Promise<void> {
+    public override async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {
         try {
-            await this.processRecord(NFLSchema, WeeklyNextGenRecTable, WeeklyStatId, week_id, this.parseStatData(row));
+            await this.processRecord(
+                NFLSchema, 
+                WeeklyNextGenRecTable, 
+                WeeklyStatId, 
+                week_id, 
+                this.parseStatData(row as unknown as RawWeeklyNextGenStatRecData)
+            );
         } catch(error: any) {
             throw error;
         }
     }
 
-    
+    public override async processSeasonStatRecord<T extends RawWeeklyStatData>(season_id: number, row: T): Promise<void> {
+        try {
+            await this.processRecord(
+                NFLSchema, 
+                SeasonNextGenRecTable, 
+                SeasonStatId, 
+                season_id, 
+                this.parseStatData(row as unknown as RawWeeklyNextGenStatRecData)
+            );
+        } catch(error: any) {
+            throw error;
+        }
+    }
 }

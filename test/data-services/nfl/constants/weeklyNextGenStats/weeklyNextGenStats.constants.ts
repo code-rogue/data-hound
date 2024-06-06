@@ -18,7 +18,7 @@ export const nextGenStatRecord = {
     jersey_number: '5',
     team: 'string',
     season: 'string',
-    week: 2,
+    week: '2',
     game_type: 'string',
 };
   

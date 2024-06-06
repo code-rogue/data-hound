@@ -7,6 +7,14 @@ export const SeasonAdvDefTable = 'season_adv_stats_def';
 export const SeasonAdvPassTable = 'season_adv_stats_pass';
 export const SeasonAdvRecTable = 'season_adv_stats_rec';
 export const SeasonAdvRushTable = 'season_adv_stats_rush';
+export const SeasonDefTable = 'season_stats_def';
+export const SeasonKickTable = 'season_stats_kick';
+export const SeasonNextGenPassTable = 'season_nextgen_stats_pass';
+export const SeasonNextGenRecTable = 'season_nextgen_stats_rec';
+export const SeasonNextGenRushTable = 'season_nextgen_stats_rush';
+export const SeasonPassTable = 'season_stats_pass';
+export const SeasonRecTable = 'season_stats_rec';
+export const SeasonRushTable = 'season_stats_rush';
 export const SeasonStatTable = 'player_season_stats';
 export const WeeklyDefTable = 'weekly_stats_def';
 export const WeeklyKickTable = 'weekly_stats_kick';
@@ -21,7 +29,6 @@ export const WeeklyNextGenPassTable = 'weekly_nextgen_stats_pass';
 export const WeeklyNextGenRecTable = 'weekly_nextgen_stats_rec';
 export const WeeklyNextGenRushTable = 'weekly_nextgen_stats_rush';
 export const WeeklyStatTable = 'player_weekly_stats';
-
 
 export const PlayerFullName = 'full_name';
 export const PlayerPFR = 'pfr_id';

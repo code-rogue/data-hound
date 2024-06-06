@@ -4,6 +4,7 @@ import { RawWeeklyStatData } from '@interfaces/nfl/stats';
 export interface RawWeeklyNextGenStatRushData extends RawWeeklyStatData, NextGenRushData {}
 
 export interface NextGenRushData {
+    player_season_id?: number,
     player_weekly_id?: number,
     efficiency:  number | null,
     attempts_gte_eight_defenders_pct: number | null,

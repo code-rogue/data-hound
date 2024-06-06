@@ -11,6 +11,8 @@ import { DBService } from '@database/dbService'
 import { LogContext } from '@log/log.enums';
 import {
   NFLSchema,
+  SeasonNextGenRecTable as SeasonDBTable,
+  SeasonStatId as SeasonDBId,
   WeeklyNextGenRecTable as DBTable,
   WeeklyStatId as DBId,
 } from '@constants/nfl/service.constants';
@@ -46,7 +48,6 @@ describe('NFLWeeklyNextGenStatRecService', () => {
       const mockParseNumber = jest.spyOn(util, 'parseNumber').mockImplementation(() => 0);
 
       const result = service.parseStatData(record);
-      expect(result.player_weekly_id).toEqual(0);
       expect(mockParseNumber).toHaveBeenCalledTimes(8);
       expect(mockParseNumber).toHaveBeenNthCalledWith(1, record.avg_cushion);
       expect(mockParseNumber).toHaveBeenNthCalledWith(2, record.avg_separation);
@@ -84,6 +85,34 @@ describe('NFLWeeklyNextGenStatRecService', () => {
       
       mockProcessRecord.mockRestore();
       mockProcessStatRecord.mockRestore();
+    });    
+  });
+
+  describe('processSeasonStatRecord', () => {
+    it('should run successfully', async () => {
+      const mockProcessRecord = jest.spyOn(DBService.prototype, 'processRecord').mockImplementation();
+      const mockParseStatData = jest.spyOn(NFLWeeklyNextGenStatRecService.prototype, 'parseStatData').mockImplementation(() => testData);
+      
+      const weekly_id = record.player_weekly_id;
+      await service.processSeasonStatRecord(weekly_id, record);
+      
+      expect(mockParseStatData).toHaveBeenCalledWith(record);
+      expect(mockProcessRecord).toHaveBeenCalledWith(NFLSchema, SeasonDBTable, SeasonDBId, weekly_id, testData);
+
+      mockProcessRecord.mockRestore();
+      mockParseStatData.mockRestore();
+    });
+
+    it('should catch and throw the error', async () => {
+      const error = new Error("error");
+      const mockProcessRecord = jest.spyOn(DBService.prototype, 'processRecord').mockImplementation().mockRejectedValue(error);
+      const mockParseStatData = jest.spyOn(NFLWeeklyNextGenStatRecService.prototype, 'parseStatData').mockImplementation(() => testData);
+
+      await expect(service.processSeasonStatRecord(1, record)).rejects.toThrow(error);
+      expect(mockParseStatData).toHaveBeenCalledWith(record);
+      
+      mockProcessRecord.mockRestore();
+      mockParseStatData.mockRestore();
     });    
   });
 });

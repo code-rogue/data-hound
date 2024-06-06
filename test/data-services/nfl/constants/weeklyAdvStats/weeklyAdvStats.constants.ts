@@ -13,7 +13,7 @@ export const advStatRecord = {
     headshot_url: 'string',
     team: 'string',
     season: 'string',
-    week: 2,
+    week: '2',
     game_type: 'string',
     opponent: 'string',
     game_id: 'string',

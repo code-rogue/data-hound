@@ -13,8 +13,9 @@ import {
   PlayerId,
   PlayerPFR,
   PlayerTable,
+  SeasonStatTable
 } from '@constants/nfl/service.constants';
-
+import { NFLSeasonAdvStatService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatService';
 import { 
     NFLStatService,
  } from '@data-services/nfl/statService';
@@ -27,12 +28,15 @@ import {
     rawStatData as data,
     statLeagueData as leagueData,
     statPlayerData as playerData,
+    seasonAdvStatData as seasonData,
+    seasonAdvStatBaseRecord as seasonBaseRecord,
+    seasonAdvStatRecord as seasonRecord,     
 } from '@test-nfl-constants/config.constants';
 
 import type { 
   PlayerData,
 } from '@interfaces/nfl/stats';
-
+import type { SeasonData } from '@interfaces/nfl/stats';
 import type {
   StringSplitResult,
 } from '@utils/utils';
@@ -109,6 +113,22 @@ describe('NFLStatService', () => {
     });    
   });
 
+  describe('parseSeasonData', () => {
+    const {age, games_played, games_started, ...seasonBaseData} = seasonData;
+
+    it.each([
+      [seasonBaseRecord],
+      [seasonRecord],
+    ])
+    ('should parse successfully', (data: SeasonData) => {
+        const result = seasonData;
+        result.player_id = 0;
+        result.age = data.age ?? 0;
+        result.games_played = data.games_played ?? 0;
+        result.games_started = data.games_started ?? 0;
+        expect(service.parseSeasonData(data)).toEqual(result);
+    });
+  });
 
   describe('processPlayerDataRow', () => {
     it('should run successfully (abstract function))', async () => {
@@ -146,6 +166,52 @@ describe('NFLStatService', () => {
 
       mockProcessPlayerDataRow.mockRestore();
     });
+  });
+
+  describe('processSeasonRecord', () => {
+    it.each([
+      [true, seasonRecord, { id: seasonRecord.player_season_id }],
+      [false, seasonRecord, { id: 0 }],
+      [false, seasonRecord, undefined],
+    ])('should run successfully - exists: "%s"', async (exists, row, statRecord) => {
+      const player_id = row.player_id;
+      const season_id = seasonRecord.player_season_id;
+      const query = `SELECT id FROM ${NFLSchema}.${SeasonStatTable} WHERE ${PlayerId} = $1 AND season = $2`;
+      const keys = [player_id, seasonRecord.season];
+
+      const mockParseSeasonData = jest.spyOn(NFLStatService.prototype, 'parseSeasonData').mockImplementation(() => seasonData);
+      const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords')
+        .mockImplementation(() => Promise.resolve( (statRecord?.id) ? [statRecord] : undefined));
+      const mockUpdateRecord = jest.spyOn(DBService.prototype, 'updateRecord').mockImplementation();
+      const mockInsertRecord = jest.spyOn(DBService.prototype, 'insertRecord').mockImplementation(() => Promise.resolve(row.player_season_id));
+
+      const result = await service.processSeasonRecord(player_id, row);
+      expect(result).toEqual(season_id);
+      expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
+      if (exists) {
+        const { player_id, ...updatedData } = seasonData;
+        expect(mockUpdateRecord).toHaveBeenCalledWith(NFLSchema, SeasonStatTable, 'id', season_id, updatedData);
+      } 
+      else {
+        expect(mockInsertRecord).toHaveBeenCalledWith(NFLSchema, SeasonStatTable, seasonData);
+      }
+
+      mockParseSeasonData.mockRestore();
+      mockFetchRecords.mockRestore();
+      mockUpdateRecord.mockRestore();
+      mockInsertRecord.mockRestore();
+    });
+
+    it('should catch and throw the error', async () => {
+      const error = new Error("error");
+      const mockParseSeasonData = jest.spyOn(NFLStatService.prototype, 'parseSeasonData').mockImplementation(() => seasonData);
+      const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation().mockRejectedValue(error);
+
+      await expect(service.processSeasonRecord(1, seasonRecord)).rejects.toThrow(error);
+      expect(mockParseSeasonData).toHaveBeenCalledWith(seasonRecord);
+      mockParseSeasonData.mockRestore();
+      mockFetchRecords.mockRestore();
+    });    
   });
 
   describe('findPlayerByPFR', () => {

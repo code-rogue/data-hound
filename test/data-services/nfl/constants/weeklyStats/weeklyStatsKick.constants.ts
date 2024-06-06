@@ -18,7 +18,7 @@ export const weeklyStatKickRecord = {
     position_group: 'string',
     team: 'string',
     season: 'string',
-    week: 2,
+    week: '2',
     game_type: 'season_type',
     fg_made: 4,
     fg_missed: 0,

@@ -4,7 +4,8 @@ import { RawWeeklyStatData } from '@interfaces/nfl/stats';
 export interface RawWeeklyNextGenStatPassData extends RawWeeklyStatData, NextGenPassData {}
 
 export interface NextGenPassData {
-    player_weekly_id?: number,
+    player_season_id?: number,
+    player_weekly_id?: number,    
     avg_time_to_throw: number | null,
     avg_completed_air_yards: number | null,
     avg_intended_air_yards: number | null,

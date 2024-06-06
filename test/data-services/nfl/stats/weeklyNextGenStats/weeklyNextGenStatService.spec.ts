@@ -73,11 +73,15 @@ describe('NFLWeeklyAdvStatService', () => {
 
   describe('processPlayerDataRow', () => {
     it.each([
-      [0, true, record],
-      [1001, false, record],
-    ])('should run successfully - id: %s, insert: %s', async (player_id, bInsert, row) => {
+      [0, true, record, 0],
+      [1001, false, record, 1],
+    ])('should run successfully - id: %s, insert: %s', async (player_id, bInsert, row, week) => {
       let id = player_id;
       const weekly_id = row.player_weekly_id;
+      const season_id = 100;
+      
+      const playerDataRecord = row;
+      row.week = week.toString();
 
       const mockParsePlayerData = jest.spyOn(NFLWeeklyNextGenStatService.prototype, 'parsePlayerData').mockImplementation(() => playerData);
       const mockRecordLookup = jest.spyOn(NFLStatService.prototype, 'recordLookup')
@@ -90,22 +94,31 @@ describe('NFLWeeklyAdvStatService', () => {
         .mockImplementation(() => Promise.resolve(weekly_id));
       const mockProcessStatRecord = jest.spyOn(NFLWeeklyNextGenStatService.prototype, 'processStatRecord').mockImplementation();
 
-      await service.processPlayerDataRow(row);
-      expect(mockParsePlayerData).toHaveBeenCalledWith(row);
-      expect(mockRecordLookup).toHaveBeenCalledWith(NFLSchema, PlayerTable, PlayerGSIS, row.gsis_id, 'id');
+      const mockProcessSeasonRecord = jest.spyOn(NFLStatService.prototype, 'processSeasonRecord')
+        .mockImplementation(() => Promise.resolve(season_id));
+      const mockProcessSeasonStatRecord = jest.spyOn(NFLWeeklyNextGenStatService.prototype, 'processSeasonStatRecord').mockImplementation();
+
+      await service.processPlayerDataRow(playerDataRecord);
+      expect(mockParsePlayerData).toHaveBeenCalledWith(playerDataRecord);
+      expect(mockRecordLookup).toHaveBeenCalledWith(NFLSchema, PlayerTable, PlayerGSIS, playerDataRecord.gsis_id, 'id');
 
       let logIndex = 2;
       if (bInsert) {
-        expect(logger.debug).toHaveBeenNthCalledWith(logIndex++,`No Player Found, creating player record: ${playerData.full_name} [${playerData.gsis_id}].`,
+        expect(logger.notice).toHaveBeenNthCalledWith(1,`No Player Found, creating player record: ${playerData.full_name} [${playerData.gsis_id}].`,
         service.logContext);
 
         expect(mockInsertRecord).toHaveBeenCalledWith(NFLSchema, PlayerTable, playerData);
         id++;
-        expect(mockProcessLeagueRecord).toHaveBeenCalledWith(id, row);
-      } 
+        expect(mockProcessLeagueRecord).toHaveBeenCalledWith(id, playerDataRecord);
+      }
 
-      expect(mockProcessGameRecord).toHaveBeenCalledWith(id, row);
-      expect(mockProcessStatRecord).toHaveBeenCalledWith(weekly_id, row);
+      if(week === 0) {
+        expect(mockProcessSeasonRecord).toHaveBeenCalledWith(id, playerDataRecord);
+        expect(mockProcessSeasonStatRecord).toHaveBeenCalledWith(season_id, playerDataRecord);
+      } else {
+        expect(mockProcessGameRecord).toHaveBeenCalledWith(id, playerDataRecord);
+        expect(mockProcessStatRecord).toHaveBeenCalledWith(weekly_id, playerDataRecord);
+      }
 
       // Await the logger.debug call
       expect(logger.debug).toHaveBeenNthCalledWith(logIndex,`Completed processing player record: ${JSON.stringify(row)}.`, service.logContext);
@@ -116,6 +129,8 @@ describe('NFLWeeklyAdvStatService', () => {
       mockProcessLeagueRecord.mockRestore();
       mockProcessGameRecord.mockRestore();
       mockProcessStatRecord.mockRestore();
+      mockProcessSeasonRecord.mockRestore();
+      mockProcessSeasonStatRecord.mockRestore();
     });
 
     it('should catch and throw the error', async () => {
@@ -172,6 +187,18 @@ describe('NFLWeeklyAdvStatService', () => {
       expect(logger.error).toHaveBeenCalledWith(`${service.serviceName} did not complete`, error.message, service.logContext);
 
       mockRunService.mockRestore();
+    });
+  });
+
+  describe('processStatRecord', () => {
+    it('should run successfully', async () => {
+      await service.processStatRecord(1, record);
+    });
+  });
+
+  describe('processSeasonStatRecord', () => {
+    it('should run successfully', async () => {
+      await service.processSeasonStatRecord(1, record);
     });
   });
 });

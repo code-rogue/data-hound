@@ -17,7 +17,7 @@ export const statRecord = {
     position_group: 'string',
     team: 'string',
     season: 'string',
-    week: 2,
+    week: '2',
     game_type: 'string',
     opponent: 'string',
     fantasy_points: 10.2,

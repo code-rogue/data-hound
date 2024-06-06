@@ -12,7 +12,7 @@ export const weeklyAdvStatRecRecord = {
     game_id: "2023_01_DET_KC",
     pfr_game_id: "202309070kan",
     season: "2003",
-    week: 1,
+    week: '1',
     game_type: "REG",
     team: "KC",
     opponent: "DET",

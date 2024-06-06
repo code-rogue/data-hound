@@ -9,6 +9,7 @@ import {
     PlayerId,
     PlayerPFR,
     PlayerTable,
+    SeasonStatTable,
     ServiceName,
 } from '@constants/nfl/service.constants';
 
@@ -16,6 +17,8 @@ import type {
     LeagueData,
     PlayerData,
     RawStatData,
+    RawSeasonStatData,
+    SeasonData,
 } from '@interfaces/nfl/stats';
 import { splitString } from '@utils/utils';
  
@@ -57,9 +60,18 @@ export class NFLStatService extends DBService {
         }
     }
 
-    // placeholder since can not use abstract in a non abstract class
-    public async processPlayerDataRow(row: any): Promise<void> {
+    public parseSeasonData<T extends SeasonData>(data: T): SeasonData {
+        return {
+            player_id: 0,
+            season: data.season,
+            age: data?.age ?? 0,
+            games_played: data?.games_played ?? 0,
+            games_started: data?.games_started ?? 0,
+        };
     }
+
+    // placeholder since can not use abstract in a non abstract class
+    public async processPlayerDataRow(row: any): Promise<void> {}
     
     public async processPlayerData(data: RawStatData[]): Promise<void> {
         try {
@@ -85,6 +97,28 @@ export class NFLStatService extends DBService {
              return result[0].id;
             
             return 0;
+        } catch(error: any) {
+            throw error;
+        }
+    }
+
+    public async processSeasonRecord(player_id: number, row: RawSeasonStatData): Promise<number> {
+        try {
+            const seasonData = this.parseSeasonData(row);
+            seasonData.player_id = player_id;
+
+            const query = `SELECT id FROM ${NFLSchema}.${SeasonStatTable} WHERE ${PlayerId} = $1 AND season = $2`;
+            const records = await this.fetchRecords<{id: number}>(query, [player_id, seasonData.season]);
+            if(!records || !records[0] || records[0].id === 0 ) {
+                return await this.insertRecord(NFLSchema, SeasonStatTable, seasonData);
+            }
+            else {
+                // remove player_id
+                const { player_id, ...updatedData } = seasonData;
+                const season_id = records[0].id;
+                await this.updateRecord(NFLSchema, SeasonStatTable, 'id', season_id, updatedData);
+                return season_id;
+            } 
         } catch(error: any) {
             throw error;
         }

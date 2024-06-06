@@ -14,7 +14,7 @@ export const weeklyStatDefRecord = {
     position_group: 'string',
     team: 'string',
     season: 'string',
-    week: 2,
+    week: '2',
     tackles: 1,
     tackles_solo: 0,
     tackle_with_assists: 1,

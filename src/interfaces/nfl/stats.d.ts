@@ -29,7 +29,7 @@ export interface GameData {
     pfr_game_id?: string,
     player_id?: number,
     season: string,
-    week: number,
+    week: string,
     game_type?: string,
     opponent?: string,
     fantasy_points?: number | null,

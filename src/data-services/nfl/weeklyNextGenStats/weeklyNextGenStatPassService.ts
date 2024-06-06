@@ -1,12 +1,15 @@
 import { LogContext } from '@log/log.enums';
 import {
     NFLSchema,
+    SeasonNextGenPassTable,
+    SeasonStatId,
     ServiceName,
     WeeklyNextGenPassTable,
     WeeklyStatId,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyNextGenStatService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatService';
 import { parseNumber } from '@utils/utils';
+import { RawWeeklyStatData } from '@interfaces/nfl/stats';
 
 import type { 
     RawWeeklyNextGenStatPassData,
@@ -25,7 +28,6 @@ export class NFLWeeklyNextGenStatPassService extends NFLWeeklyNextGenStatService
     
     public parseStatData(data: RawWeeklyNextGenStatPassData): NextGenPassData {
         return {
-            player_weekly_id: 0,
             aggressiveness: parseNumber(data.aggressiveness),
             avg_time_to_throw: parseNumber(data.avg_time_to_throw),
             avg_air_distance: parseNumber(data.avg_air_distance),
@@ -42,13 +44,31 @@ export class NFLWeeklyNextGenStatPassService extends NFLWeeklyNextGenStatService
         };
     }
 
-    public override async processStatRecord(week_id: number, row: RawWeeklyNextGenStatPassData): Promise<void> {
+    public override async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {
         try {
-            await this.processRecord(NFLSchema, WeeklyNextGenPassTable, WeeklyStatId, week_id, this.parseStatData(row));
+            await this.processRecord(
+                NFLSchema, 
+                WeeklyNextGenPassTable, 
+                WeeklyStatId, 
+                week_id, 
+                this.parseStatData(row as unknown as RawWeeklyNextGenStatPassData)
+            );
         } catch(error: any) {
             throw error;
         }
     }
 
-    
+    public override async processSeasonStatRecord<T extends RawWeeklyStatData>(season_id: number, row: T): Promise<void> {
+        try {
+            await this.processRecord(
+                NFLSchema, 
+                SeasonNextGenPassTable, 
+                SeasonStatId, 
+                season_id, 
+                this.parseStatData(row as unknown as RawWeeklyNextGenStatPassData)
+            );
+        } catch(error: any) {
+            throw error;
+        }
+    }
 }

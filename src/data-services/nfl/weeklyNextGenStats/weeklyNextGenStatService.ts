@@ -51,8 +51,9 @@ export class NFLWeeklyNextGenStatService extends NFLWeeklyStatService {
         };
     }
 
-    // Abstract function 
-    public async processStatRecord(week_id: number, row: any): Promise<void> {}
+    // Abstract functions
+    public async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {}
+    public async processSeasonStatRecord<T extends RawWeeklyStatData>(season_id: number, row: T): Promise<void> {}
 
     public override async processPlayerDataRow<T extends RawWeeklyStatData>(row: T): Promise<void> {
         try {
@@ -61,15 +62,20 @@ export class NFLWeeklyNextGenStatService extends NFLWeeklyStatService {
 
             let player_id = await this.recordLookup(NFLSchema, PlayerTable, PlayerGSIS, player.gsis_id, 'id');
             if(player_id === 0) {
-                logger.debug(`No Player Found, creating player record: ${player.full_name} [${player.gsis_id}].`, this.logContext);
+                logger.notice(`No Player Found, creating player record: ${player.full_name} [${player.gsis_id}].`, this.logContext);
 
                 player_id = await this.insertRecord(NFLSchema, PlayerTable, player);
                 promises.push(this.processLeagueRecord(player_id, row));
             }
 
-            const weeklyStatId = await this.processGameRecord(player_id, row);
-
-            promises.push(this.processStatRecord(weeklyStatId, row));
+            if(row.week === "0") {
+                const seasonStatId = await this.processSeasonRecord(player_id, row);
+                promises.push(this.processSeasonStatRecord(seasonStatId, row));
+            } else {
+                const weeklyStatId = await this.processGameRecord(player_id, row);
+                promises.push(this.processStatRecord(weeklyStatId, row));
+            }
+            
             await Promise.all(promises);
             logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, this.logContext);
         } catch(error: any) {
