@@ -7,6 +7,7 @@ import {
     ServiceName,
 } from '@constants/nfl/service.constants';
 import { splitString } from '@utils/utils';
+import { teamLookup } from '@utils/teamUtils';
 
 import type { 
     LeagueData,
@@ -35,7 +36,7 @@ export class NFLSeasonAdvStatService extends NFLStatService {
     public override parseLeagueData<T extends LeagueData>(data: T): LeagueData {
         return {
             player_id: 0,
-            team: data.team,
+            team_id: teamLookup(data.team),
         };
     }
 
@@ -46,18 +47,24 @@ export class NFLSeasonAdvStatService extends NFLStatService {
         try {
             const promises: Promise<void>[] = [];
             const player = this.parsePlayerData(row);
-
-            let player_id = await this.findPlayerByPFR(player);
-            if(player_id === 0) {
-                logger.debug(`No Player Found, creating player record: ${player.full_name} [${player.pfr_id}].`, this.logContext);
-
-                player_id = await this.insertRecord(NFLSchema, PlayerTable, player);
-                promises.push(this.processLeagueRecord(player_id, row));
+            if (!player.pfr_id || player.pfr_id === '') {
+                logger.notice(`Player Record missing PFR Id: ${JSON.stringify(player)}.`, this.logContext);
+                return;
             }
 
-            const seasonStatId = await this.processSeasonRecord(player_id, row);
+            let player_id = await this.findPlayerByPFR(player);
+            if (player_id === 0) {
+                logger.notice(`No Player Found: ${player.full_name} [${player.pfr_id}].`, this.logContext);
+                return;
+            }
+            promises.push(this.processPlayerRecord(player_id, {pfr_id: row.pfr_id}));
+            promises.push(this.processLeagueRecord(player_id, row));
 
-            promises.push(this.processStatRecord(seasonStatId, row));
+            const seasonStatId = await this.processSeasonRecord(player_id, row);
+            if (seasonStatId !== 0) {
+                promises.push(this.processStatRecord(seasonStatId, row));
+            }
+            
             await Promise.all(promises);
             logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, this.logContext);
         } catch(error: any) {

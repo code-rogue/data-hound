@@ -15,6 +15,7 @@ import {
   SeasonStatId as SeasonDBId,
   WeeklyNextGenRushTable as DBTable,
   WeeklyStatId as DBId,
+  CalcSeasonNextGenRushStats,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyNextGenStatRushService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRushService';
 import { ServiceName } from '@constants/nfl/service.constants';4
@@ -57,6 +58,17 @@ describe('NFLWeeklyNextGenStatRushService', () => {
       expect(mockParseNumber).toHaveBeenNthCalledWith(6, record.avg_yards);
       expect(mockParseNumber).toHaveBeenNthCalledWith(7, record.yards_over_expected_per_att);
       expect(mockParseNumber).toHaveBeenNthCalledWith(8, record.yards_over_expected_pct);
+    });
+  });
+
+  describe('processProcedures', () => {
+    it('should call the procedures', async () => {
+      const mockCallProcedure = jest.spyOn(DBService.prototype, 'callProcedure').mockImplementation();
+
+      await service.processProcedures();
+      expect(mockCallProcedure).toHaveBeenCalledWith(NFLSchema, CalcSeasonNextGenRushStats);
+
+      mockCallProcedure.mockRestore();
     });
   });
 

@@ -17,6 +17,7 @@ export const nextGenStatRecord = {
     position: 'WR',
     jersey_number: '5',
     team: 'string',
+    team_id: 5,
     season: 'string',
     week: '2',
     game_type: 'string',
@@ -30,6 +31,7 @@ export const nextGenStatGameData: GameData = {
     season: nextGenStatRecord.season,
     week: nextGenStatRecord.week,
     game_type: nextGenStatRecord.game_type,
+    team_id: nextGenStatRecord.team_id,
 };
 
 export const nextGenStatPlayerData: PlayerData = {
@@ -44,5 +46,5 @@ export const nextGenStatLeagueData: LeagueData = {
     player_id: nextGenStatRecord.player_id,
     jersey_number: nextGenStatRecord.jersey_number,
     position: nextGenStatRecord.position,
-    team: nextGenStatRecord.team,
+    team_id: nextGenStatRecord.team_id,
 };

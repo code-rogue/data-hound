@@ -7,6 +7,7 @@ import {
     ServiceName,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyStatService } from '@data-services/nfl//weeklyStats/weeklyStatService';
+import { teamLookup } from '@utils/teamUtils';
 
 import type { 
     GameData,
@@ -39,13 +40,14 @@ export class NFLWeeklyNextGenStatService extends NFLWeeklyStatService {
             season: data.season,
             week: data.week,
             game_type: data.game_type,
+            team_id: teamLookup(data.team),
         };
     }
 
     public override parseLeagueData<T extends LeagueData>(data: T): LeagueData {
         return {
             player_id: 0,
-            team: data.team,
+            team_id: teamLookup(data.team),
             position: data.position,
             jersey_number: data.jersey_number,
         };
@@ -59,21 +61,27 @@ export class NFLWeeklyNextGenStatService extends NFLWeeklyStatService {
         try {
             const promises: Promise<void>[] = [];
             const player = this.parsePlayerData(row);
-
-            let player_id = await this.recordLookup(NFLSchema, PlayerTable, PlayerGSIS, player.gsis_id, 'id');
-            if(player_id === 0) {
-                logger.notice(`No Player Found, creating player record: ${player.full_name} [${player.gsis_id}].`, this.logContext);
-
-                player_id = await this.insertRecord(NFLSchema, PlayerTable, player);
-                promises.push(this.processLeagueRecord(player_id, row));
+            if (!player.gsis_id || player.gsis_id === '') {
+                logger.notice(`Player Record missing GSIS Id: ${JSON.stringify(player)}.`, this.logContext);
+                return;
             }
+            let player_id = await this.findPlayerByGSIS(player);
+            if (player_id === 0) {
+                logger.notice(`No Player Found: ${player.full_name} [${player.gsis_id}].`, this.logContext);
+                return;
+            }
+            promises.push(this.processLeagueRecord(player_id, row));
 
-            if(row.week === "0") {
+            if (row.week === "0") {
                 const seasonStatId = await this.processSeasonRecord(player_id, row);
-                promises.push(this.processSeasonStatRecord(seasonStatId, row));
+                if (seasonStatId !== 0) {
+                    promises.push(this.processSeasonStatRecord(seasonStatId, row));
+                }
             } else {
                 const weeklyStatId = await this.processGameRecord(player_id, row);
-                promises.push(this.processStatRecord(weeklyStatId, row));
+                if (weeklyStatId !== 0) {
+                    promises.push(this.processStatRecord(weeklyStatId, row));
+                }
             }
             
             await Promise.all(promises);

@@ -22,10 +22,12 @@ export const weeklyStatRecord = {
     position: 'string',
     position_group: 'string',
     team: 'string',
+    team_id: 5, // TeamLookup is mocked to return 5 for all teams
     season: 'string',
     week: '2',
     game_type: 'string',
     opponent: 'string',
+    opponent_id: 5, // TeamLookup is mocked to return 5 for all teams
     fantasy_points: 10.2,
     fantasy_points_ppr: 15.2,
     attempts: 22,
@@ -76,8 +78,10 @@ export const weeklyStatRecord = {
     player_id: weeklyStatRecord.player_id,
     season: weeklyStatRecord.season,
     week: weeklyStatRecord.week,
-    game_type: weeklyStatRecord.game_type,
-    opponent: weeklyStatRecord.opponent,
+    game_type: weeklyStatRecord.game_type,    
+    team: weeklyStatRecord.team,
+    team_id: weeklyStatRecord.team_id,
+    opponent_id: weeklyStatRecord.opponent_id,
     fantasy_points: weeklyStatRecord.fantasy_points,
     fantasy_points_ppr: weeklyStatRecord.fantasy_points_ppr,
   };
@@ -93,6 +97,7 @@ export const weeklyStatRecord = {
     position: weeklyStatRecord.position,
     position_group: weeklyStatRecord.position_group,
     team: weeklyStatRecord.team,
+    team_id: weeklyStatRecord.team_id,
   }
   
   export const weeklyBioData: WeeklyBioData = {

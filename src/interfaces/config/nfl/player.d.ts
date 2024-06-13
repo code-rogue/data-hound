@@ -28,7 +28,7 @@ export interface nflPlayers {
         years_of_experience: string,
         team: string,
         team_seq: string,
-        team_id: string,
+        current_team_id: string,
         football_name: string,
         entry_year: string,
         rookie_year: string,

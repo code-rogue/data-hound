@@ -5,7 +5,7 @@ export interface RawSeasonStatData extends RawStatData, SeasonData {}
 export interface PlayerData {
     gsis_id?: string,
     pfr_id?: string,
-    full_name: string,
+    full_name?: string,
     short_name?: string,
     first_name?: string,
     last_name?: string,
@@ -21,7 +21,8 @@ export interface LeagueData {
     position?: string,
     position_group?: string,
     jersey_number?: string,
-    team: string,
+    team?: string,
+    team_id?: number | null,
 }
 
 export interface GameData {
@@ -32,6 +33,9 @@ export interface GameData {
     week: string,
     game_type?: string,
     opponent?: string,
+    opponent_id?: number | null,
+    team?: string,
+    team_id?: number | null,
     fantasy_points?: number | null,
     fantasy_points_ppr?: number | null,
 }
@@ -42,4 +46,6 @@ export interface SeasonData {
     age?: number,
     games_played?: number,
     games_started?: number,
+    team?: string,
+    team_id?: number | null,
 }

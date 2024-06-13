@@ -273,6 +273,33 @@ describe('DBService', () => {
         });
     });
 
+    describe('callProcedure', () => {
+        it.each([
+            ['schema', 'procedure', []],
+            ['schema', 'procedure', ['a', 'b']],
+        ])('should successfully call the procedure', async (schema, procedure, params) => {
+            mockPoolQuery.mockResolvedValueOnce({ rows: [{ id: 100 }] } as QueryResult);
+            await dbService.callProcedure(schema, procedure, params);
+            expect(logger.debug).toHaveBeenCalledTimes(2);
+            expect(logger.debug).toHaveBeenNthCalledWith(2, `Procedure: ${procedure} completed.`,LogContext.DBService);
+        });
+
+        it.each([
+            ['schema', 'procedure', undefined],
+            ['schema', 'procedure', []],
+            ['schema', 'procedure', ['a', 'b']],
+        ])('should log and throw an error if query fails - %s', async (schema, procedure, params) => {
+            const error = new Error('Update failed');
+            const query = `CALL ${schema}.${procedure}(${params?.join(',') ?? ''})`;
+            
+            mockPoolQuery.mockRejectedValueOnce(error);
+            await expect(dbService.callProcedure(schema, procedure, params)).rejects.toThrow(error);
+            expect(logger.debug).toHaveBeenNthCalledWith(2, `Unable to execute procedure: '${query}'`, LogContext.DBService);
+            expect(logger.error).toHaveBeenCalledWith(`Failed to execute procedure: `, error.message, LogContext.DBService);
+            expect(mockConsoleError).toHaveBeenCalledWith('Error: ', error);
+        });
+    });
+
     describe('processRecord', () => {
         it.each([
             [true, passData, WeeklyStatId, 5],

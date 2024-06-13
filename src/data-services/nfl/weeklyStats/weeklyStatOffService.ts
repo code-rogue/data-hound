@@ -1,5 +1,9 @@
-import { LogContext } from '@log/log.enums';
+
 import {
+    CalcSeasonStats,
+    CalcSeasonPassStats,
+    CalcSeasonRecStats,
+    CalcSeasonRushStats,
     NFLSchema,
     ServiceName,
     WeeklyPassTable as PassTable,
@@ -7,6 +11,7 @@ import {
     WeeklyRushTable as RushTable,
     WeeklyStatId,
 } from '@constants/nfl/service.constants';
+import { LogContext } from '@log/log.enums';
 import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
 import { parseNumber } from '@utils/utils';
 
@@ -17,6 +22,7 @@ import type {
     RushData,
     RecData
 } from '@interfaces/nfl/weeklyStats/weeklyStats';
+import { teamLookup } from '@utils/teamUtils';
 
 export class NFLWeeklyStatOffService extends NFLWeeklyStatService {
     constructor() {
@@ -34,7 +40,8 @@ export class NFLWeeklyStatOffService extends NFLWeeklyStatService {
             season: data.season,
             week: data.week,
             game_type: data.game_type,
-            opponent: data.opponent,
+            opponent_id: teamLookup(data.opponent),
+            team_id: teamLookup(data.team),
             fantasy_points: parseNumber(data.fantasy_points),
             fantasy_points_ppr: parseNumber(data.fantasy_points_ppr),
         };
@@ -98,11 +105,18 @@ export class NFLWeeklyStatOffService extends NFLWeeklyStatService {
         };
     }
 
+    public async processProcedures(): Promise<void> {
+        await this.callProcedure(NFLSchema, CalcSeasonStats);
+        await this.callProcedure(NFLSchema, CalcSeasonPassStats);
+        await this.callProcedure(NFLSchema, CalcSeasonRecStats);
+        await this.callProcedure(NFLSchema, CalcSeasonRushStats);
+    }
+
     public async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {
         try {
             await this.processRecord(NFLSchema, PassTable, WeeklyStatId, week_id, this.parsePassData(row));
             await this.processRecord(NFLSchema, RushTable, WeeklyStatId, week_id, this.parseRushData(row));
-            await this.processRecord(NFLSchema, RecTable, WeeklyStatId, week_id, this.parseRecData(row));
+            await this.processRecord(NFLSchema, RecTable, WeeklyStatId, week_id, this.parseRecData(row));            
         } catch(error: any) {
             throw error;
         }

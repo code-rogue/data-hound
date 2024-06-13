@@ -13,6 +13,8 @@ import {
   NFLSchema,
   WeeklyDefTable as DBTable,
   WeeklyStatId as DBId,
+  CalcSeasonStats,
+  CalcSeasonDefStats,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyStatDefService } from '@data-services/nfl/weeklyStats/weeklyStatDefService';
 import { ServiceName } from '@constants/nfl/service.constants';
@@ -70,6 +72,18 @@ describe('NFLWeeklyStatDefService', () => {
       expect(mockParseNumber).toHaveBeenNthCalledWith(20, record.safety);
       expect(mockParseNumber).toHaveBeenNthCalledWith(21, record.penalty);
       expect(mockParseNumber).toHaveBeenNthCalledWith(22, record.penalty_yards);
+    });
+  });
+
+  describe('processProcedures', () => {
+    it('should call the procedures', async () => {
+      const mockCallProcedure = jest.spyOn(DBService.prototype, 'callProcedure').mockImplementation();
+
+      await service.processProcedures();
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(1, NFLSchema, CalcSeasonStats);
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(2, NFLSchema, CalcSeasonDefStats);
+
+      mockCallProcedure.mockRestore();
     });
   });
 

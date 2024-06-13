@@ -16,10 +16,12 @@ export const statRecord = {
     position: 'string',
     position_group: 'string',
     team: 'string',
+    team_id: 5, // TeamLookup is mocked to return 5 for all teams
     season: 'string',
     week: '2',
     game_type: 'string',
     opponent: 'string',
+    opponent_id: 5, // TeamLookup is mocked to return 5 for all teams
     fantasy_points: 10.2,
     fantasy_points_ppr: 15.2,
     attempts: 22,
@@ -70,6 +72,8 @@ export const statGameData: GameData = {
     player_id: statRecord.player_id,
     season: statRecord.season,
     week: statRecord.week,
+    opponent_id: statRecord.opponent_id,
+    team_id: statRecord.team_id,
 };
 
 export const statPlayerData: PlayerData = {
@@ -83,6 +87,7 @@ export const statLeagueData: LeagueData = {
     position: statRecord.position,
     position_group: statRecord.position_group,
     team: statRecord.team,
+    team_id: statRecord.team_id,
 }
 
 export const statBioData: BioData = {

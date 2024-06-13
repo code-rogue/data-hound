@@ -11,6 +11,7 @@ export const seasonAdvStatRecord = {
     pfr_id: 'string',
     full_name: 'string',
     team: 'string',
+    team_id: 5,
     season: 'string',
     age: 22,
     games_played: 16,
@@ -23,6 +24,7 @@ export const seasonAdvStatBaseRecord = {
     pfr_id: 'string',
     full_name: 'string',
     team: 'string',
+    team_id: 5,
     season: 'string',
 };
 
@@ -33,6 +35,8 @@ export const seasonAdvStatData: SeasonData = {
     player_id: seasonAdvStatRecord.player_id,
     season: seasonAdvStatRecord.season,
     age: seasonAdvStatRecord.age,
+    team: seasonAdvStatRecord.team,
+    team_id: seasonAdvStatRecord.team_id,
     games_played: seasonAdvStatRecord.games_played,
     games_started: seasonAdvStatRecord.games_started,
 };
@@ -44,5 +48,5 @@ export const seasonAdvStatPlayerData: PlayerData = {
 
 export const seasonAdvStatLeagueData: LeagueData = {
     player_id: 0,
-    team: seasonAdvStatRecord.team,
+    team_id: seasonAdvStatRecord.team_id,
 };

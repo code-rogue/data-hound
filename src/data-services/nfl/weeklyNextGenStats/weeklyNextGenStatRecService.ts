@@ -1,11 +1,12 @@
 import { LogContext } from '@log/log.enums';
 import {
+    CalcSeasonNextGenRecStats,
     NFLSchema,
+    SeasonNextGenRecTable,
+    SeasonStatId,
     ServiceName,
     WeeklyNextGenRecTable,
     WeeklyStatId,
-    SeasonNextGenRecTable,
-    SeasonStatId,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyNextGenStatService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatService';
 import { parseNumber } from '@utils/utils';
@@ -37,6 +38,10 @@ export class NFLWeeklyNextGenStatRecService extends NFLWeeklyNextGenStatService 
             avg_expected_yac: parseNumber(data.avg_expected_yac),
             avg_yac_above_expectation: parseNumber(data.avg_yac_above_expectation),
         };
+    }
+
+    public async processProcedures(): Promise<void> {
+        await this.callProcedure(NFLSchema, CalcSeasonNextGenRecStats);
     }
 
     public override async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {

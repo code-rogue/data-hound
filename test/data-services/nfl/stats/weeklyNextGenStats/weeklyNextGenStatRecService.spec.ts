@@ -15,6 +15,7 @@ import {
   SeasonStatId as SeasonDBId,
   WeeklyNextGenRecTable as DBTable,
   WeeklyStatId as DBId,
+  CalcSeasonNextGenRecStats,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyNextGenStatRecService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatRecService'
 import { ServiceName } from '@constants/nfl/service.constants';
@@ -57,6 +58,17 @@ describe('NFLWeeklyNextGenStatRecService', () => {
       expect(mockParseNumber).toHaveBeenNthCalledWith(6, record.avg_yac);
       expect(mockParseNumber).toHaveBeenNthCalledWith(7, record.avg_expected_yac);
       expect(mockParseNumber).toHaveBeenNthCalledWith(8, record.avg_yac_above_expectation);
+    });
+  });
+
+  describe('processProcedures', () => {
+    it('should call the procedures', async () => {
+      const mockCallProcedure = jest.spyOn(DBService.prototype, 'callProcedure').mockImplementation();
+
+      await service.processProcedures();
+      expect(mockCallProcedure).toHaveBeenCalledWith(NFLSchema, CalcSeasonNextGenRecStats);
+
+      mockCallProcedure.mockRestore();
     });
   });
 

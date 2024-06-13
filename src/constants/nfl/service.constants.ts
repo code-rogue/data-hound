@@ -38,6 +38,18 @@ export const PlayerSmartId = "smart_id";
 export const SeasonStatId = 'player_season_id';
 export const WeeklyStatId = 'player_weekly_id';
 
+// Procedures
+export const CalcSeasonStats = 'calc_season_stats';
+export const CalcSeasonDefStats = 'calc_season_def_stats';
+export const CalcSeasonKickStats = 'calc_season_kick_stats';
+export const CalcSeasonPassStats = 'calc_season_pass_stats';
+export const CalcSeasonRecStats = 'calc_season_rec_stats';
+export const CalcSeasonRushStats = 'calc_season_rush_stats';
+export const CalcSeasonNextGenPassStats = 'calc_season_nextgen_pass_stats';
+export const CalcSeasonNextGenRecStats = 'calc_season_nextgen_rec_stats';
+export const CalcSeasonNextGenRushStats = 'calc_season_nextgen_rush_stats';
+export const CleanPlayerData = 'clean_player_data';
+
 export enum ServiceName {
     CSVService = 'CSV Service',
     DBService = 'DB Service',

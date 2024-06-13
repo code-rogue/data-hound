@@ -1,5 +1,6 @@
 import * as cd from '@config/configData';
 import * as csv from '@csv/csvService';
+import * as utils from '@data-services/utils/teamUtils';
 import { Config } from '@interfaces/config/config';
 import { DBService } from '@database/dbService'
 import { LogContext } from '@log/log.enums';
@@ -9,8 +10,8 @@ import {
   BioTable,
   LeagueTable,
   NFLSchema,
+  PlayerGSIS,
   PlayerId,
-  PlayerSmartId,
   PlayerTable
 } from '@constants/nfl/service.constants';
 
@@ -166,7 +167,7 @@ describe('NFLPlayerService', () => {
 
       await service.processPlayerDataRow(row);
       expect(mockParsePlayerData).toHaveBeenCalledWith(row);
-      expect(mockRecordLookup).toHaveBeenCalledWith(NFLSchema, PlayerTable, PlayerSmartId, playerData.smart_id, 'id');
+      expect(mockRecordLookup).toHaveBeenCalledWith(NFLSchema, PlayerTable, PlayerGSIS, playerData.gsis_id, 'id');
 
       if (bInsert) {
         expect(mockInsertRecord).toHaveBeenCalledWith(NFLSchema, PlayerTable, playerData);
@@ -186,6 +187,43 @@ describe('NFLPlayerService', () => {
       mockInsertRecord.mockRestore();
       mockProcessBioRecord.mockRestore();
       mockProcessLeagueRecord.mockRestore();
+    });
+
+    it.each([
+      [1001, '', playerRecord],
+    ])('processPlayerDataRow should no-op when gsis_id is empty string', async () => {
+      let id = playerRecord.player_id;
+      
+      const gsis_id = playerData.gsis_id;
+      const data = playerData;
+      data.gsis_id = '';
+
+      const mockParsePlayerData = jest.spyOn(NFLPlayerService.prototype, 'parsePlayerData').mockImplementation(() => data);
+      const mockRecordLookup = jest.spyOn(DBService.prototype, 'recordLookup')
+        .mockImplementation(() => Promise.resolve(id));
+      const mockUpdateRecord = jest.spyOn(DBService.prototype, 'updateRecord').mockImplementation();
+      const mockInsertRecord = jest.spyOn(DBService.prototype, 'insertRecord').mockImplementation(() => Promise.resolve(id + 1));
+      const mockProcessBioRecord = jest.spyOn(NFLPlayerService.prototype, 'processBioRecord').mockImplementation();
+      const mockProcessLeagueRecord = jest.spyOn(NFLPlayerService.prototype, 'processLeagueRecord').mockImplementation();
+
+      await service.processPlayerDataRow(playerRecord);
+      expect(mockParsePlayerData).toHaveBeenCalledWith(playerRecord);
+      expect(logger.notice).toHaveBeenCalledWith(`Player Record missing GSIS Id: ${JSON.stringify(data)}.`, LogContext.NFLPlayerService);
+
+      expect(mockRecordLookup).toHaveBeenCalledTimes(0);
+      expect(mockInsertRecord).toHaveBeenCalledTimes(0);
+      expect(mockUpdateRecord).toHaveBeenCalledTimes(0);
+      expect(mockProcessBioRecord).toHaveBeenCalledTimes(0);
+      expect(mockProcessLeagueRecord).toHaveBeenCalledTimes(0);
+      
+      mockParsePlayerData.mockRestore();
+      mockRecordLookup.mockRestore();
+      mockUpdateRecord.mockRestore();
+      mockInsertRecord.mockRestore();
+      mockProcessBioRecord.mockRestore();
+      mockProcessLeagueRecord.mockRestore();
+
+      playerData.gsis_id = gsis_id;
     });
 
     it('processPlayerDataRow should catch and throw the error', async () => {
@@ -333,21 +371,32 @@ describe('NFLPlayerService', () => {
 
   describe('parseLeagueData', () => {
     it.each([
-      ["", ""],
-      ["1", ""],
-      ["", "1"],
-      ["1", "1"],
-    ])('should run parseLeagueData successfully - jersey: "%s", experience: "%s"', (jersey, experience) => {
+      ["", "", ""],
+      ["1", "1", "1"],
+    ])('should run parseLeagueData successfully - jersey: "%s", experience: "%s", season "%s"', (jersey, experience, season) => {
+      const team_id = 5;
+      const mockTeamLookup = jest.spyOn(utils, 'teamLookup').mockImplementation(() => team_id);
+      
       const data = playerRecord;
       data.jersey_number = jersey;
       data.years_of_experience = experience;
+      data.season = season;
       
       const result = leagueData;
       result.player_id = 0;
       result.jersey_number = (data.jersey_number === "") ? null : data.jersey_number,
       result.years_of_experience = (data.years_of_experience === "") ? null : data.years_of_experience,
+      result.years_of_experience = (data.years_of_experience === "") ? null : data.years_of_experience,
+      result.team_id = team_id;
+      result.draft_team_id = team_id;
+      result.season = (data.season === "") ? null : data.season;
+      
+      // Remove draft_team and team from the object
+      const { team, draft_team, ...updatedResult }: LeagueData = result;
 
-      expect(service.parseLeagueData(data)).toEqual(result);
+      expect(service.parseLeagueData(data)).toEqual(updatedResult);
+
+      mockTeamLookup.mockRestore();
     });
   });
 

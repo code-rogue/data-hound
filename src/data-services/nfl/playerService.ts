@@ -1,23 +1,25 @@
-import { DBService } from '@database/dbService';
-import { ColumnMap, downloadCSV, parseCSV } from '@csv/csvService';
-import { logger } from '@log/logger';
-import { LogContext } from '@log/log.enums';
-
-import type { 
-    RawPlayerData, 
-    PlayerData,
-    BioData,
-    LeagueData,
- } from '@interfaces/nfl/player';
-
  import {
     BioTable,
     LeagueTable,
     NFLSchema,
     PlayerId,
-    PlayerSmartId,
-    PlayerTable
+    PlayerGSIS,
+    PlayerTable,
+    CleanPlayerData
 } from '@constants/nfl/service.constants';
+import { ColumnMap, downloadCSV, parseCSV } from '@csv/csvService';
+import { DBService } from '@database/dbService';
+import { logger } from '@log/logger';
+import { LogContext } from '@log/log.enums';
+import { teamLookup } from '@data-services/utils/teamUtils';
+
+import type { 
+    BioData,
+    LeagueData,
+    PlayerData,
+    RawPlayerData
+ } from '@interfaces/nfl/player';
+
 
 export class NFLPlayerService extends DBService {
     public columns: ColumnMap = {};
@@ -66,14 +68,12 @@ export class NFLPlayerService extends DBService {
             position: data.position,
             jersey_number: (data.jersey_number === "") ? null : data.jersey_number,
             years_of_experience: (data.years_of_experience === "") ? null : data.years_of_experience,
-            team: data.team,
-            team_seq: data.team_seq,
-            team_id: data.team_id,
+            team_id: teamLookup(data.team),
             rookie_year: data.rookie_year,
-            draft_team: data.draft_team,
+            draft_team_id: teamLookup(data.draft_team),
             draft_number: data.draft_number,
             draft_round: data.draft_round,
-            season: data.season,
+            season: (data.season === "") ? null : data.season
         };
     }
 
@@ -125,8 +125,13 @@ export class NFLPlayerService extends DBService {
     public async processPlayerDataRow(row: RawPlayerData): Promise<void> {
         try {
             const playerData = this.parsePlayerData(row);
-            let player_id = await this.recordLookup(NFLSchema, PlayerTable, PlayerSmartId, playerData.smart_id, 'id');
-            if(player_id !== 0) {
+            if (!playerData.gsis_id || playerData.gsis_id === '') {
+                logger.notice(`Player Record missing GSIS Id: ${JSON.stringify(playerData)}.`, LogContext.NFLPlayerService);
+                return;
+            }
+
+            let player_id = await this.recordLookup(NFLSchema, PlayerTable, PlayerGSIS, playerData.gsis_id, 'id');
+            if (player_id !== 0) {
                 await this.updateRecord(NFLSchema, PlayerTable, 'id', player_id, playerData);
             } else {
                 player_id = await this.insertRecord(NFLSchema, PlayerTable, playerData);
@@ -146,10 +151,9 @@ export class NFLPlayerService extends DBService {
     public async processPlayerData(data: RawPlayerData[]): Promise<void> {
         try {
             logger.log(`Processing player records [${data.length}]`, LogContext.NFLPlayerService);
-            const promises = data.map((row) => this.processPlayerDataRow(row));
-
-            // Now await all promises in parallel
-            await Promise.all(promises);
+            for await (const row of data) {
+                await this.processPlayerDataRow(row);
+            }
 
             logger.log('Processed player records.', LogContext.NFLPlayerService);
         } catch(error: any) {
@@ -164,6 +168,8 @@ export class NFLPlayerService extends DBService {
             const data = await parseCSV<RawPlayerData>(dataFile, this.columns);
             await this.processPlayerData(data);
             logger.log(`Completed processing: ${url}`, LogContext.NFLPlayerService);
+            
+            
         } catch(error: any) {
             throw error;
         }
@@ -172,13 +178,10 @@ export class NFLPlayerService extends DBService {
     public async runService(): Promise<void> {
         try {
             logger.log('NFL Player Service started...', LogContext.NFLPlayerService);
-            
-            const promises: Promise<void>[] = [];
-            this.urls.forEach(url => {
-                promises.push(this.parseAndLoadPlayers(url));
-            });
-
-            await Promise.all(promises);
+            for await (const url of this.urls) {
+                await this.parseAndLoadPlayers(url);
+            }
+            await this.callProcedure(NFLSchema, CleanPlayerData);
         } catch (error: any) {
             console.error('Error: ', error);
             logger.error('NFL Player Service did not complete', error.message, LogContext.NFLPlayerService);

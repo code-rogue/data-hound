@@ -17,6 +17,7 @@ export const weeklyStatKickRecord = {
     position: 'string',
     position_group: 'string',
     team: 'string',
+    team_id: 5,
     season: 'string',
     week: '2',
     game_type: 'season_type',
@@ -64,6 +65,8 @@ export const weeklyKickGameData: WeeklyKickGameData = {
   season: weeklyStatKickRecord.season,
   week: weeklyStatKickRecord.week,
   game_type: weeklyStatKickRecord.game_type,
+  team: weeklyStatKickRecord.team,
+  team_id: weeklyStatKickRecord.team_id,
 }
 
 export const weeklyKickData: WeeklyKickData = {

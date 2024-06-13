@@ -1,21 +1,24 @@
 import * as cd from '@config/configData';
+import * as team from '@utils/teamUtils';
 import * as util from '@utils/utils';
 
 import { Config } from '@interfaces/config/config';
 import {
   configData,
-  dataFile,
   weeklyStatRecord as record,
-  rawWeeklyStatData as data,
   weeklyGameData as gameData,
   passData,
   rushData,
   recData,
 } from '@test-nfl-constants/config.constants';
 import { DBService } from '@database/dbService'
+import { GameData } from '@interfaces/nfl/stats';
 import { LogContext } from '@log/log.enums';
-
 import {
+  CalcSeasonPassStats,
+  CalcSeasonRecStats,
+  CalcSeasonRushStats,
+  CalcSeasonStats,
   NFLSchema,
   WeeklyPassTable as PassTable,
   WeeklyRecTable as RecTable,
@@ -26,10 +29,12 @@ import {
 import {  NFLWeeklyStatOffService } from '@data-services/nfl/weeklyStats/weeklyStatOffService';
 import { ServiceName } from '@constants/nfl/service.constants';
 
+
 jest.mock('@log/logger');
 
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;
+let mockTeamLookup: jest.SpyInstance<number | null, [teamName?: string | undefined], any>;
 let service: NFLWeeklyStatOffService;
 
 describe('NFLWeeklyStatOffService', () => {
@@ -38,6 +43,7 @@ describe('NFLWeeklyStatOffService', () => {
 
     mockGetConfigurationData = jest.spyOn(cd, 'getConfigurationData').mockReturnValue(configData);
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockTeamLookup = jest.spyOn(team, 'teamLookup').mockImplementation(() => 5);
     service = new NFLWeeklyStatOffService();
   });
   
@@ -52,9 +58,11 @@ describe('NFLWeeklyStatOffService', () => {
 
   describe('parseGameData', () => {
     it('should parse successfully', () => {
-        const result = gameData;
+        // remove the team column
+        const {team, ...result}: GameData = gameData;
         result.player_id = 0;
         expect(service.parseGameData(record)).toEqual(result);
+        expect(mockTeamLookup).toHaveBeenCalledWith(record.team);
     });
   });
 
@@ -125,6 +133,20 @@ describe('NFLWeeklyStatOffService', () => {
       expect(mockParseNumber).toHaveBeenNthCalledWith(13, record.rec_first_downs);
       expect(mockParseNumber).toHaveBeenNthCalledWith(14, record.rec_fumbles);
       expect(mockParseNumber).toHaveBeenNthCalledWith(15, record.rec_fumbles_lost);
+    });
+  });
+
+  describe('processProcedures', () => {
+    it('should call the procedures', async () => {
+      const mockCallProcedure = jest.spyOn(DBService.prototype, 'callProcedure').mockImplementation();
+
+      await service.processProcedures();
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(1, NFLSchema, CalcSeasonStats);
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(2, NFLSchema, CalcSeasonPassStats);
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(3, NFLSchema, CalcSeasonRecStats);
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(4, NFLSchema, CalcSeasonRushStats);
+
+      mockCallProcedure.mockRestore();
     });
   });
 

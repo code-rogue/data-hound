@@ -1,21 +1,22 @@
 import * as cd from '@config/configData';
 import * as csv from '@csv/csvService';
+import * as team from '@utils/teamUtils';
+import * as util from '@data-services/utils/utils';
+
 import { Config } from '@interfaces/config/config';
 import { DBService } from '@database/dbService'
 import { LogContext } from '@log/log.enums';
 import { logger } from '@log/logger';
-import * as util from '@data-services/utils/utils';
-
 import {
   NFLSchema,
   LeagueTable,
   PlayerFullName,
+  PlayerGSIS,
   PlayerId,
   PlayerPFR,
   PlayerTable,
   SeasonStatTable
 } from '@constants/nfl/service.constants';
-import { NFLSeasonAdvStatService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatService';
 import { 
     NFLStatService,
  } from '@data-services/nfl/statService';
@@ -34,6 +35,7 @@ import {
 } from '@test-nfl-constants/config.constants';
 
 import type { 
+  LeagueData,
   PlayerData,
 } from '@interfaces/nfl/stats';
 import type { SeasonData } from '@interfaces/nfl/stats';
@@ -48,6 +50,7 @@ let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;
 let mockDownloadCSV: jest.SpyInstance<Promise<string>, [url: string], any>;
 let mockSplitString: jest.SpyInstance<util.StringSplitResult, [input: string | null | undefined, delimiter: string], any>;
 let mockParseCSV: jest.SpyInstance<Promise<unknown[]>, [filePath: string, columnMap: csv.ColumnMap], any>;
+let mockTeamLookup: jest.SpyInstance<number | null, [teamName?: string | undefined], any>;
 let service: NFLStatService;
 
 const splitStringData: StringSplitResult = {
@@ -64,12 +67,13 @@ describe('NFLStatService', () => {
     mockParseCSV = jest.spyOn(csv, 'parseCSV').mockResolvedValue(data);
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     mockSplitString = jest.spyOn(util, 'splitString').mockImplementation(() => splitStringData);
+    mockTeamLookup = jest.spyOn(team, 'teamLookup').mockImplementation(() => 5);
     service = new NFLStatService();
   });
 
   describe('parsePlayerData', () => {
     it('should parse successfully', () => {
-      const result = playerData
+      const { pfr_id, ...result }: PlayerData = playerData
       result.first_name = splitStringData.firstPart;
       result.last_name = splitStringData.secondPart;
       expect(service.parsePlayerData(statRecord)).toEqual(result);
@@ -79,9 +83,11 @@ describe('NFLStatService', () => {
 
   describe('parseLeagueData', () => {
     it('should parse successfully', () => {
-        const result = leagueData;
+        // remove the team column
+        const {team, ...result}: LeagueData = leagueData;
         result.player_id = 0;
         expect(service.parseLeagueData(statRecord)).toEqual(result);
+        expect(mockTeamLookup).toHaveBeenCalledWith(statRecord.team);
     });
   });
 
@@ -113,6 +119,33 @@ describe('NFLStatService', () => {
     });    
   });
 
+  describe('processProcedures', () => {
+    it('should call the procedures', async () => {
+      await service.processProcedures();
+    });
+  });
+
+  describe('processPlayerRecord', () => {
+    it('should run successfully', async () => {
+      const mockUpdateRecord = jest.spyOn(DBService.prototype, 'updateRecord').mockImplementation();
+      
+      const player_id = statRecord.player_id;
+      await service.processPlayerRecord(player_id, statRecord);
+      
+      expect(mockUpdateRecord).toHaveBeenCalledWith(NFLSchema, PlayerTable, 'id', player_id, statRecord);
+      mockUpdateRecord.mockRestore();
+    });
+
+    it('should catch and throw the error', async () => {
+      const error = new Error("error");
+      const mockUpdateRecord = jest.spyOn(DBService.prototype, 'updateRecord').mockImplementation().mockRejectedValue(error);
+
+      await expect(service.processPlayerRecord(1, statRecord)).rejects.toThrow(error);
+      
+      mockUpdateRecord.mockRestore();
+    });    
+  });
+
   describe('parseSeasonData', () => {
     const {age, games_played, games_started, ...seasonBaseData} = seasonData;
 
@@ -121,12 +154,15 @@ describe('NFLStatService', () => {
       [seasonRecord],
     ])
     ('should parse successfully', (data: SeasonData) => {
-        const result = seasonData;
+      // remove the team column
+      const {team, ...result}: SeasonData = seasonData;
+
         result.player_id = 0;
         result.age = data.age ?? 0;
         result.games_played = data.games_played ?? 0;
         result.games_started = data.games_started ?? 0;
         expect(service.parseSeasonData(data)).toEqual(result);
+        expect(mockTeamLookup).toHaveBeenCalledWith(data.team);
     });
   });
 
@@ -151,7 +187,7 @@ describe('NFLStatService', () => {
         expect(mockProcessPlayerDataRow).toHaveBeenCalledWith(row);
       })
       
-      expect(logger.log).toHaveBeenCalledWith('Processed player records.', LogContext.NFLStatService);
+      expect(logger.log).toHaveBeenCalledWith('Processed player stat records.', LogContext.NFLStatService);
       mockProcessPlayerDataRow.mockRestore();
     });
 
@@ -176,8 +212,8 @@ describe('NFLStatService', () => {
     ])('should run successfully - exists: "%s"', async (exists, row, statRecord) => {
       const player_id = row.player_id;
       const season_id = seasonRecord.player_season_id;
-      const query = `SELECT id FROM ${NFLSchema}.${SeasonStatTable} WHERE ${PlayerId} = $1 AND season = $2`;
-      const keys = [player_id, seasonRecord.season];
+      const query = `SELECT id FROM ${NFLSchema}.${SeasonStatTable} WHERE ${PlayerId} = $1 AND season = $2 AND team_id = $3`;
+      const keys = [player_id, seasonRecord.season, seasonRecord.team_id];
 
       const mockParseSeasonData = jest.spyOn(NFLStatService.prototype, 'parseSeasonData').mockImplementation(() => seasonData);
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords')
@@ -187,6 +223,7 @@ describe('NFLStatService', () => {
 
       const result = await service.processSeasonRecord(player_id, row);
       expect(result).toEqual(season_id);
+      expect(mockParseSeasonData).toHaveBeenCalledWith(row);
       expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
       if (exists) {
         const { player_id, ...updatedData } = seasonData;
@@ -202,9 +239,41 @@ describe('NFLStatService', () => {
       mockInsertRecord.mockRestore();
     });
 
+    it('Missing team_id should log and return 0', async () => {
+      const player_id = 1;
+      const {team_id, ...updatedSeasonRecord }: SeasonData = seasonData;
+      const mockParseSeasonData = jest.spyOn(NFLStatService.prototype, 'parseSeasonData').mockImplementation(() => updatedSeasonRecord);
+
+      expect(await service.processSeasonRecord(player_id, seasonRecord)).toEqual(0);
+      expect(mockParseSeasonData).toHaveBeenCalledWith(seasonRecord);
+      expect(logger.warn).toHaveBeenCalledWith(`Unable to process Season Record for Player Id: ${player_id} - Team: ${(updatedSeasonRecord as SeasonData)?.team_id}`, LogContext.NFLStatService);
+      
+      mockParseSeasonData.mockRestore();
+    });
+
+    it.each([
+      [null],
+      [0],
+    ])('Invalid team_id: %s', async (team_id) => {
+      const player_id = 1;
+      const updatedSeasonRecord = seasonData;
+      updatedSeasonRecord.team_id = team_id
+
+      const mockParseSeasonData = jest.spyOn(NFLStatService.prototype, 'parseSeasonData').mockImplementation(() => updatedSeasonRecord);
+      
+      expect(await service.processSeasonRecord(player_id, seasonRecord)).toEqual(0);
+      expect(mockParseSeasonData).toHaveBeenCalledWith(seasonRecord);
+      expect(logger.warn).toHaveBeenCalledWith(`Unable to process Season Record for Player Id: ${player_id} - Team: ${team_id}`, LogContext.NFLStatService);
+
+      mockParseSeasonData.mockRestore();
+    });
+
     it('should catch and throw the error', async () => {
+      const {team_id, ...seasonDataRecord}: SeasonData = seasonData;
+      (seasonDataRecord as SeasonData).team_id = 5;
+
       const error = new Error("error");
-      const mockParseSeasonData = jest.spyOn(NFLStatService.prototype, 'parseSeasonData').mockImplementation(() => seasonData);
+      const mockParseSeasonData = jest.spyOn(NFLStatService.prototype, 'parseSeasonData').mockImplementation(() => seasonDataRecord);
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation().mockRejectedValue(error);
 
       await expect(service.processSeasonRecord(1, seasonRecord)).rejects.toThrow(error);
@@ -214,29 +283,63 @@ describe('NFLStatService', () => {
     });    
   });
 
-  describe('findPlayerByPFR', () => {
-    const query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerPFR} = $1 OR ${PlayerFullName} = $2`;
-    const { pfr_id, ...noPFRIdData }: PlayerData = playerData;
+  describe('findPlayerByGSIS', () => {
+    const baseQuery = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerGSIS} = $1`;
+    const fullQuery = `${baseQuery} OR ${PlayerFullName} = $2`;
+    const noGSIS = {
+      full_name: 'string',
+    } as PlayerData;
+
+    const blankGSIS = {
+      full_name: 'string',
+      gsis_id: '',
+    } as PlayerData;
+
+    const noFullName = {
+      gsis_id: 'string',
+    } as PlayerData;
+
+    const blankFullName = {
+      gsis_id: 'string',
+      full_name: '',
+    } as PlayerData;
+   
+    const fullDataRecord = {
+      gsis_id: 'string',
+      full_name: 'string',
+    } as PlayerData;
 
     it.each([
-      [1, playerData, {id: 1001}],
-      [2, noPFRIdData as PlayerData, undefined],
-    ])('should run successfully - idx: %s', async (idx, data, record) => {
+      [1, noGSIS, 0],
+      [2, blankGSIS, 0],
+      [3, noFullName, 0],
+      [4, blankFullName, 0],      
+      [5, fullDataRecord, 0],
+      [6, fullDataRecord, 1001],
+    ])('should run successfully - idx: %s', async (idx, data, player_id) => {
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation(() => { 
-        if(record)
-          return Promise.resolve([record]); 
+        if(player_id !== 0)
+          return Promise.resolve([ {id: player_id}]); 
 
-          return Promise.resolve([] as unknown as [unknown]);
+        return Promise.resolve([] as unknown as [unknown]);
       });
 
-      const keys = [data.pfr_id ?? '', data.full_name];
-      const player_id = await service.findPlayerByPFR(data);
-      if(record)
-        expect(player_id).toEqual(record.id);
-      else
+      let query = baseQuery;
+      const keys = [data.gsis_id];
+      
+      if (data.full_name && data.full_name !== '') {
+        query = fullQuery;
+        keys.push(data.full_name);
+      }
+      
+      const result = await service.findPlayerByGSIS(data);
+      if (!data.gsis_id || data.gsis_id === '') {
         expect(player_id).toEqual(0);
-
-      expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
+        expect(mockFetchRecords).toHaveBeenCalledTimes(0);        
+      } else {
+        expect(result).toEqual(player_id);
+        expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
+      }
 
       mockFetchRecords.mockRestore();
     });
@@ -245,9 +348,83 @@ describe('NFLStatService', () => {
       const error = new Error("error");
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation().mockRejectedValue(error);
 
-      const keys = [playerData.pfr_id ?? '', playerData.full_name];
-      await expect(service.findPlayerByPFR(playerData)).rejects.toThrow(error);
-      expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
+      const keys = [fullDataRecord.gsis_id, fullDataRecord.full_name];
+      await expect(service.findPlayerByGSIS(fullDataRecord)).rejects.toThrow(error);
+      expect(mockFetchRecords).toHaveBeenCalledWith(fullQuery, keys);
+      
+      mockFetchRecords.mockRestore();
+    });    
+  });
+
+  describe('findPlayerByPFR', () => {
+    const baseQuery = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerPFR} = $1`;
+    const fullQuery = `${baseQuery} OR ${PlayerFullName} = $2`;
+    const noPFR = {
+      full_name: 'string',
+    } as PlayerData;
+
+    const blankPFR = {
+      full_name: 'string',
+      pfr_id: '',
+    } as PlayerData;
+
+    const noFullName = {
+      pfr_id: 'string',
+    } as PlayerData;
+
+    const blankFullName = {
+      pfr_id: 'string',
+      full_name: '',
+    } as PlayerData;
+   
+    const fullDataRecord = {
+      pfr_id: 'string',
+      full_name: 'string',
+    } as PlayerData;
+
+    it.each([
+      [1, noPFR, 0],
+      [2, blankPFR, 0],
+      [3, noFullName, 0],
+      [4, blankFullName, 0],
+      [5, fullDataRecord, 0],
+      [6, fullDataRecord, 1001],
+    ])('should run successfully - idx: %s', async (idx, data, player_id) => {
+      const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation(() => { 
+        if(player_id !== 0)
+          return Promise.resolve([{id: player_id}]); 
+
+        return Promise.resolve([] as unknown as [unknown]);
+      });
+
+      let query = baseQuery;
+      const keys = [data.pfr_id];
+      
+      if (data.full_name && data.full_name !== '') {
+        query = fullQuery;
+        keys.push(data.full_name);
+      }
+
+      const result = await service.findPlayerByPFR(data);
+      if (!data.pfr_id || data.pfr_id === '') {
+        expect(player_id).toEqual(0);
+        expect(mockFetchRecords).toHaveBeenCalledTimes(0);        
+      }
+      else {
+        expect(result).toEqual(player_id);
+        expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
+      }
+
+      mockFetchRecords.mockRestore();
+    });
+
+    it('should catch and throw the error', async () => {
+      const error = new Error("error");
+      const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation().mockRejectedValue(error);
+
+      const keys = [fullDataRecord.pfr_id, fullDataRecord.full_name];
+      await expect(service.findPlayerByPFR(fullDataRecord)).rejects.toThrow(error);
+      expect(mockFetchRecords).toHaveBeenCalledWith(fullQuery, keys);
       
       mockFetchRecords.mockRestore();
     });    

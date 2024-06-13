@@ -1,12 +1,15 @@
-import { LogContext } from '@log/log.enums';
 import {
+    CalcSeasonStats,
+    CalcSeasonKickStats,
     NFLSchema,
     ServiceName,
     WeeklyKickTable,
     WeeklyStatId,    
 } from '@constants/nfl/service.constants';
+import { LogContext } from '@log/log.enums';
 import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
 import { parseNumber, splitString } from '@utils/utils';
+import { teamLookup } from '@utils/teamUtils';
 
 import type { 
     BioData,
@@ -48,6 +51,7 @@ export class NFLWeeklyStatKickService extends NFLWeeklyStatService {
             season: data.season,
             week: data.week,
             game_type: data.game_type,
+            team_id: teamLookup(data.team),
         };
     }
 
@@ -63,7 +67,7 @@ export class NFLWeeklyStatKickService extends NFLWeeklyStatService {
             player_id: 0,
             position: 'K',
             position_group: 'K',
-            team: data.team,
+            team_id: teamLookup(data.team),
         };
     }
 
@@ -105,6 +109,11 @@ export class NFLWeeklyStatKickService extends NFLWeeklyStatService {
             fg_missed_list: data.fg_missed_list,
             fg_blocked_list: data.fg_blocked_list,
         };
+    }
+
+    public async processProcedures(): Promise<void> {
+        await this.callProcedure(NFLSchema, CalcSeasonStats);
+        await this.callProcedure(NFLSchema, CalcSeasonKickStats);
     }
 
     public async processStatRecord(week_id: number, row: RawWeeklyStatKickData): Promise<void> {

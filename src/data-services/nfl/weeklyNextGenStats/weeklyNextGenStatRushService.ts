@@ -1,11 +1,12 @@
 import { LogContext } from '@log/log.enums';
 import {
+    CalcSeasonNextGenRushStats,
     NFLSchema,
-    ServiceName,
-    WeeklyNextGenRushTable,
-    WeeklyStatId,
     SeasonNextGenRushTable,
     SeasonStatId,
+    ServiceName,
+    WeeklyNextGenRushTable,
+    WeeklyStatId,    
 } from '@constants/nfl/service.constants';
 import { 
     NFLWeeklyNextGenStatService 
@@ -39,6 +40,10 @@ export class NFLWeeklyNextGenStatRushService extends NFLWeeklyNextGenStatService
             yards_over_expected_per_att: parseNumber(data.yards_over_expected_per_att),
             yards_over_expected_pct: parseNumber(data.yards_over_expected_pct),
         };
+    }
+
+    public async processProcedures(): Promise<void> {
+        await this.callProcedure(NFLSchema, CalcSeasonNextGenRushStats);
     }
 
     public override async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {

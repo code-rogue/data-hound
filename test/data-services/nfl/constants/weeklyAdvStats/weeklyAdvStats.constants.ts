@@ -12,10 +12,12 @@ export const advStatRecord = {
     full_name: 'string',
     headshot_url: 'string',
     team: 'string',
+    team_id: 5,
     season: 'string',
     week: '2',
     game_type: 'string',
     opponent: 'string',
+    opponent_id: 5, // TeamLookup is mocked to return 5 for all teams
     game_id: 'string',
     pfr_game_id: 'string',
 };
@@ -28,6 +30,9 @@ export const advStatGameData: GameData = {
     week: advStatRecord.week,
     game_type: advStatRecord.game_type,
     opponent: advStatRecord.opponent,
+    opponent_id: advStatRecord.opponent_id,
+    team: advStatRecord.team,
+    team_id: advStatRecord.team_id,
     game_id: advStatRecord.game_id,
     pfr_game_id: advStatRecord.pfr_game_id,
 };
@@ -40,4 +45,5 @@ export const advStatPlayerData: PlayerData = {
 export const advStatLeagueData: LeagueData = {
     player_id: 0,
     team: advStatRecord.team,
+    team_id: advStatRecord.team_id,
 };

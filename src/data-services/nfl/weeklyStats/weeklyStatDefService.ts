@@ -1,11 +1,12 @@
-import { LogContext } from '@log/log.enums';
-
 import {
+    CalcSeasonStats,
+    CalcSeasonDefStats,
     NFLSchema,
     ServiceName,
     WeeklyDefTable,
     WeeklyStatId,
 } from '@constants/nfl/service.constants';
+import { LogContext } from '@log/log.enums';
 import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
 import { parseNumber } from '@utils/utils';
 
@@ -49,6 +50,11 @@ export class NFLWeeklyStatDefService extends NFLWeeklyStatService {
             penalty: parseNumber(data.penalty),
             penalty_yards: parseNumber(data.penalty_yards),
         };
+    }
+
+    public async processProcedures(): Promise<void> {
+        await this.callProcedure(NFLSchema, CalcSeasonStats);
+        await this.callProcedure(NFLSchema, CalcSeasonDefStats);
     }
 
     public async processStatRecord(week_id: number, row: RawWeeklyStatDefData): Promise<void> {

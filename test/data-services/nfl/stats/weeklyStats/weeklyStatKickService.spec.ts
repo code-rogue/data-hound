@@ -1,4 +1,5 @@
 import * as cd from '@config/configData';
+import * as team from '@utils/teamUtils';
 import * as util from '@utils/utils';
 
 import { Config } from '@interfaces/config/config';
@@ -13,10 +14,13 @@ import {
   weeklyKickData as testData,
 } from '@test-nfl-constants/config.constants';
 import { DBService } from '@database/dbService';
+import { GameData, LeagueData } from '@interfaces/nfl/stats';
 import {
   NFLSchema,
   WeeklyKickTable as DBTable,
   WeeklyStatId as DBId,
+  CalcSeasonStats,
+  CalcSeasonKickStats,
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyStatKickService } from '@data-services/nfl/weeklyStats/weeklyStatKickService';
 
@@ -28,6 +32,7 @@ jest.mock('@log/logger');
 let mockConsoleError: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any>;
 let mockGetConfigurationData: jest.SpyInstance<Config, [], any>;
 let mockSplitString: jest.SpyInstance<util.StringSplitResult, [input: string | null | undefined, delimiter: string], any>;
+let mockTeamLookup: jest.SpyInstance<number | null, [teamName?: string | undefined], any>;
 let service: NFLWeeklyStatKickService;
 
 const splitStringData: StringSplitResult = {
@@ -42,6 +47,7 @@ describe('NFLWeeklyStatKickService', () => {
     mockGetConfigurationData = jest.spyOn(cd, 'getConfigurationData').mockReturnValue(configData);
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     mockSplitString = jest.spyOn(util, 'splitString').mockImplementation(() => splitStringData);
+    mockTeamLookup = jest.spyOn(team, 'teamLookup').mockImplementation(() => 5);
     service = new NFLWeeklyStatKickService();
   });
   
@@ -71,9 +77,11 @@ describe('NFLWeeklyStatKickService', () => {
 
   describe('parseGameData', () => {
     it('should parse successfully', () => {
-        const result = gameData;
+        // remove the team column
+        const {team, ...result}: GameData = gameData;
         result.player_id = 0;
         expect(service.parseGameData(record)).toEqual(result);
+        expect(mockTeamLookup).toHaveBeenCalledWith(record.team);
     });
   });
 
@@ -88,11 +96,14 @@ describe('NFLWeeklyStatKickService', () => {
 
   describe('parseLeagueData', () => {
     it('should parse successfully', () => {
-        const result = leagueData;
+        // remove the team column
+        const {team, ...result}: LeagueData = leagueData;
+
         result.player_id = 0;
         result.position = 'K';
         result.position_group = 'K';
         expect(service.parseLeagueData(record)).toEqual(result);
+        expect(mockTeamLookup).toHaveBeenCalledWith(record.team);
     });
   });
 
@@ -134,6 +145,18 @@ describe('NFLWeeklyStatKickService', () => {
       expect(mockParseNumber).toHaveBeenNthCalledWith(29, record.fg_missed_40_49);
       expect(mockParseNumber).toHaveBeenNthCalledWith(30, record.fg_missed_50_59);
       expect(mockParseNumber).toHaveBeenNthCalledWith(31, record.fg_missed_60_);
+    });
+  });
+
+  describe('processProcedures', () => {
+    it('should call the procedures', async () => {
+      const mockCallProcedure = jest.spyOn(DBService.prototype, 'callProcedure').mockImplementation();
+
+      await service.processProcedures();
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(1, NFLSchema, CalcSeasonStats);
+      expect(mockCallProcedure).toHaveBeenNthCalledWith(2, NFLSchema, CalcSeasonKickStats);
+
+      mockCallProcedure.mockRestore();
     });
   });
 

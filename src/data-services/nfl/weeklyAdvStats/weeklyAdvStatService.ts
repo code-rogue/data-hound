@@ -7,6 +7,7 @@ import {
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
 import { splitString } from '@utils/utils';
+import { teamLookup } from '@utils/teamUtils';
 
 import type { 
     GameData,
@@ -33,7 +34,7 @@ export class NFLWeeklyAdvStatService extends NFLWeeklyStatService {
         };
     }
 
-    public override parseGameData<T extends GameData>(data: T): GameData {
+    public override parseGameData<T extends RawWeeklyStatData>(data: T): GameData {
         return {
             player_id: 0,
             game_id: data.game_id,
@@ -41,14 +42,15 @@ export class NFLWeeklyAdvStatService extends NFLWeeklyStatService {
             season: data.season,
             week: data.week,
             game_type: data.game_type,
-            opponent: data.opponent,
+            opponent_id: teamLookup(data.opponent),
+            team_id: teamLookup(data.team),
         };
     }
 
     public override parseLeagueData<T extends LeagueData>(data: T): LeagueData {
         return {
             player_id: 0,
-            team: data.team,
+            team_id: teamLookup(data.team),
         };
     }
 
@@ -59,18 +61,23 @@ export class NFLWeeklyAdvStatService extends NFLWeeklyStatService {
         try {
             const promises: Promise<void>[] = [];
             const player = this.parsePlayerData(row);
-
-            let player_id = await this.findPlayerByPFR(player);
-            if(player_id === 0) {
-                logger.debug(`No Player Found, creating player record: ${player.full_name} [${player.pfr_id}].`, this.logContext);
-
-                player_id = await this.insertRecord(NFLSchema, PlayerTable, player);
-                promises.push(this.processLeagueRecord(player_id, row));
+            if (!player.pfr_id || player.pfr_id === '') {
+                logger.notice(`Player Record missing PFR Id: ${JSON.stringify(player)}.`, this.logContext);
+                return;
             }
 
+            let player_id = await this.findPlayerByPFR(player);
+            if (player_id === 0) {
+                logger.notice(`No Player Found: ${player.full_name} [${player.pfr_id}].`, this.logContext);
+                return;
+            }
+            promises.push(this.processPlayerRecord(player_id, {pfr_id: row.pfr_id}));
+            promises.push(this.processLeagueRecord(player_id, row));
+            
             const weeklyStatId = await this.processGameRecord(player_id, row);
-
-            promises.push(this.processStatRecord(weeklyStatId, row));
+            if (weeklyStatId !== 0) {
+                promises.push(this.processStatRecord(weeklyStatId, row));
+            }
             await Promise.all(promises);
             logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, this.logContext);
         } catch(error: any) {

@@ -24,14 +24,32 @@ export class DBService {
         });
     }
 
-    public async recordExists(schema: string, tableName: string, keyColumn: string, key: number | string): Promise<boolean> {
-        const query = `SELECT EXISTS(SELECT 1 FROM ${schema}.${tableName} WHERE ${keyColumn} = $1) as "exists"`;
+    public async recordExists(schema: string, table: string, keyColumn: string, key: number | string): Promise<boolean> {
+        const query = `SELECT EXISTS(SELECT 1 FROM ${schema}.${table} WHERE ${keyColumn} = $1) as "exists"`;
         try {
             const result = await this.pool.query(query, [key]);
             return result.rows[0].exists;
         } catch (error: any) {
             logger.debug(`Failed Query: '${query}' - Values: '${key}'`, LogContext.DBService);
             logger.error('Unable to find record: ', error.message, LogContext.DBService);
+            console.error("Error: ", error);
+            throw error;
+        }
+    }
+
+    public async callProcedure(
+        schema: string,
+        procedure: string,
+        params?: string[]
+    ): Promise<void> {
+        const query = `CALL ${schema}.${procedure}(${params?.join(',') ?? ''})`;
+        try {
+            await this.pool.query(query);
+            logger.debug(`Procedure: ${procedure} completed.`, LogContext.DBService);
+            return;
+        } catch (error: any) {
+            logger.debug(`Unable to execute procedure: '${query}'`, LogContext.DBService);
+            logger.error('Failed to execute procedure: ', error.message, LogContext.DBService);
             console.error("Error: ", error);
             throw error;
         }

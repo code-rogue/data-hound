@@ -1,5 +1,6 @@
 import { LogContext } from '@log/log.enums';
 import {
+    CalcSeasonNextGenPassStats,
     NFLSchema,
     SeasonNextGenPassTable,
     SeasonStatId,
@@ -42,6 +43,10 @@ export class NFLWeeklyNextGenStatPassService extends NFLWeeklyNextGenStatService
             expected_completion_pct: parseNumber(data.expected_completion_pct),
             completions_above_expectation_pct: parseNumber(data.completions_above_expectation_pct),
         };
+    }
+
+    public async processProcedures(): Promise<void> {
+        await this.callProcedure(NFLSchema, CalcSeasonNextGenPassStats);
     }
 
     public override async processStatRecord<T extends RawWeeklyStatData>(week_id: number, row: T): Promise<void> {
