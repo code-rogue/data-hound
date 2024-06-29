@@ -12,7 +12,9 @@ import {
     SeasonStatTable,
     ServiceName,
     PlayerGSIS,
+    UnmatchedPlayerStatsTable,
 } from '@constants/nfl/service.constants';
+import { PlayerIdentifiers } from '@interfaces/enums/nfl/player.enums';
 import { teamLookup } from '@utils/teamUtils';
 
 import type { 
@@ -21,6 +23,7 @@ import type {
     RawStatData,
     RawSeasonStatData,
     SeasonData,
+    UnmatchedPlayerData,
 } from '@interfaces/nfl/stats';
 import { splitString } from '@utils/utils';
  
@@ -80,6 +83,16 @@ export class NFLStatService extends DBService {
             team_id: teamLookup(data.team),
         };
     }
+    
+    public parseUnmatchedPlayerData(data: RawStatData): UnmatchedPlayerData {
+        return {
+            gsis_id: data?.gsis_id,
+            pfr_id: data?.pfr_id,
+            full_name: data?.full_name,
+            stat_service: this.serviceName,
+            team_id: teamLookup(data.team),
+        }
+    }
 
     // placeholder since can not use abstract in a non abstract class
     public async processPlayerDataRow(row: any): Promise<void> {}
@@ -97,20 +110,71 @@ export class NFLStatService extends DBService {
             throw error;
         }
     }
+
+    public async findPlayerById(player: PlayerData, lookupId: PlayerIdentifiers): Promise<number> {
+        let player_id = 0;
+        try {
+            switch (lookupId) {
+                case PlayerIdentifiers.GSIS: {
+                    player_id = await this.findPlayerIdByGSIS(player);
+                    break;
+                }
+                case PlayerIdentifiers.PFR: {
+                    player_id = await this.findPlayerIdByPFR(player);
+                    break;
+                }
+            }
+
+            // If only one player record matches full name then use it
+            if (player_id === 0) {                
+                player_id = await this.findPlayerIdByName(player);                
+            }
+
+            // Record unmatched player record
+            if (player_id === 0) {
+                await this.insertRecord(NFLSchema, UnmatchedPlayerStatsTable, this.parseUnmatchedPlayerData(player));
+            }
+
+            return player_id;
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+    public async findPlayerIdByName(player: PlayerData): Promise<number> {
+        try {
+            // Must have a non-blank full_name
+            if (!player.full_name || player.full_name === '') {
+                logger.notice(`Player Record missing Full Name: ${JSON.stringify(player)}.`, LogContext.NFLStatService);
+                return 0;
+            }
+
+            const query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerFullName} = $1`;
+            const result = await this.fetchRecords<{id: number}>(query, [player.full_name]);
+            if(result) {
+                if(result.length === 1) {
+                    return result[0].id;
+                }
+                
+                logger.notice(`Unable to identify Player: '${player.full_name}' returned ${result.length} records`, LogContext.NFLStatService);
+            }
+            
+            return 0;
+        } catch(error: any) {
+            throw error;
+        }
+    }
     
-    public async findPlayerByGSIS(player: PlayerData): Promise<number> {
+    public async findPlayerIdByGSIS(player: PlayerData): Promise<number> {
         try {
             // Must have a non-blank gsis_id
-            if (!player.gsis_id || player.gsis_id === '')
+            if (!player.gsis_id || player.gsis_id === '') {
+                logger.notice(`Player Record missing GSIS Id: ${JSON.stringify(player)}.`, LogContext.NFLStatService);
                 return 0;
-
-            const keys = [player.gsis_id];
-            let query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerGSIS} = $1`;
-            if (player.full_name && player.full_name !== '') {
-                query += ` OR ${PlayerFullName} = $2`;
-                keys.push(player.full_name);
             }
-            const result = await this.fetchRecords<{id: number}>(query, keys);
+
+            const query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerGSIS} = $1`;
+            const result = await this.fetchRecords<{id: number}>(query, [player.gsis_id]);
             if (result && result[0])
                 return result[0].id;
             
@@ -120,20 +184,16 @@ export class NFLStatService extends DBService {
         }
     }
 
-    public async findPlayerByPFR(player: PlayerData): Promise<number> {
+    public async findPlayerIdByPFR(player: PlayerData): Promise<number> {
         try {
             // Must have a non-blank pfr_id
-            if (!player.pfr_id || player.pfr_id === '')
+            if (!player.pfr_id || player.pfr_id === '') {
+                logger.notice(`Player Record missing PFR Id: ${JSON.stringify(player)}.`, LogContext.NFLStatService);
                 return 0;
-
-            const keys = [player.pfr_id];
-            let query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerPFR} = $1`;
-            if (player.full_name && player.full_name !== '') {
-                query += ` OR ${PlayerFullName} = $2`;
-                keys.push(player.full_name);
             }
 
-            const result = await this.fetchRecords<{id: number}>(query, keys);
+            const query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerPFR} = $1`;
+            const result = await this.fetchRecords<{id: number}>(query, [player.pfr_id]);
             if(result && result[0])
                 return result[0].id;
             

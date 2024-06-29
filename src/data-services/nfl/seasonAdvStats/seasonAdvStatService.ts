@@ -1,11 +1,8 @@
 import { logger } from '@log/logger';
 import { LogContext } from '@log/log.enums';
 import { NFLStatService } from '@data-services/nfl/statService';
-import {
-    NFLSchema,
-    PlayerTable,
-    ServiceName,
-} from '@constants/nfl/service.constants';
+import { PlayerIdentifiers } from '@interfaces/enums/nfl/player.enums';
+import { ServiceName } from '@constants/nfl/service.constants';
 import { splitString } from '@utils/utils';
 import { teamLookup } from '@utils/teamUtils';
 
@@ -13,7 +10,9 @@ import type {
     LeagueData,
     PlayerData,
     RawSeasonStatData,
+    UnmatchedPlayerData,
 } from '@interfaces/nfl/stats';
+
 
 export class NFLSeasonAdvStatService extends NFLStatService {
     constructor() {
@@ -40,6 +39,16 @@ export class NFLSeasonAdvStatService extends NFLStatService {
         };
     }
 
+    public override parseUnmatchedPlayerData(data: RawSeasonStatData): UnmatchedPlayerData {
+        return {
+            pfr_id: data?.pfr_id,
+            full_name: data?.full_name,
+            stat_service: this.serviceName,
+            season: data?.season,
+            team_id: teamLookup(data.team),
+        };
+    }
+
     // Abstract function 
     public async processStatRecord(season_id: number, row: any): Promise<void> {}
 
@@ -47,16 +56,10 @@ export class NFLSeasonAdvStatService extends NFLStatService {
         try {
             const promises: Promise<void>[] = [];
             const player = this.parsePlayerData(row);
-            if (!player.pfr_id || player.pfr_id === '') {
-                logger.notice(`Player Record missing PFR Id: ${JSON.stringify(player)}.`, this.logContext);
+            const player_id = await this.findPlayerById(player, PlayerIdentifiers.PFR);
+            if (player_id === 0)
                 return;
-            }
 
-            let player_id = await this.findPlayerByPFR(player);
-            if (player_id === 0) {
-                logger.notice(`No Player Found: ${player.full_name} [${player.pfr_id}].`, this.logContext);
-                return;
-            }
             promises.push(this.processPlayerRecord(player_id, {pfr_id: row.pfr_id}));
             promises.push(this.processLeagueRecord(player_id, row));
 

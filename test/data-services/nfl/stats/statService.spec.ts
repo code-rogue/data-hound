@@ -4,6 +4,18 @@ import * as team from '@utils/teamUtils';
 import * as util from '@data-services/utils/utils';
 
 import { Config } from '@interfaces/config/config';
+import {
+  configData,
+  dataFile,
+  noRawStatData as noData,
+  statRecord,
+  rawStatData as data,
+  statLeagueData as leagueData,
+  statPlayerData as playerData,
+  seasonAdvStatData as seasonData,
+  seasonAdvStatBaseRecord as seasonBaseRecord,
+  seasonAdvStatRecord as seasonRecord,     
+} from '@test-nfl-constants/config.constants';
 import { DBService } from '@database/dbService'
 import { LogContext } from '@log/log.enums';
 import { logger } from '@log/logger';
@@ -15,33 +27,16 @@ import {
   PlayerId,
   PlayerPFR,
   PlayerTable,
-  SeasonStatTable
+  SeasonStatTable,
+  ServiceName,
+  UnmatchedPlayerStatsTable
 } from '@constants/nfl/service.constants';
-import { 
-    NFLStatService,
- } from '@data-services/nfl/statService';
+import { NFLStatService } from '@data-services/nfl/statService';
+import { PlayerIdentifiers } from '@interfaces/enums/nfl/player.enums';
 
-import {
-    configData,
-    dataFile,
-    noRawStatData as noData,
-    statRecord,
-    rawStatData as data,
-    statLeagueData as leagueData,
-    statPlayerData as playerData,
-    seasonAdvStatData as seasonData,
-    seasonAdvStatBaseRecord as seasonBaseRecord,
-    seasonAdvStatRecord as seasonRecord,     
-} from '@test-nfl-constants/config.constants';
-
-import type { 
-  LeagueData,
-  PlayerData,
-} from '@interfaces/nfl/stats';
+import type { LeagueData, PlayerData } from '@interfaces/nfl/stats';
 import type { SeasonData } from '@interfaces/nfl/stats';
-import type {
-  StringSplitResult,
-} from '@utils/utils';
+import type { StringSplitResult } from '@utils/utils';
 
 jest.mock('@log/logger');
 
@@ -166,6 +161,24 @@ describe('NFLStatService', () => {
     });
   });
 
+  describe('parseUnmatchedPlayerData', () => {
+    const unmatchedData = {
+      gsis_id: 'string',
+      pfr_id: 'string',
+      full_name: 'Travis Kelce',
+      stat_service: ServiceName.NFLWeeklyAdvStatService,
+      team: 'KC',
+      team_id: 5
+    };
+
+    it('should parse successfully', () => {
+      // remove the team column
+      const {team, ...result} = unmatchedData;
+      expect(service.parseUnmatchedPlayerData(unmatchedData)).toEqual(result);
+      expect(mockTeamLookup).toHaveBeenCalledWith(unmatchedData.team);
+    });
+  });
+
   describe('processPlayerDataRow', () => {
     it('should run successfully (abstract function))', async () => {
       await service.processPlayerDataRow(statRecord);
@@ -283,9 +296,146 @@ describe('NFLStatService', () => {
     });    
   });
 
+  describe('findPlayerById', () => {
+    const unmatchedData = { stat_service: 'me'};
+    const fullDataRecord = {
+      gsis_id: 'string',
+      full_name: 'string',
+    } as PlayerData;
+
+    it.each([
+      [1, 1001, PlayerIdentifiers.GSIS, fullDataRecord],
+      [2, 1002, PlayerIdentifiers.PFR, fullDataRecord],
+      [3, 0, 0, fullDataRecord],
+      [4, 1001, 0, fullDataRecord],
+    ])('should run successfully - idx: %s', async (idx, player_id, lookup, data ) => {
+      const mockFindPlayerIdByGSIS = jest.spyOn(NFLStatService.prototype, 'findPlayerIdByGSIS').mockReturnValue(Promise.resolve(player_id)); 
+      const mockFindPlayerIdByPFR = jest.spyOn(NFLStatService.prototype, 'findPlayerIdByPFR').mockReturnValue(Promise.resolve(player_id));
+      const mockFindPlayerIdByName = jest.spyOn(NFLStatService.prototype, 'findPlayerIdByName').mockReturnValue(Promise.resolve(player_id));
+      const mockInsertRecord = jest.spyOn(DBService.prototype, 'insertRecord').mockImplementation(() => Promise.resolve(0));
+      const mockParseUnmatchedPlayerData = jest.spyOn(NFLStatService.prototype, 'parseUnmatchedPlayerData').mockReturnValue(unmatchedData);
+
+      const result = await service.findPlayerById(data, lookup);
+      expect(result).toEqual(player_id);
+      switch (lookup) {
+        case PlayerIdentifiers.GSIS: {
+          expect(mockFindPlayerIdByGSIS).toHaveBeenCalledWith(data);
+          expect(mockFindPlayerIdByPFR).toHaveBeenCalledTimes(0);
+          expect(mockFindPlayerIdByName).toHaveBeenCalledTimes(0);
+          expect(mockInsertRecord).toHaveBeenCalledTimes(0);
+          break;
+        }
+        case PlayerIdentifiers.PFR: {
+          expect(mockFindPlayerIdByGSIS).toHaveBeenCalledTimes(0);
+          expect(mockFindPlayerIdByPFR).toHaveBeenCalledWith(data);
+          expect(mockFindPlayerIdByName).toHaveBeenCalledTimes(0);
+          expect(mockInsertRecord).toHaveBeenCalledTimes(0);
+          break;
+        }
+        default: {  // lookup === 0
+          expect(mockFindPlayerIdByGSIS).toHaveBeenCalledTimes(0);
+          expect(mockFindPlayerIdByPFR).toHaveBeenCalledTimes(0);
+          expect(mockFindPlayerIdByName).toHaveBeenCalledWith(data);
+
+          if (player_id === 0) {
+            expect(mockInsertRecord).toHaveBeenCalledWith(NFLSchema, UnmatchedPlayerStatsTable, unmatchedData);
+            expect(mockParseUnmatchedPlayerData).toHaveBeenCalledWith(data);            
+          }
+          else {
+            expect(mockInsertRecord).toHaveBeenCalledTimes(0);
+            expect(mockParseUnmatchedPlayerData).toHaveBeenCalledTimes(0);
+          }
+        }
+      }
+
+      mockFindPlayerIdByGSIS.mockRestore();
+      mockFindPlayerIdByPFR.mockRestore();
+      mockFindPlayerIdByName.mockRestore();
+      mockInsertRecord.mockRestore();
+      mockParseUnmatchedPlayerData.mockRestore();
+    });
+
+    it('should catch and throw the error', async () => {
+      const error = new Error("error");
+      const mockFindPlayerIdByName = jest.spyOn(NFLStatService.prototype, 'findPlayerIdByName').mockRejectedValue(error);
+
+      await expect(service.findPlayerById(fullDataRecord, 0)).rejects.toThrow(error);
+      expect(mockFindPlayerIdByName).toHaveBeenCalledWith(fullDataRecord);
+      
+      mockFindPlayerIdByName.mockRestore();
+    });    
+  });
+
+  describe('findPlayerIdByName', () => {
+    const query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerFullName} = $1`;
+    const noFullName = {
+      gsis_id: 'string',
+    } as PlayerData;
+
+    const blankFullName = {
+      gsis_id: 'string',
+      full_name: '',
+    } as PlayerData;
+   
+    const fullDataRecord = {
+      gsis_id: 'string',
+      full_name: 'string',
+    } as PlayerData;
+
+    it.each([
+      [1, 0, false, noFullName],
+      [2, 0, false, blankFullName],
+      [3, 0, false, fullDataRecord],
+      [4, 1001, false, fullDataRecord],
+      [5, 1001, true, fullDataRecord],
+      [6, 0, false, fullDataRecord],
+    ])('should run successfully - idx: %s, player_id: %s', async (idx, player_id, multi, data) => {
+      let records;
+      if(player_id !== 0) {
+        if (multi) 
+          records = [ {id: player_id}, {id: player_id}] as unknown as [unknown];
+        else
+          records = [ {id: player_id}] as unknown as [unknown];
+      } 
+      else
+        records = [] as unknown as [unknown];
+
+      const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation(() => { 
+        return Promise.resolve(records);
+      });
+
+      const result = await service.findPlayerIdByName(data);
+      if (!data.full_name || data.full_name === '') {
+        expect(result).toEqual(0);
+        expect(mockFetchRecords).toHaveBeenCalledTimes(0);
+        expect(logger.notice).toHaveBeenCalledWith(`Player Record missing Full Name: ${JSON.stringify(data)}.`, LogContext.NFLStatService);
+      } else {
+        expect(mockFetchRecords).toHaveBeenCalledWith(query, [data.full_name]);
+
+        if(records.length === 1) { //if (records.length !== 1) {
+          expect(result).toEqual(player_id);                    
+        } else {
+          expect(result).toEqual(0);
+          expect(logger.notice).toHaveBeenCalledWith(`Unable to identify Player: '${data.full_name}' returned ${records.length} records`, LogContext.NFLStatService);
+        }
+      }
+
+      mockFetchRecords.mockRestore();
+    });
+
+    it('should catch and throw the error', async () => {
+      const error = new Error("error");
+      const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation().mockRejectedValue(error);
+
+      await expect(service.findPlayerIdByName(fullDataRecord)).rejects.toThrow(error);
+      expect(mockFetchRecords).toHaveBeenCalledWith(query, [fullDataRecord.full_name]);
+      
+      mockFetchRecords.mockRestore();
+    });    
+  });
+
   describe('findPlayerByGSIS', () => {
-    const baseQuery = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerGSIS} = $1`;
-    const fullQuery = `${baseQuery} OR ${PlayerFullName} = $2`;
+    const query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerGSIS} = $1`;
     const noGSIS = {
       full_name: 'string',
     } as PlayerData;
@@ -295,15 +445,6 @@ describe('NFLStatService', () => {
       gsis_id: '',
     } as PlayerData;
 
-    const noFullName = {
-      gsis_id: 'string',
-    } as PlayerData;
-
-    const blankFullName = {
-      gsis_id: 'string',
-      full_name: '',
-    } as PlayerData;
-   
     const fullDataRecord = {
       gsis_id: 'string',
       full_name: 'string',
@@ -312,10 +453,8 @@ describe('NFLStatService', () => {
     it.each([
       [1, noGSIS, 0],
       [2, blankGSIS, 0],
-      [3, noFullName, 0],
-      [4, blankFullName, 0],      
-      [5, fullDataRecord, 0],
-      [6, fullDataRecord, 1001],
+      [3, fullDataRecord, 0],
+      [4, fullDataRecord, 1001],
     ])('should run successfully - idx: %s', async (idx, data, player_id) => {
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation(() => { 
         if(player_id !== 0)
@@ -324,21 +463,14 @@ describe('NFLStatService', () => {
         return Promise.resolve([] as unknown as [unknown]);
       });
 
-      let query = baseQuery;
-      const keys = [data.gsis_id];
-      
-      if (data.full_name && data.full_name !== '') {
-        query = fullQuery;
-        keys.push(data.full_name);
-      }
-      
-      const result = await service.findPlayerByGSIS(data);
+      const result = await service.findPlayerIdByGSIS(data);
       if (!data.gsis_id || data.gsis_id === '') {
         expect(player_id).toEqual(0);
-        expect(mockFetchRecords).toHaveBeenCalledTimes(0);        
+        expect(logger.notice).toHaveBeenCalledWith(`Player Record missing GSIS Id: ${JSON.stringify(data)}.`, LogContext.NFLStatService);
+        expect(mockFetchRecords).toHaveBeenCalledTimes(0);
       } else {
         expect(result).toEqual(player_id);
-        expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
+        expect(mockFetchRecords).toHaveBeenCalledWith(query, [data.gsis_id]);
       }
 
       mockFetchRecords.mockRestore();
@@ -348,17 +480,15 @@ describe('NFLStatService', () => {
       const error = new Error("error");
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation().mockRejectedValue(error);
 
-      const keys = [fullDataRecord.gsis_id, fullDataRecord.full_name];
-      await expect(service.findPlayerByGSIS(fullDataRecord)).rejects.toThrow(error);
-      expect(mockFetchRecords).toHaveBeenCalledWith(fullQuery, keys);
+      await expect(service.findPlayerIdByGSIS(fullDataRecord)).rejects.toThrow(error);
+      expect(mockFetchRecords).toHaveBeenCalledWith(query, [fullDataRecord.gsis_id]);
       
       mockFetchRecords.mockRestore();
     });    
   });
 
-  describe('findPlayerByPFR', () => {
-    const baseQuery = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerPFR} = $1`;
-    const fullQuery = `${baseQuery} OR ${PlayerFullName} = $2`;
+  describe('findPlayerIdByPFR', () => {
+    const query = `SELECT id FROM ${NFLSchema}.${PlayerTable} WHERE ${PlayerPFR} = $1`;
     const noPFR = {
       full_name: 'string',
     } as PlayerData;
@@ -368,15 +498,6 @@ describe('NFLStatService', () => {
       pfr_id: '',
     } as PlayerData;
 
-    const noFullName = {
-      pfr_id: 'string',
-    } as PlayerData;
-
-    const blankFullName = {
-      pfr_id: 'string',
-      full_name: '',
-    } as PlayerData;
-   
     const fullDataRecord = {
       pfr_id: 'string',
       full_name: 'string',
@@ -385,10 +506,8 @@ describe('NFLStatService', () => {
     it.each([
       [1, noPFR, 0],
       [2, blankPFR, 0],
-      [3, noFullName, 0],
-      [4, blankFullName, 0],
-      [5, fullDataRecord, 0],
-      [6, fullDataRecord, 1001],
+      [3, fullDataRecord, 0],
+      [4, fullDataRecord, 1001],
     ])('should run successfully - idx: %s', async (idx, data, player_id) => {
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation(() => { 
         if(player_id !== 0)
@@ -397,22 +516,15 @@ describe('NFLStatService', () => {
         return Promise.resolve([] as unknown as [unknown]);
       });
 
-      let query = baseQuery;
-      const keys = [data.pfr_id];
-      
-      if (data.full_name && data.full_name !== '') {
-        query = fullQuery;
-        keys.push(data.full_name);
-      }
-
-      const result = await service.findPlayerByPFR(data);
+      const result = await service.findPlayerIdByPFR(data);
       if (!data.pfr_id || data.pfr_id === '') {
         expect(player_id).toEqual(0);
+        expect(logger.notice).toHaveBeenCalledWith(`Player Record missing PFR Id: ${JSON.stringify(data)}.`, LogContext.NFLStatService);
         expect(mockFetchRecords).toHaveBeenCalledTimes(0);        
       }
       else {
         expect(result).toEqual(player_id);
-        expect(mockFetchRecords).toHaveBeenCalledWith(query, keys);
+        expect(mockFetchRecords).toHaveBeenCalledWith(query, [data.pfr_id]);
       }
 
       mockFetchRecords.mockRestore();
@@ -422,9 +534,8 @@ describe('NFLStatService', () => {
       const error = new Error("error");
       const mockFetchRecords = jest.spyOn(DBService.prototype, 'fetchRecords').mockImplementation().mockRejectedValue(error);
 
-      const keys = [fullDataRecord.pfr_id, fullDataRecord.full_name];
-      await expect(service.findPlayerByPFR(fullDataRecord)).rejects.toThrow(error);
-      expect(mockFetchRecords).toHaveBeenCalledWith(fullQuery, keys);
+      await expect(service.findPlayerIdByPFR(fullDataRecord)).rejects.toThrow(error);
+      expect(mockFetchRecords).toHaveBeenCalledWith(query, [fullDataRecord.pfr_id]);
       
       mockFetchRecords.mockRestore();
     });    

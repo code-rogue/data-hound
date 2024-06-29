@@ -5,17 +5,16 @@ import * as util from '@utils/utils';
 import { Config } from '@interfaces/config/config';
 import {
   configData,
-  seasonAdvStatBaseRecord as baseRecord,
-  seasonAdvStatData as seasonData,
   seasonAdvStatLeagueData as leagueData,
   seasonAdvStatPlayerData as playerData,
   seasonAdvStatRecord as record,   
 } from '@test-nfl-constants/config.constants';
-import { LeagueData, PlayerData, SeasonData } from '@interfaces/nfl/stats';
+import { LeagueData } from '@interfaces/nfl/stats';
 import { LogContext } from '@log/log.enums';
 import { logger } from '@log/logger';
 import { NFLSeasonAdvStatService } from '@data-services/nfl/seasonAdvStats/seasonAdvStatService';
 import { NFLStatService } from '@data-services/nfl/statService';
+import { PlayerIdentifiers } from '@interfaces/enums/nfl/player.enums';
 import { ServiceName } from '@constants/nfl/service.constants';
 
 import type { StringSplitResult } from '@data-services/utils/utils';
@@ -71,6 +70,24 @@ describe('NFLSeasonAdvStatService', () => {
     });
   });
 
+  describe('parseUnmatchedPlayerData', () => {
+    const unmatchedData = {
+      pfr_id: 'string',
+      full_name: 'Travis Kelce',
+      stat_service: ServiceName.NFLSeasonAdvStatService,
+      team: 'KC',
+      team_id: 5,
+      season: '2023'
+    };
+
+    it('should parse successfully', () => {
+      // remove the team column
+      const {team, ...result} = unmatchedData;
+      expect(service.parseUnmatchedPlayerData(unmatchedData)).toEqual(result);
+      expect(mockTeamLookup).toHaveBeenCalledWith(unmatchedData.team);
+    });
+  });
+
   describe('processStatRecord', () => {
     it('should run successfully (abstract function))', async () => {
       await service.processStatRecord(1, record);
@@ -78,25 +95,13 @@ describe('NFLSeasonAdvStatService', () => {
   });
 
   describe('processPlayerDataRow', () => {
-    const noPFR = {
-      full_name: 'Travis Kelce',
-      season: '2023',
-    } as PlayerData;
-
-    const blankPFR = {
-      full_name: 'Travis Kelce',
-      season: '2023',
-      pfr_id: '',
-    } as PlayerData;
-
     it.each([
-      [0, 1, playerData],
-      [1000, 0, noPFR],
-      [1001, 0, blankPFR],
-      [1002, 1, playerData],
-    ])('should run successfully - player_id: %s, season_id: %s', async (player_id, season_id, data) => {
-      const mockParsePlayerData = jest.spyOn(NFLSeasonAdvStatService.prototype, 'parsePlayerData').mockImplementation(() => data);
-      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerByPFR')
+      [0, 1],
+      [1001, 0],
+      [1002, 1],
+    ])('should run successfully - player_id: %s, season_id: %s', async (player_id, season_id) => {
+      const mockParsePlayerData = jest.spyOn(NFLSeasonAdvStatService.prototype, 'parsePlayerData').mockImplementation(() => playerData);
+      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerById')
         .mockImplementation(() => Promise.resolve(player_id));
 
       const mockProcessPlayerRecord = jest.spyOn(NFLStatService.prototype, 'processLeagueRecord').mockImplementation();
@@ -108,30 +113,24 @@ describe('NFLSeasonAdvStatService', () => {
 
       await service.processPlayerDataRow(record);
       expect(mockParsePlayerData).toHaveBeenCalledWith(record);
-      
-      if (!data.pfr_id || data.pfr_id === '') {
-        expect(logger.notice).toHaveBeenCalledWith(`Player Record missing PFR Id: ${JSON.stringify(data)}.`, service.logContext);
-      } else {
-        expect(mockFindPlayer).toHaveBeenCalledWith(playerData);
+      expect(mockFindPlayer).toHaveBeenCalledWith(playerData, PlayerIdentifiers.PFR);
 
-        if (player_id === 0) {
-          expect(logger.notice).toHaveBeenCalledWith(`No Player Found: ${data.full_name} [${data.pfr_id}].`, service.logContext);
-          expect(mockProcessPlayerRecord).toHaveBeenCalledTimes(0);
-          expect(mockProcessLeagueRecord).toHaveBeenCalledTimes(0);
-          expect(mockProcessSeasonRecord).toHaveBeenCalledTimes(0);
+      if (player_id === 0) {
+        expect(mockProcessPlayerRecord).toHaveBeenCalledTimes(0);
+        expect(mockProcessLeagueRecord).toHaveBeenCalledTimes(0);
+        expect(mockProcessSeasonRecord).toHaveBeenCalledTimes(0);
+        expect(mockProcessStatRecord).toHaveBeenCalledTimes(0);
+        expect(logger.debug).toHaveBeenCalledTimes(1);
+      } else {
+        expect(mockProcessPlayerRecord).toHaveBeenCalledWith(player_id, record);
+        expect(mockProcessLeagueRecord).toHaveBeenCalledWith(player_id, record);
+        if (season_id === 0) {
           expect(mockProcessStatRecord).toHaveBeenCalledTimes(0);
-          expect(logger.debug).toHaveBeenCalledTimes(1);
         } else {
-          expect(mockProcessPlayerRecord).toHaveBeenCalledWith(player_id, record);
-          expect(mockProcessLeagueRecord).toHaveBeenCalledWith(player_id, record);
-          if (season_id === 0) {
-            expect(mockProcessStatRecord).toHaveBeenCalledTimes(0);
-          } else {
-            expect(mockProcessStatRecord).toHaveBeenCalledWith(season_id, record);
-          }
-          
-          expect(logger.debug).toHaveBeenNthCalledWith(3, `Completed processing player record: ${JSON.stringify(record)}.`, service.logContext);
+          expect(mockProcessStatRecord).toHaveBeenCalledWith(season_id, record);
         }
+        
+        expect(logger.debug).toHaveBeenNthCalledWith(3, `Completed processing player record: ${JSON.stringify(record)}.`, service.logContext);
       }
 
       mockParsePlayerData.mockRestore();
@@ -145,29 +144,14 @@ describe('NFLSeasonAdvStatService', () => {
     it('should catch and throw the error', async () => {
       const error = new Error("error");
       const mockParsePlayerData = jest.spyOn(NFLSeasonAdvStatService.prototype, 'parsePlayerData').mockImplementation(() => playerData);
-      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerByPFR').mockRejectedValue(error);
+      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerById').mockRejectedValue(error);
 
       await expect(service.processPlayerDataRow(record)).rejects.toThrow(error);
       expect(mockParsePlayerData).toHaveBeenCalledWith(record);
+      expect(mockFindPlayer).toHaveBeenCalledWith(playerData, PlayerIdentifiers.PFR);
+      
       mockParsePlayerData.mockRestore();
       mockFindPlayer.mockRestore();
-    });
-
-    it('Promise All should catch and throw the error', async () => {
-      const error = new Error("error");
-
-      const mockParsePlayerData = jest.spyOn(NFLSeasonAdvStatService.prototype, 'parsePlayerData').mockImplementation(() => playerData);
-      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerByPFR').mockImplementation(() => Promise.resolve(1));
-
-      const mockProcessSeasonRecord = jest.spyOn(NFLSeasonAdvStatService.prototype, 'processSeasonRecord')
-        .mockImplementation(() => Promise.resolve(record.player_season_id));
-      const mockProcessStatRecord = jest.spyOn(NFLSeasonAdvStatService.prototype, 'processStatRecord').mockRejectedValue(error);
-
-      await expect(service.processPlayerDataRow(record)).rejects.toThrow(error);
-      mockParsePlayerData.mockRestore();
-      mockFindPlayer.mockRestore();
-      mockProcessSeasonRecord.mockRestore();
-      mockProcessStatRecord.mockRestore();
     });
   });
 

@@ -14,6 +14,7 @@ module.exports = {
         "^@src/(.*)$": "<rootDir>/src/$1",
         "^@test/(.*)$": "<rootDir>/test/$1",
         "^@test-nfl-constants/(.*)$": "<rootDir>/test/data-services/nfl/constants/$1",
+        "^@interfaces/(.*)$": "<rootDir>/src/interfaces/$1",
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {

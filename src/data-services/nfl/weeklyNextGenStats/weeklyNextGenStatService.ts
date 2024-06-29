@@ -1,11 +1,7 @@
 import { logger } from '@log/logger';
 import { LogContext } from '@log/log.enums';
-import {
-    NFLSchema,
-    PlayerGSIS,
-    PlayerTable,
-    ServiceName,
-} from '@constants/nfl/service.constants';
+import { PlayerIdentifiers } from '@interfaces/enums/nfl/player.enums';
+import { ServiceName } from '@constants/nfl/service.constants';
 import { NFLWeeklyStatService } from '@data-services/nfl//weeklyStats/weeklyStatService';
 import { teamLookup } from '@utils/teamUtils';
 
@@ -13,6 +9,7 @@ import type {
     GameData,
     LeagueData,
     PlayerData,
+    UnmatchedPlayerData,
 } from '@interfaces/nfl/stats';
 import type { RawWeeklyStatData } from '@interfaces/nfl/stats';
 
@@ -47,9 +44,20 @@ export class NFLWeeklyNextGenStatService extends NFLWeeklyStatService {
     public override parseLeagueData<T extends LeagueData>(data: T): LeagueData {
         return {
             player_id: 0,
-            team_id: teamLookup(data.team),
             position: data.position,
             jersey_number: data.jersey_number,
+            team_id: teamLookup(data.team),
+        };
+    }
+
+    public parseUnmatchedPlayerData(data: RawWeeklyStatData): UnmatchedPlayerData {
+        return {
+            gsis_id: data?.gsis_id,
+            full_name: data?.full_name,
+            stat_service: this.serviceName,
+            season: data?.season,
+            week: data?.week,
+            team_id: teamLookup(data.team),
         };
     }
 
@@ -61,15 +69,10 @@ export class NFLWeeklyNextGenStatService extends NFLWeeklyStatService {
         try {
             const promises: Promise<void>[] = [];
             const player = this.parsePlayerData(row);
-            if (!player.gsis_id || player.gsis_id === '') {
-                logger.notice(`Player Record missing GSIS Id: ${JSON.stringify(player)}.`, this.logContext);
+            const player_id = await this.findPlayerById(player, PlayerIdentifiers.GSIS);
+            if (player_id === 0)
                 return;
-            }
-            let player_id = await this.findPlayerByGSIS(player);
-            if (player_id === 0) {
-                logger.notice(`No Player Found: ${player.full_name} [${player.gsis_id}].`, this.logContext);
-                return;
-            }
+            
             promises.push(this.processLeagueRecord(player_id, row));
 
             if (row.week === "0") {

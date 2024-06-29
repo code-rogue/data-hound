@@ -15,11 +15,12 @@ import {
   weeklyPlayerData as playerData,
 } from '@test-nfl-constants/config.constants';
 import { DBService } from '@database/dbService'
-import { GameData, PlayerData } from '@interfaces/nfl/stats';
+import { GameData, PlayerData, RawWeeklyStatData } from '@interfaces/nfl/stats';
 import { LogContext } from '@log/log.enums';
 import { logger } from '@log/logger';
 import { NFLStatService } from '@data-services/nfl/statService'
 import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
+import { PlayerIdentifiers } from '@interfaces/enums/nfl/player.enums';
 import { ServiceName } from '@constants/nfl/service.constants';
 
 jest.mock('@log/logger');
@@ -63,6 +64,25 @@ describe('NFLWeeklyStatService', () => {
         result.player_id = 0;
         expect(service.parseGameData(record)).toEqual(result);
         expect(mockTeamLookup).toHaveBeenCalledWith(record.team);
+    });
+  });
+
+  describe('parseUnmatchedPlayerData', () => {
+    const unmatchedData = {
+      gsis_id: 'string',
+      full_name: 'Travis Kelce',
+      stat_service: ServiceName.NFLWeeklyStatService,
+      team: 'KC',
+      team_id: 5,
+      season: '2023',
+      week: '3'
+    } as unknown as RawWeeklyStatData;
+
+    it('should parse successfully', () => {
+      // remove the team column
+      const {team, ...result} = unmatchedData;
+      expect(service.parseUnmatchedPlayerData(unmatchedData)).toEqual(result);
+      expect(mockTeamLookup).toHaveBeenCalledWith(unmatchedData.team);
     });
   });
 
@@ -170,44 +190,36 @@ describe('NFLWeeklyStatService', () => {
       [1003, 0, fullPlayerRecord],
       [1004, 1, fullPlayerRecord],
     ])('should run successfully - player_id: %s, week_id: %s', async (player_id, weekly_id, data) => {
-      const mockParsePlayerData = jest.spyOn(NFLWeeklyStatService.prototype, 'parsePlayerData').mockImplementation(() => data);
-      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerByGSIS')
-        .mockReturnValue(Promise.resolve(player_id));
-
       const mockProcessBioRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processBioRecord').mockImplementation();
       const mockProcessLeagueRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processLeagueRecord').mockImplementation();
-      
+      const mockProcessStatRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processStatRecord').mockImplementation();
+      const mockParsePlayerData = jest.spyOn(NFLWeeklyStatService.prototype, 'parsePlayerData')
+        .mockImplementation(() => playerData);
+      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerById')
+        .mockReturnValue(Promise.resolve(player_id));
       const mockProcessGameRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processGameRecord')
         .mockImplementation(() => Promise.resolve(weekly_id));
-      const mockProcessStatRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processStatRecord').mockImplementation();
-
+      
       await service.processPlayerDataRow(record);
       expect(mockParsePlayerData).toHaveBeenCalledWith(record);
-      
-      if (!data.gsis_id || data.gsis_id === '') {
-        expect(logger.notice).toHaveBeenCalledWith(`Player Record missing GSIS Id: ${JSON.stringify(data)}.`, service.logContext);
+      expect(mockFindPlayer).toHaveBeenCalledWith(playerData, PlayerIdentifiers.GSIS);
+
+      if (player_id === 0) {
+        expect(mockProcessBioRecord).toHaveBeenCalledTimes(0);
+        expect(mockProcessLeagueRecord).toHaveBeenCalledTimes(0);
+        expect(mockProcessGameRecord).toHaveBeenCalledTimes(0);
+        expect(mockProcessStatRecord).toHaveBeenCalledTimes(0);
+        expect(logger.debug).toHaveBeenCalledTimes(1);
       } else {
-        expect(mockFindPlayer).toHaveBeenCalledWith(data);
-
-        if (player_id === 0) {
-          expect(logger.notice).toHaveBeenCalledWith(`No Player Found: ${data.full_name} [${data.gsis_id}].`, service.logContext);
-          expect(mockProcessBioRecord).toHaveBeenCalledTimes(0);
-          expect(mockProcessLeagueRecord).toHaveBeenCalledTimes(0);
-          expect(mockProcessGameRecord).toHaveBeenCalledTimes(0);
+        expect(mockProcessBioRecord).toHaveBeenCalledWith(player_id, record);
+        expect(mockProcessLeagueRecord).toHaveBeenCalledWith(player_id, record);
+        expect(mockProcessGameRecord).toHaveBeenCalledWith(player_id, record);
+        if (weekly_id === 0)
           expect(mockProcessStatRecord).toHaveBeenCalledTimes(0);
-          expect(logger.debug).toHaveBeenCalledTimes(1);
-        } else {
-          expect(mockProcessBioRecord).toHaveBeenCalledWith(player_id, record);
-          expect(mockProcessLeagueRecord).toHaveBeenCalledWith(player_id, record);
-          expect(mockProcessGameRecord).toHaveBeenCalledWith(player_id, record);
-          if (weekly_id === 0) {
-            expect(mockProcessStatRecord).toHaveBeenCalledTimes(0);
-          } else {
-            expect(mockProcessStatRecord).toHaveBeenCalledWith(weekly_id, record);
-          }
+        else
+          expect(mockProcessStatRecord).toHaveBeenCalledWith(weekly_id, record);
 
-          expect(logger.debug).toHaveBeenNthCalledWith(2,`Completed processing player record: ${JSON.stringify(record)}.`, service.logContext);
-        }
+        expect(logger.debug).toHaveBeenNthCalledWith(2,`Completed processing player record: ${JSON.stringify(record)}.`, service.logContext);
       }
 
       mockParsePlayerData.mockRestore();
@@ -221,31 +233,14 @@ describe('NFLWeeklyStatService', () => {
     it('processPlayerDataRow should catch and throw the error', async () => {
       const error = new Error("error");
       const mockParsePlayerData = jest.spyOn(NFLWeeklyStatService.prototype, 'parsePlayerData').mockImplementation(() => playerData);
-      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerByGSIS').mockRejectedValue(error);
+      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerById').mockRejectedValue(error);
 
       await expect(service.processPlayerDataRow(record)).rejects.toThrow(error);
       expect(mockParsePlayerData).toHaveBeenCalledWith(record);
+      expect(mockFindPlayer).toHaveBeenCalledWith(playerData, PlayerIdentifiers.GSIS);
+      
       mockParsePlayerData.mockRestore();
       mockFindPlayer.mockRestore();
-    });
-
-    it.skip('processPlayerDataRow Promise All should catch and throw the error', async () => {
-      const error = new Error("error");
-
-      const mockParsePlayerData = jest.spyOn(NFLWeeklyStatService.prototype, 'parsePlayerData').mockImplementation(() => playerData);
-      const mockFindPlayer = jest.spyOn(NFLStatService.prototype, 'findPlayerByGSIS').mockImplementation(() => Promise.resolve(1));
-
-      const mockProcessBioRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processBioRecord').mockImplementation();
-      const mockProcessLeagueRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processLeagueRecord').mockImplementation();
-      const mockProcessGameRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processGameRecord')
-        .mockImplementation(() => Promise.resolve(1));
-      const mockProcessStatRecord = jest.spyOn(NFLWeeklyStatService.prototype, 'processStatRecord').mockRejectedValue(error);
-
-      await expect(service.processPlayerDataRow(record)).rejects.toThrow(error);
-      mockParsePlayerData.mockRestore();
-      mockFindPlayer.mockRestore();
-      mockProcessGameRecord.mockRestore();
-      mockProcessStatRecord.mockRestore();
     });
   });
 

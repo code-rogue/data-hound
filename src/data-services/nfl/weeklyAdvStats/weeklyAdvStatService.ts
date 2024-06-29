@@ -1,11 +1,8 @@
 import { logger } from '@log/logger';
 import { LogContext } from '@log/log.enums';
-import {
-    NFLSchema,
-    ServiceName,
-    PlayerTable,
-} from '@constants/nfl/service.constants';
+import { PlayerIdentifiers } from '@interfaces/enums/nfl/player.enums';
 import { NFLWeeklyStatService } from '@data-services/nfl/weeklyStats/weeklyStatService';
+import { ServiceName } from '@constants/nfl/service.constants';
 import { splitString } from '@utils/utils';
 import { teamLookup } from '@utils/teamUtils';
 
@@ -13,6 +10,7 @@ import type {
     GameData,
     LeagueData,
     PlayerData,
+    UnmatchedPlayerData,
 } from '@interfaces/nfl/stats';
 import type { RawWeeklyStatData } from '@interfaces/nfl/stats';
 
@@ -54,6 +52,17 @@ export class NFLWeeklyAdvStatService extends NFLWeeklyStatService {
         };
     }
 
+    public parseUnmatchedPlayerData(data: RawWeeklyStatData): UnmatchedPlayerData {
+        return {
+            pfr_id: data?.pfr_id,
+            full_name: data?.full_name,
+            stat_service: this.serviceName,
+            season: data?.season,
+            week: data?.week,
+            team_id: teamLookup(data.team),
+        };
+    }
+
     // Abstract function 
     public async processStatRecord(week_id: number, row: any): Promise<void> {}
 
@@ -61,23 +70,17 @@ export class NFLWeeklyAdvStatService extends NFLWeeklyStatService {
         try {
             const promises: Promise<void>[] = [];
             const player = this.parsePlayerData(row);
-            if (!player.pfr_id || player.pfr_id === '') {
-                logger.notice(`Player Record missing PFR Id: ${JSON.stringify(player)}.`, this.logContext);
+            const player_id = await this.findPlayerById(player, PlayerIdentifiers.PFR);
+            if (player_id === 0)
                 return;
-            }
-
-            let player_id = await this.findPlayerByPFR(player);
-            if (player_id === 0) {
-                logger.notice(`No Player Found: ${player.full_name} [${player.pfr_id}].`, this.logContext);
-                return;
-            }
+            
             promises.push(this.processPlayerRecord(player_id, {pfr_id: row.pfr_id}));
             promises.push(this.processLeagueRecord(player_id, row));
             
             const weeklyStatId = await this.processGameRecord(player_id, row);
-            if (weeklyStatId !== 0) {
+            if (weeklyStatId !== 0)
                 promises.push(this.processStatRecord(weeklyStatId, row));
-            }
+            
             await Promise.all(promises);
             logger.debug(`Completed processing player record: ${JSON.stringify(row)}.`, this.logContext);
         } catch(error: any) {

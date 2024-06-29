@@ -43,6 +43,7 @@ export function teamLookup(teamName?: string): number | null {
         case NFL_TEAMS.SD:
             return NFL_TEAM_IDS.LAC;
         case NFL_TEAMS.LV:
+        case NFL_TEAMS.LVR:
         case NFL_TEAMS.OAK:
             return NFL_TEAM_IDS.LV;
         case NFL_TEAMS.MIA:
@@ -71,6 +72,10 @@ export function teamLookup(teamName?: string): number | null {
             return NFL_TEAM_IDS.TEN;
         case NFL_TEAMS.WAS:
             return NFL_TEAM_IDS.WAS;
+        case NFL_TEAMS.TwoTM:
+            return NFL_TEAM_IDS.TwoTM;
+        case NFL_TEAMS.ThreeTM:
+            return NFL_TEAM_IDS.ThreeTM;
         default:
             return null;
     }

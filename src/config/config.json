@@ -277,7 +277,7 @@
         "season": "season",
         "week": "week",
         "game_type": "game_type",
-        "team": "tm",
+        "team": "team",
         "opponent": "opponent",
         "full_name": "pfr_player_name",
         "pfr_id": "pfr_player_id",
@@ -404,7 +404,7 @@
         "season": "season",
         "full_name": "player",
         "pfr_id": "pfr_id",
-        "team": "team",
+        "team": "tm",
         "age": "age",
         "position": "position",
         "games_played": "g",
@@ -468,7 +468,7 @@
         "short_name": "player_short_name"
       },
       "urls": [
-        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_passing.csv.gz"
+        "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2021_passing.csv.gz"        
       ]
     },
     "player_weekly_nextgen_rush_stats": {
@@ -528,7 +528,6 @@
       },
       "urls": [
         "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_2023_receiving.csv.gz"
-
       ]
     }
   }

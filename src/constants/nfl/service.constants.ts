@@ -16,6 +16,7 @@ export const SeasonPassTable = 'season_stats_pass';
 export const SeasonRecTable = 'season_stats_rec';
 export const SeasonRushTable = 'season_stats_rush';
 export const SeasonStatTable = 'player_season_stats';
+export const UnmatchedPlayerStatsTable = 'unmatched_player_stats';
 export const WeeklyDefTable = 'weekly_stats_def';
 export const WeeklyKickTable = 'weekly_stats_kick';
 export const WeeklyPassTable = 'weekly_stats_pass';

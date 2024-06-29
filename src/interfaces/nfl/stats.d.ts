@@ -49,3 +49,17 @@ export interface SeasonData {
     team?: string,
     team_id?: number | null,
 }
+
+export interface UnmatchedPlayerData {
+    id?: number,
+    esb_id?: string,
+    gsis_id?: string,
+    gsis_it_id?: string,
+    smart_id?: string,
+    pfr_id?: string,
+    full_name?: string,
+    stat_service: string,
+    season?: string,
+    week?: string,
+    team_id?: number | null,
+}

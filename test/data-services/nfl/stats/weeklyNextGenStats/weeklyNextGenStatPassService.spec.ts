@@ -19,7 +19,6 @@ import {
 } from '@constants/nfl/service.constants';
 import { NFLWeeklyNextGenStatPassService } from '@data-services/nfl/weeklyNextGenStats/weeklyNextGenStatPassService';
 import { ServiceName } from '@constants/nfl/service.constants';
-import { NFLStatService } from '@data-services/nfl/statService';
 
 jest.mock('@log/logger');
 

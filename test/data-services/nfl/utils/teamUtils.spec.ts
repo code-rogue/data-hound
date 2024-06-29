@@ -29,6 +29,7 @@ describe('Team Utils', () => {
         [NFL_TEAMS.LAC, NFL_TEAM_IDS.LAC],
         [NFL_TEAMS.SD, NFL_TEAM_IDS.LAC],
         [NFL_TEAMS.LV, NFL_TEAM_IDS.LV],
+        [NFL_TEAMS.LVR, NFL_TEAM_IDS.LV],
         [NFL_TEAMS.OAK, NFL_TEAM_IDS.LV],
         [NFL_TEAMS.MIA, NFL_TEAM_IDS.MIA],
         [NFL_TEAMS.MIN, NFL_TEAM_IDS.MIN],
@@ -43,6 +44,8 @@ describe('Team Utils', () => {
         [NFL_TEAMS.TB, NFL_TEAM_IDS.TB],
         [NFL_TEAMS.TEN, NFL_TEAM_IDS.TEN],
         [NFL_TEAMS.WAS, NFL_TEAM_IDS.WAS],        
+        [NFL_TEAMS.TwoTM, NFL_TEAM_IDS.TwoTM],
+        [NFL_TEAMS.ThreeTM, NFL_TEAM_IDS.ThreeTM],
       ])('should return the correct team id - team: %s', (team, result) => {
             expect(teamLookup(team)).toEqual(result);
       })
